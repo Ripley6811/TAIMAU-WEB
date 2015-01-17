@@ -1,0 +1,132 @@
+body {
+    padding-top: 60px;
+    padding-bottom: 40px;
+}
+
+.jumbotron {
+    text-align: center;
+}
+
+.jumbotron h2 {
+    font-size: 1.5em;
+    letter-spacing: -1px;
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: normal;
+    color: cyan;
+}
+
+.container .gray {
+    color: gray;
+}
+
+.container .footer {
+    width: 25%;
+}
+
+.form-signin {
+    border: 2px solid;
+    padding: 0px 29px 10px;
+    width: 400px;
+    background-color: lightgray;
+    border-color: #9ec03b;
+    margin: 0 auto 20px;
+    margin-top: 20px;
+        text-align: center;
+    border-radius: 15px;
+}
+
+.form-signin input {
+    font-size: 16px;
+    height: auto;
+    margin-bottom: 15px;
+    padding: 7px 9px;
+}
+
+.branch-edit {
+    border: 2px solid;
+    padding: 0px 29px 10px;
+    width: 60%;
+    background-color: lightgray;
+    border-color: rgb(158, 191, 59);
+    margin: 0 auto 20px;
+    margin-top: 20px;
+        text-align: center;
+    border-radius: 15px;
+}
+
+.branch-edit .col-md-2 {
+    line-height: 220%;
+    vertical-align: middle;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.branch-edit input {
+    font-size: 16px;
+    height: auto;
+    margin-bottom: 2px;
+    padding: 7px 9px;
+}
+
+
+table {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+/*
+table {
+  border-collapse:collapse;
+    width: 80%;
+    margin-top: 20px;
+    border-radius: 15px;
+}
+*/
+
+th {
+  background:#9B59B6;
+    text-align: center;
+  color:white;
+}
+
+tr:nth-child(even) {
+    background-color: #e2dfff;
+}
+
+
+
+
+tbody tr:hover{
+background:#BDC3C7;
+/*  color:#FFFFFF;*/
+}
+
+::-webkit-input-placeholder {
+ font-size: 14px;
+ color: #d0cdfa;
+ text-transform: uppercase;
+ text-align: center;
+ font-weight: bold;
+}
+:-moz-placeholder { /* older Firefox*/
+ font-size:14px;
+ color: #d0cdfa;
+ text-transform: uppercase;
+ text-align: center;
+ font-weight: bold;
+}
+::-moz-placeholder { /* Firefox 19+ */ 
+ font-size: 14px;
+ color: #d0cdfa; 
+ text-transform: uppercase;
+ text-align: center;
+ font-weight: bold;
+} 
+:-ms-input-placeholder { 
+ font-size: 14px; 
+ color: #d0cdfa;
+ text-transform: uppercase;
+ text-align: center;
+ font-weight: bold;
+}

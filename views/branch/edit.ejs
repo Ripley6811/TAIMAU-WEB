@@ -1,0 +1,32 @@
+<div class="row" style="text-align: center">
+    <form action="/branch/update" method="post" class="branch-edit">
+        <h2>Edit Company Record - <%= branch.name %></h2>
+        <input type="hidden" name="name" value="<%= branch.name %>" />
+        <div class="row vcenter"><div class="col-md-2">中文名稱</div><div class="col-md-10"><input type="text" class="form-control" placeholder="CHINESE FULLNAME" name="fullname" value="<%= branch.fullname %>"></div></div>
+        <div class="row vcenter"><div class="col-md-2">英文名稱</div><div class="col-md-10"><input type="text" class="form-control" placeholder="ENGLISH FULLNAME" name="english_name" value="<%= branch.english_name %>"></div></div>
+        <div class="row vcenter"><div class="col-md-2">統一編號</div><div class="col-md-10"><input type="text" class="form-control" placeholder="TAX ID" name="tax_id" value="<%= branch.tax_id %>"></div></div>
+        <div class="row vcenter"><div class="col-md-2">電話</div><div class="col-md-10"><input type="text" class="form-control" placeholder="PHONE" name="phone" value="<%= branch.phone %>"></div></div>
+        <div class="row vcenter"><div class="col-md-2">傳真</div><div class="col-md-10"><input type="text" class="form-control" placeholder="FAX" name="fax" value="<%= branch.fax %>"></div></div>
+        <div class="row vcenter"><div class="col-md-2">電子郵件</div><div class="col-md-10"><input type="text" class="form-control" placeholder="EMAIL" name="email" value="<%= branch.email %>"></div></div>
+        <div class="row vcenter"><div class="col-md-2">辦公室地址</div><div class="col-md-10"><input type="text" class="form-control" placeholder="OFFICE ADDRESS" name="address_office" value="<%= branch.address_office %>"></div></div>
+        <div class="row vcenter"><div class="col-md-2">送貨地址</div><div class="col-md-10"><input type="text" class="form-control" placeholder="SHIPPING ADDRESS" name="address_shipping" value="<%= branch.address_shipping %>"></div></div>
+        <div class="row vcenter"><div class="col-md-2">送發票地址</div><div class="col-md-10"><input type="text" class="form-control" placeholder="BILLING ADDRESS" name="address_billing" value="<%= branch.address_billing %>"></div></div>
+        <div class="row vcenter"><div class="col-md-2">備註</div><div class="col-md-10"><input type="text" class="form-control" placeholder="NOTE" name="note" value="<%= branch.note %>"></div></div>
+        <br>
+        
+        <% var flash = req.flash('message'); %>
+        <% if(flash.length) { %>
+        <mark>
+        <%- flash %>
+            </mark>
+        <br><br>
+        <% } %>
+        
+<div class="row vcenter"><div class="col-md-6">
+    <input type="submit" class="btn btn-lg btn-primary btn-block" value="UPDATE" /></div>
+    <div class="col-md-6">
+        <input type="cancel" class="btn btn-lg btn-primary btn-block red" value="EXIT" onclick="javascript:window.location='company_list'" /></div></div>
+        <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+
+    </form>
+</div>
