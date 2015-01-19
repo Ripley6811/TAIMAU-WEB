@@ -8,19 +8,19 @@
 module.exports = {
 
     schema: true,  // Follow schema. Only allows values in attributes.
-    autoPK: false,  // Do not use 'id' field
+//    autoPK: false,  // Do not use 'id' field
     autoCreatedAt: false,  // Do not use 'createAt' field
     autoUpdatedAt: false,  // Do not use 'updatedAt' field
 
   attributes: {
 
-        id: {
-            type: 'integer',
-            unique: true,
-            primaryKey: true,
-            required: true,
-            autoIncrement: true
-        },
+//        id: {
+//            type: 'integer',
+//            unique: true,
+//            primaryKey: true,
+//            required: true,
+//            autoIncrement: true
+//        },
         group: {
             model: 'cogroup',
             required: true

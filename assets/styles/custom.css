@@ -86,7 +86,7 @@ table {
 
 th {
   background:#9B59B6;
-    text-align: center;
+/*    text-align: center;*/
   color:white;
 }
 
@@ -94,9 +94,6 @@ tr:nth-child(even) {
     background-color: #e2dfff;
 }
 
-navbar {
-    padding: 2px 15px;
-}
 
 
 tbody tr:hover{

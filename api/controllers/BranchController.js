@@ -28,7 +28,7 @@ module.exports = {
     },
 
     'edit': function (req, res) {
-        console.log('BRANCH_EDIT', req.params.all(), req.param('id'));
+//        console.log('BRANCH_EDIT', req.params.all(), req.param('id'));
         Branch.findOne(req.param('id'))
             .exec(function (err, branch) {
                 if (err) res.json({
@@ -67,7 +67,7 @@ module.exports = {
                 address_shipping: req.param('address_shipping'),
                 address_billing: req.param('address_billing'),
                 note: req.param('note')
-            }
+            };
 
         if (name) {
             Branch.update(name, updates)
@@ -80,7 +80,7 @@ module.exports = {
         }
     },
 
-    destroy: function (req, res) {
+    destroy: function (req, res, next) {
         var qstring = 'SELECT COUNT(*) AS NumberOfRecords FROM `order` WHERE `group` = ?;';
         var name = req.param('id');
         Branch.findOne(name)
@@ -92,7 +92,7 @@ module.exports = {
 
                 if (!branch) return next('Branch doesn\'t exist.');
 
-                console.log(qstring);
+//                console.log(qstring);
                 Branch.query(qstring, [branch.group], function (err, rows) {
                     if (err) res.json({
                         error: err.message
@@ -104,13 +104,13 @@ module.exports = {
                         var delRecord = {
                             name: branch.name
                         };
-                        console.log('DELETING', delRecord, rows[0]);
+//                        console.log('DELETING', delRecord, rows[0]);
                         Branch.destroy(delRecord).exec(function (err, branches) {
                             if (err) res.json({
                                 error: err.message
                             }, 400);
 
-                            console.log('DESTROYED:', err, branches);
+//                            console.log('DESTROYED:', err, branches);
                             res.redirect('/branch');
                         });
                     }
