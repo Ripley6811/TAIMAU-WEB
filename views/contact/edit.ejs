@@ -25,10 +25,18 @@
             <br>
         <% } %>
 
+<div class="row vcenter"><div class="col-md-6">
         <input type="submit" class="btn btn-lg btn-primary btn-block" value="UPDATE" />
+    </div>
+    <div class="col-md-6">
+        
+        <input type="delete" class="btn btn-lg btn-danger btn-block" value="DELETE" onclick="javascript:window.location='../destroy/<%= contact.id %>'" />
+    </div></div>
+        
+        
         <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+<br>
 
-
-        <input type="cancel" class="btn btn-lg btn-danger btn-block" value="EXIT" onclick="javascript:window.location='../../cogroup/show/<%= contact.group %>'" />
+        <input type="cancel" class="btn btn-lg btn-warning btn-block" value="EXIT" onclick="javascript:window.location='../../cogroup/show/<%= contact.group %>'" />
     </form>
 </div>

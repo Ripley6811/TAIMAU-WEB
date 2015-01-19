@@ -87,6 +87,17 @@ module.exports = {
                 req.flash('message', 'Record Updated!');
                 res.redirect('/contact/edit/' + id);
             });
+    },
+
+    destroy: function (req, res, next) {
+        var delRecord = req.param('id');
+        Contact.destroy(delRecord).exec(function (err, contact) {
+            if (err) res.json({
+                error: err.message
+            }, 400);
+
+            res.redirect('/cogroup/show/' + contact[0].group);
+        });
     }
     
 };

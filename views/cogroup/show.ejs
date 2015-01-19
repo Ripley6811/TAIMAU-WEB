@@ -1,5 +1,20 @@
 <div class='container'>
-	<h1><%= cogroup.name %> </h1>
+    <div class="row">
+        <h1 class="col-md-3"><%= cogroup.name %> </h1>
+        <div class="col-md-3">
+        <% if (cogroup.is_supplier) { %>
+            <h2 class="btn btn-success active">
+        <% } else { %>
+            <h2 class="btn btn-warning" disabled="disabled">
+        <% } %>供應商</h2>
+        <% if (cogroup.is_customer) { %>
+            <h2 class="btn btn-success active">
+        <% } else { %>
+            <h2 class="btn btn-warning" disabled="disabled">
+        <% } %>客戶</h2>
+        </div>
+
+    </div>
 	<hr>
     <h2>分公司</h2>
 <table class="table table-condensed">
@@ -30,6 +45,7 @@
         </tbody>
 </table>
     
+	<a class="btn btn-medium btn-primary" href="/branch/new/<%= cogroup.name %>">Add branch</a>
     
     <hr>
     

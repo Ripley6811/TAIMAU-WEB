@@ -7,6 +7,53 @@
 
 module.exports = {
 
+    'new': function (req, res) {
+        Cogroup.findOne(req.param('id'))
+//            .populate('branches')
+            .exec(function (err, cogroup) {
+                if (err) res.json({
+                    error: err.message
+                }, 400);
+
+                res.view({ cogroup: cogroup });
+            });
+    },
+    
+    
+    create: function (req, res, next) {
+//        console.log(req.params.all());
+
+        var branchObj = {
+            name: req.param('name'),
+            group: req.param('group'),
+            fullname: req.param('fullname'),
+            english_name: req.param('english_name'),
+            tax_id: req.param('tax_id'),
+            phone: req.param('phone'),
+            fax: req.param('fax'),
+            email: req.param('email'),
+            address_office: req.param('address_office'),
+            address_shipping: req.param('address_shipping'),
+            address_billing: req.param('address_billing'),
+            note: req.param('note')
+        };
+
+        // Create a User with the params sent from 
+        // the sign-up form --> new.ejs
+        Branch.create(branchObj, function(err, branch) {
+
+            // If there's an error
+            if (err) {
+                console.log(err);
+                // If error redirect back to creation page
+                return res.redirect('/branch/new/' + branchObj.group);
+            }
+            console.log(branch);
+
+            res.redirect('/cogroup/show/' + branchObj.group);
+        });
+    },
+    
     'index': function (req, res) {
         Branch.find({
             where: {
