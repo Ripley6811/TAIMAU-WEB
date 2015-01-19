@@ -50,7 +50,7 @@ module.exports.connections = {
     port: '3306', // default is `3306`
     user: 'admin',
     password: 'admin',
-    database: 'test_copy' // optional
+    database: 'test_copy_2' // optional
   },
 
   /***************************************************************************

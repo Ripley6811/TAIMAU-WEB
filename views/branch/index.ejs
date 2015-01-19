@@ -1,0 +1,40 @@
+
+<table class="table table-condensed">
+    <thead class="text-uppercase"><tr>
+        <th>Group</th>
+        <th>Branch</th>
+        <th>Phone</th>
+        <th>Full name</th>
+        <th>Tax ID</th>
+        <th>Fax</th>
+        <th>Address Billing</th>
+<!--        <th></th>-->
+        <th></th>
+        <th></th>
+    </tr></thead>
+<!--    <tbody data-bind="foreach: branches">-->
+    <tbody>
+        <% branches.forEach(function(branch)  { %>
+        <tr>
+            <td><%= branch.group %></td>
+            <td><a href="/branch/edit/<%= branch.name %>"><%= branch.name %></a></td>
+            <td>&#x260f; <%= branch.phone %></td>
+            <td><%= branch.fullname %></td>
+            <td><%= branch.tax_id %></td>
+            <td><%= branch.fax %></td>
+            <td><%= branch.address_billing %></td>
+            
+<!--
+                <td><a href="/user/show/<%= branch.name %>" class="btn btn-sm btn-primary">Show</a>
+                </td>
+-->
+                <td><a href="/branch/edit/<%= branch.name %>" class="btn btn-sm btn-warning">Edit</a>
+                </td>
+<!--
+                <td><a href="/branch/destroy/<%= branch.name %>" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+-->
+        </tr>
+        <% }); %>
+    </tbody>
+</table>

@@ -1,0 +1,53 @@
+
+<table class="table table-condensed">
+    <thead class="text-uppercase"><tr>
+        <th></th>
+        <th>公司主要</th>
+        <th>分公司</th>
+        <th>統一編號</th>
+        <th>電話</th>
+        <th>傳真</th>
+        <th>地址主要</th>
+    </tr></thead>
+<!--    <tbody data-bind="foreach: cogroupes">-->
+    <tbody>
+        <% cogroups.forEach(function(cogroup) { %>
+        <tr>
+            <td>
+                <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-sm btn-primary">View</a>
+            </td>
+            <td><%= cogroup.name %></td>
+            <td>
+                <% cogroup.branches.forEach(function(branch) { %>
+                    <% if (branch.fullname != '') { %>
+                    <abbr title="<%= branch.fullname %>"><%= branch.name %></abbr><br>
+                    <% } else { %>
+                    <%= branch.name %><br>
+                    <% } %>
+                <% }); %>
+            </td>
+            <td>
+                <% cogroup.branches.forEach(function(branch) { %>
+                    <%= branch.tax_id %><br>
+                <% }); %>
+            </td>
+            <td>
+                <% cogroup.branches.forEach(function(branch) { %>
+                    <%= branch.phone %><br>
+                <% }); %>
+            </td>
+            <td>
+                <% cogroup.branches.forEach(function(branch) { %>
+                    <%= branch.fax %><br>
+                <% }); %>
+            </td>
+            <td>
+                <% cogroup.branches.forEach(function(branch) { %>
+                    <%= branch.address_office %><br>
+                <% }); %>
+            </td>
+            
+        </tr>
+        <% }); %>
+    </tbody>
+</table>

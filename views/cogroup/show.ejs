@@ -1,0 +1,60 @@
+<div class='container'>
+	<h1><%= cogroup.name %> </h1>
+	<hr>
+    <h3>分公司</h3>
+<table class="table table-condensed">
+    <thead class="text-uppercase"><tr>
+        <th>ID (縮寫)</th>
+        <th>名稱</th>
+        <th>統一編號</th>
+        <th>電話</th>
+        <th>傳真</th>
+        <th></th>
+    </tr></thead>
+    <tbody>
+    <% cogroup.branches.forEach(function(branch) { %>
+        <tr>
+            <td><%= branch.name %></td>
+            <td><%= branch.fullname %></td>
+            <td><%= branch.tax_id %></td>
+            <td><%= branch.phone %></td>
+            <td><%= branch.fax %></td>
+                <td><a href="/branch/edit/<%= branch.name %>" class="btn btn-sm btn-warning">Edit</a>
+                </td>
+        </tr>
+    <% }); %>
+        </tbody>
+</table>
+    
+    
+    
+    
+    <h3>聯絡人</h3>
+<table class="table table-condensed">
+    <thead class="text-uppercase"><tr>
+        <th>分公司</th>
+        <th>稱號</th>
+        <th>姓名</th>
+        <th>電話</th>
+        <th>Email</th>
+    </tr></thead>
+    <tbody>
+    <% cogroup.contacts.forEach(function(contact) { %>
+        
+        <tr>
+            <td><%= contact.branch %></td>
+            <td><%= contact.position %></td>
+            <td><%= contact.name %></td>
+            <td><%= contact.phone %></td>
+            <td><%= contact.email %></td>
+        </tr>
+    <% }); %>
+        </tbody>
+</table>
+    
+    
+    <br>
+	
+<!--	<a class="btn btn-medium btn-primary" href="/cogroup/edit/<%= cogroup.name %>">Edit</a>-->
+	
+</div>

@@ -30,6 +30,15 @@ module.exports = {
         is_customer: {
             type: 'boolean',
             defaultsTo: true,
+        },
+        
+        branches: {
+            collection: 'branch',
+            via: 'group'
+        },
+        contacts: {
+            collection: 'contact',
+            via: 'group'
         }
     }
 };

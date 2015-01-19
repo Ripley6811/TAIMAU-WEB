@@ -1,0 +1,26 @@
+<div class="row" style="text-align: center">
+    <form action="/user/update/<%= user.id %>" method="post" class="form-signin">
+        <h2>Edit account: <%= user.name %></h2>
+
+        <input type="text" name="name" value="<%= user.name %>" class="form-control" placeholder="your name">
+        <input type="text" name="title" value="<%= user.title %>" class="form-control" placeholder="your title">
+        <input type="text" name="email" value="<%= user.email %>" class="form-control" placeholder="email address">
+        
+        
+		<% if (session.authenticated && session.User.admin) { %>
+			<% if (user.admin) { %>
+				<input type="hidden" name="admin" value="unchecked">
+				<label class="checkbox"><input type="checkbox" name="admin" checked> Admin</label>
+			<% } else { %>
+				<input type="hidden" name="admin" value="unchecked">
+				<label class="checkbox"><input type="checkbox" name="admin"> Admin</label>
+			<% } %> 
+		<% } %> 
+
+        <br>
+
+        <input type="submit" class="btn btn-lg btn-primary btn-block" value="Create Account" />
+        <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+
+    </form>
+</div>

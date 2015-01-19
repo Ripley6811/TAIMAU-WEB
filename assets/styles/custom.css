@@ -94,11 +94,13 @@ tr:nth-child(even) {
     background-color: #e2dfff;
 }
 
-
+navbar {
+    padding: 2px 15px;
+}
 
 
 tbody tr:hover{
-background:#BDC3C7;
+background:rgba(150, 184, 206, 0.39);
 /*  color:#FFFFFF;*/
 }
 
