@@ -9,7 +9,15 @@ module.exports = {
     
 
     'index': function (req, res) {
-        Cogroup.find({ sort: 'name' })
+        var findParams = { sort: 'name' };
+        var id = req.param('id');
+        if (id == 'suppliers') {
+            findParams.where = { is_supplier: true };
+        }
+        if (id == 'customers') {
+            findParams.where = { is_customer: true };
+        }
+        Cogroup.find(findParams)
             .populate('branches')
             .exec(function (err, cogroups) {
                 if (err) res.json({

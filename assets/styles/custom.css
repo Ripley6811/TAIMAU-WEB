@@ -84,6 +84,10 @@ table {
 }
 */
 
+nav ul li:hover > ul {
+    display: block;
+}
+
 th {
   background:#9B59B6;
 /*    text-align: center;*/
