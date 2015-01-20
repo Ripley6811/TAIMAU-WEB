@@ -3,18 +3,23 @@
         <div class="col-md-12">
             <h1><span><%= cogroup.name %></span></h1>
             <h2>
+            <a href="/cogroup/toggle_supplier/<%= cogroup.name %>" class=
         <% if (cogroup.is_supplier) { %>
-            <span class="label label-success">供應商</span>
+                "glyphicon glyphicon-ok btn btn-success"
         <% } else { %>
-            <span class="label label-warning" disabled="disabled">供應商</span>
+            "glyphicon glyphicon-remove btn btn-danger"
         <% } %>
+                > 供應商</a>
+            <a href="/cogroup/toggle_customer/<%= cogroup.name %>" class=
         <% if (cogroup.is_customer) { %>
-            <span class="label label-success">客戶</span>
+                "glyphicon glyphicon-ok btn btn-success"
         <% } else { %>
-            <span class="label label-warning" disabled="disabled">客戶</span>
+            "glyphicon glyphicon-remove btn btn-danger"
         <% } %>
+                > 客戶</a>
+                
                 </h2>
-</div>
+        </div>
     </div>
 	<hr>
     <h2>分公司</h2>
@@ -39,7 +44,7 @@
             <td><%= branch.fax %></td>
             <td><%= branch.address_office %></td>
             <td><%= branch.note %></td>
-                <td><a href="/branch/edit/<%= branch.name %>" class="btn btn-xs btn-warning">Edit</a>
+                <td><a href="/branch/edit/<%= branch.name %>" class="btn btn-xs btn-custom">Edit</a>
                 </td>
         </tr>
     <% }); %>
@@ -73,7 +78,7 @@
             <td><%= contact.fax %></td>
             <td><%= contact.email %></td>
             <td><%= contact.note %></td>
-                <td><a href="/contact/edit/<%= contact.id %>" class="btn btn-xs btn-warning">Edit</a>
+                <td><a href="/contact/edit/<%= contact.id %>" class="btn btn-xs btn-custom">Edit</a>
                 </td>
         </tr>
     <% }); %>

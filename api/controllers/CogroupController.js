@@ -54,6 +54,46 @@ module.exports = {
         
         console.log(req.params.all());
         res.json(req.params.all());
+    },
+    
+    toggle_supplier: function(req, res) {
+        var name = req.param('id');
+        Cogroup.findOne(name)
+            .exec(function (err, cogroup) {
+                if (err) res.json({
+                    error: err.message
+                }, 400);
+            
+                var updateParams = {};
+                updateParams.is_supplier = !cogroup.is_supplier;
+
+                Cogroup.update(name, updateParams)
+                    .exec(function cogroupUpdated(err, cogroup) {
+                        if (err) return err;
+
+                        res.redirect('/cogroup/show/' + name);
+                    });
+            });
+    },
+    
+    toggle_customer: function(req, res) {
+        var name = req.param('id');
+        Cogroup.findOne(name)
+            .exec(function (err, cogroup) {
+                if (err) res.json({
+                    error: err.message
+                }, 400);
+            
+                var updateParams = {};
+                updateParams.is_customer = !cogroup.is_customer;
+
+                Cogroup.update(name, updateParams)
+                    .exec(function cogroupUpdated(err, cogroup) {
+                        if (err) return err;
+
+                        res.redirect('/cogroup/show/' + name);
+                    });
+            });
     }
 };
 
