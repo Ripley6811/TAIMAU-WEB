@@ -84,6 +84,10 @@ table {
 }
 */
 
+nav {
+    font-size: 24px;
+}
+
 nav ul li:hover > ul {
     display: block;
 }
