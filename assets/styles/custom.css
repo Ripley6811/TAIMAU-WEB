@@ -93,19 +93,19 @@ nav ul li:hover > ul {
 }
 
 th {
-  background:#9B59B6;
+  background:rgb(0, 102, 0);
 /*    text-align: center;*/
-  color:white;
+  color:rgb(255, 230, 140);
 }
 
 tr:nth-child(even) {
-    background-color: #e2dfff;
+    background-color: rgb(255, 242, 199);
 }
 
 
 
 tbody tr:hover{
-background:rgba(150, 184, 206, 0.39);
+background:rgb(255, 230, 140);
 /*  color:#FFFFFF;*/
 }
 
@@ -136,4 +136,13 @@ background:rgba(150, 184, 206, 0.39);
  text-transform: uppercase;
  text-align: center;
  font-weight: bold;
+}
+
+.btn-default {
+    border-color: rgb(204, 255, 0); 
+    background-color: rgb(204, 255, 0);
+}
+.btn-default:hover {
+    border-color: rgb(230, 92, 0); 
+    background-color: rgb(230, 92, 0);
 }
