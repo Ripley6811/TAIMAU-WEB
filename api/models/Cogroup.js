@@ -39,6 +39,10 @@ module.exports = {
         contacts: {
             collection: 'contact',
             via: 'group'
+        },
+        products: {
+            collection: 'product',
+            via: 'group'
         }
     }
 };

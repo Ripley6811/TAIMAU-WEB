@@ -36,6 +36,7 @@ module.exports = {
         Cogroup.findOne(req.param('id'))
             .populate('branches')
             .populate('contacts')
+            .populate('products')
             .exec(function (err, cogroup) {
                 if (err) res.json({
                     error: err.message

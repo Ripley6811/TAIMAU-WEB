@@ -1,0 +1,86 @@
+<div class='container'>
+    <div class="row">
+        <div class="col-md-4">
+            <h1><span><%= cogroup.name %></span><font color="lightgrey">(集團)</font></h1>
+            
+        </div>
+        <div class="col-md-4">
+            <h2>
+            <a href="/cogroup/toggle_supplier/<%= cogroup.name %>" class=
+        <% if (cogroup.is_supplier) { %>
+                "glyphicon glyphicon-ok btn btn-success"
+        <% } else { %>
+            "glyphicon glyphicon-remove btn btn-danger"
+        <% } %>
+                > 供應商</a>
+            <a href="/cogroup/toggle_customer/<%= cogroup.name %>" class=
+        <% if (cogroup.is_customer) { %>
+                "glyphicon glyphicon-ok btn btn-success"
+        <% } else { %>
+            "glyphicon glyphicon-remove btn btn-danger"
+        <% } %>
+                > 客戶</a>
+            <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom">聯絡信息</a>
+                
+                </h2>
+        </div>
+	   <% if (cogroup.products.length == 0) { %>
+        <div class="col-md-4">
+            <a href="/cogroup/destroy/<%= cogroup.name %>" class="btn btn-danger btn-lg">DELETE COMPANY GROUP ID</a>
+        </div>
+        <% } %>
+    </div>
+    
+	<hr>
+    
+    <h2>產品和服務</h2>
+<table class="table table-condensed">
+    <thead class="text-uppercase"><tr>
+        <th></th>
+        <th>內用品名</th>
+        <th>標籤品名</th>
+        <th><abbr title="# of kg, L, gal per container">包量</abbr></th>
+        <th><abbr title="kg, L, gal, etc.">單位</abbr></th>
+        <th><abbr title="桶, 包, 瓶, 等...">包裝</abbr></th>
+        <th>包裝描述</th>
+        <th>備註</th>
+        <th></th>
+    </tr></thead>
+    <tbody>
+    <% cogroup.products.forEach(function(product) { %>
+        <tr>
+            <td>
+                <% if (product.discontinued === 1) { %>
+                <font color="red"><abbr title="Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
+                <% } %>
+            </td>
+            <td><font color=<% if (product.product_label != "") { %>
+                "grey"
+                <% } else { %>
+                "black"
+                <% } %>>
+                <% if (product.english_name != "") { %>
+                    <abbr title="<%= product.english_name %>"><%= product.inventory_name %></abbr>
+                <% } else { %>
+                    <%= product.inventory_name %>
+                <% } %>
+            </font></td>
+            <td><%= product.product_label %></td>
+            <td><%= product.units %></td>
+            <td><%= product.UM %></td>
+            <td><%= product.SKU %></td>
+            <td><%= product.SKUlong %></td>
+            <td><%= product.note %></td>
+            
+            
+                <td><a href="/product/edit/<%= product.name %>" class="btn btn-xs btn-custom">Edit</a>
+                </td>
+        </tr>
+    <% }); %>
+        </tbody>
+</table>
+    
+	<a class="btn btn-medium btn-primary" href="/product/new/<%= cogroup.name %>">Add product</a>
+    
+
+</div>

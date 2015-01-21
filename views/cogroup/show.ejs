@@ -4,14 +4,7 @@
             <h1><span><%= cogroup.name %></span><font color="lightgrey">(集團)</font></h1>
             
         </div>
-	   <% if (cogroup.branches.length == 0) { %>
         <div class="col-md-4">
-            <a href="/cogroup/destroy/<%= cogroup.name %>" class="btn btn-danger btn-lg">DELETE COMPANY GROUP ID</a>
-        </div>
-        <% } %>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
             <h2>
             <a href="/cogroup/toggle_supplier/<%= cogroup.name %>" class=
         <% if (cogroup.is_supplier) { %>
@@ -27,11 +20,19 @@
             "glyphicon glyphicon-remove btn btn-danger"
         <% } %>
                 > 客戶</a>
+            <a href="/product/show/<%= cogroup.name %>" class="btn btn-custom">產品 <span class="badge"><%= cogroup.products.length %></span></a>
                 
                 </h2>
         </div>
+	   <% if (cogroup.branches.length == 0) { %>
+        <div class="col-md-4">
+            <a href="/cogroup/destroy/<%= cogroup.name %>" class="btn btn-danger btn-lg">DELETE COMPANY GROUP ID</a>
+        </div>
+        <% } %>
     </div>
+    
 	<hr>
+    
     <h2>分公司</h2>
 <table class="table table-condensed">
     <thead class="text-uppercase"><tr>

@@ -93,9 +93,6 @@ nav ul li:hover > ul {
 }
 
 th {
-/*
-  background:rgb(0, 102, 0);
-*/
   color:rgb(255, 230, 140);
   background-color: hsl(110, 56%, 16%) !important;
   background-repeat: repeat-x;
@@ -115,12 +112,13 @@ th {
 tr:nth-child(even) {
     background-color: rgb(255, 248, 225);
 }
+tr:nth-child(odd) {
+    background-color: rgb(255, 250, 246);
+}
 
 
 
 tbody tr:hover{
-/*background: rgb(255, 230, 140);*/
-/*  color:#FFFFFF;*/
   background-color: hsl(36, 100%, 73%) !important;
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#fff8ef", endColorstr="#ffc775");
@@ -175,18 +173,8 @@ tbody tr:hover{
     background-color: rgb(255, 128, 0);
 }
 
-/*
-.input-group-addon {
-    background-color: rgb(0, 102, 0);
-    color: white;
-    font-weight: 700;
-}
-*/
-
 
 .input-group-addon {
-/*    background-color: rgb(204, 255, 51);*/
-/*    color: white;*/
     font-weight: 700;
     
   background-color: hsl(86, 79%, 51%) !important;
@@ -297,4 +285,13 @@ tbody tr:hover{
   color: #fff !important;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.16);
   -webkit-font-smoothing: antialiased;
+}
+
+.label-as-badge {
+    border-radius: 1em;
+}
+
+.badge {
+    background-color: white;
+    color: #bc7100;
 }
