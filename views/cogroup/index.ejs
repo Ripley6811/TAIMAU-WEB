@@ -2,7 +2,7 @@
 <table class="table table-condensed">
     <thead class="text-uppercase"><tr>
         <th></th>
-        <th>公司主要</th>
+        <th>集團名稱</th>
         <th>分公司</th>
         <th>統一編號</th>
         <th>電話</th>
@@ -16,7 +16,7 @@
             <td>
                 <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-xs btn-custom">View</a>
             </td>
-            <td><%= cogroup.name %></td>
+            <td><%= cogroup.name %><font color="#acacac">集團</font></td>
             <td>
                 <% cogroup.branches.forEach(function(branch) { %>
                     <% if (branch.fullname != '') { %>

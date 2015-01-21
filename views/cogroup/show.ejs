@@ -1,7 +1,17 @@
 <div class='container'>
     <div class="row">
+        <div class="col-md-4">
+            <h1><span><%= cogroup.name %></span><font color="lightgrey">(集團)</font></h1>
+            
+        </div>
+	   <% if (cogroup.branches.length == 0) { %>
+        <div class="col-md-4">
+            <a href="/cogroup/destroy/<%= cogroup.name %>" class="btn btn-danger btn-lg">DELETE COMPANY GROUP ID</a>
+        </div>
+        <% } %>
+    </div>
+    <div class="row">
         <div class="col-md-12">
-            <h1><span><%= cogroup.name %></span></h1>
             <h2>
             <a href="/cogroup/toggle_supplier/<%= cogroup.name %>" class=
         <% if (cogroup.is_supplier) { %>
@@ -25,7 +35,7 @@
     <h2>分公司</h2>
 <table class="table table-condensed">
     <thead class="text-uppercase"><tr>
-        <th>ID (縮寫)</th>
+        <th>縮寫</th>
         <th>名稱</th>
         <th>統一編號</th>
         <th>電話</th>
@@ -56,6 +66,7 @@
     <hr>
     
     <h2>聯絡人</h2>
+	<% if (cogroup.branches.length > 0) { %>
 <table class="table table-condensed">
     <thead class="text-uppercase"><tr>
         <th>稱號</th>
@@ -84,7 +95,9 @@
     <% }); %>
         </tbody>
 </table>
-	
 	<a class="btn btn-medium btn-primary" href="/contact/new/<%= cogroup.name %>">Add contact</a>
+    <% } else { %>
+    <h3><span class="label label-primary">先添加一家分公司</span></h3>
+    <% } %>
 	
 </div>

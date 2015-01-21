@@ -48,7 +48,6 @@ module.exports = {
                 // If error redirect back to creation page
                 return res.redirect('/branch/new/' + branchObj.group);
             }
-            console.log(branch);
 
             res.redirect('/cogroup/show/' + branchObj.group);
         });
@@ -81,7 +80,7 @@ module.exports = {
                 if (err) res.json({
                     error: err.message
                 }, 400);
-        console.log('FOUND THIS:', branch);
+            
                 // Add a parameter giving the number of orders in the database.
                 var qstring = 'SELECT (SELECT COUNT(*) FROM `order` WHERE `group` = ?) AS NumberOfRecords, (SELECT COUNT(*) FROM `contact` WHERE `branch` = ?) AS NumberOfContacts;';
                 Branch.query(qstring, [branch.group, branch.name], function (err, rows) {
@@ -89,7 +88,6 @@ module.exports = {
                         error: err.message
                     }, 400);
 
-                    console.log('COUNT RESULTS:', rows[0]);
                     res.view({
                         branch: branch,
                         numberOfRecords: rows[0].NumberOfRecords,
@@ -144,7 +142,6 @@ module.exports = {
                     if (err) res.json({
                         error: err.message
                     }, 400);
-                    console.log('COUNT for', branch.name, branch.group, rows[0]);
 
                     // If no orders exist then it can be deleted.
                     if (rows[0].NumberOfRecords === 0) {
@@ -158,7 +155,7 @@ module.exports = {
                             }, 400);
 
 //                            console.log('DESTROYED:', err, branches);
-                            res.redirect('/branch');
+                            res.redirect('/cogroup/show/'+branch.group);
                         });
                     }
                 });

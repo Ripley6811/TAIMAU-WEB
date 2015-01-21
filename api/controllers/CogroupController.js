@@ -45,15 +45,25 @@ module.exports = {
             });
     },
     
-    create: function (req, res, next) {
-//        Cogroup.create(req.params.all(), function cogroupCreated(err, cogroup) {
-//            if (err) return next(err);
-//    
-//            res.json(cogroup);
-//        });
+    create: function (req, res) {
+        var cogroupObj = {
+            name: req.param('name')
+        };
+
+        // Create a User with the params sent from 
+        // the sign-up form --> new.ejs
+        Cogroup.create(cogroupObj, function(err, cogroup) {
+
+            // If there's an error
+            if (err) {
+                console.log(err);
+                // If error redirect back to creation page
+                return res.redirect('/cogroup/new/');
+            }
+
+            res.redirect('/cogroup/show/' + cogroupObj.name);
+        });
         
-        console.log(req.params.all());
-        res.json(req.params.all());
     },
     
     toggle_supplier: function(req, res) {
@@ -93,6 +103,35 @@ module.exports = {
 
                         res.redirect('/cogroup/show/' + name);
                     });
+            });
+    },
+
+    destroy: function (req, res, next) {
+        var name = req.param('id');
+        Cogroup.findOne(name)
+            .populate('branches')
+            .exec(function (err, cogroup) {
+
+                if (err) res.json({
+                    error: err.message
+                }, 400);
+
+                if (!cogroup) return next('Cogroup doesn\'t exist.');
+
+                // If no orders exist then it can be deleted.
+                if (cogroup.branches.length === 0) {
+                    var delRecord = {
+                        name: cogroup.name
+                    };
+                    
+                    Cogroup.destroy(delRecord).exec(function (err, cogroups) {
+                        if (err) res.json({
+                            error: err.message
+                        }, 400);
+
+                        res.redirect('/cogroup/');
+                    });
+                }
             });
     }
 };
