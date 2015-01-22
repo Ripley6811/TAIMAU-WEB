@@ -44,9 +44,29 @@ module.exports = {
             type: 'string',
             required: true
         },
-        sku: {
+        SKUlong: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        SKU: {
             type: 'string',
             required: true
+        },
+        note: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        orders: {
+            collection: 'order',
+            via: 'MPN'
+        },
+        discontinued: {
+            type: 'boolean',
+            defaultsTo: false
+        },
+        json: {
+            type: 'json',
+            defaultsTo: null
         }
     }
 };

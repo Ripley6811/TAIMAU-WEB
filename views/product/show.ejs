@@ -34,9 +34,10 @@
         <th></th>
         <th>內用品名</th>
         <th>標籤品名</th>
-        <th><abbr title="# of kg, L, gal per container">包量</abbr></th>
+        <th><abbr title="桶, 包, 瓶, 等...">容器</abbr></th>
+        <th><abbr title="# of kg, L, gal per container">容量</abbr></th>
         <th><abbr title="kg, L, gal, etc.">單位</abbr></th>
-        <th><abbr title="桶, 包, 瓶, 等...">包裝</abbr></th>
+<!--        <th><abbr title="Price by container or volume?">價格單位</abbr></th>-->
         <th>包裝描述</th>
         <th>備註</th>
         <th></th>
@@ -45,11 +46,26 @@
     <% cogroup.products.forEach(function(product) { %>
         <tr>
             <td>
-                <% if (product.discontinued === 1) { %>
-                <font color="red"><abbr title="Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
-                <% } %>
+                <span class="badge">
+                <% if (product.is_supply === 1) { %>
+                <abbr title="買:We buy"><span class="glyphicon glyphicon-arrow-right"></span></abbr>
+                    <% } else { %>
+                    <span class="glyphicon glyphicon-none"></span>
+                    <% } %>
+                <% if (product.discontinued === false) { %>
+                    <span class="glyphicon glyphicon-home"></span>
+                    <% } else { %>
+                    <font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
+                    <% } %>
+                <% if (product.is_supply === 0) { %>
+                <abbr title="賣:We sell"><span class="glyphicon glyphicon-arrow-right"></span></abbr>
+                    <% } else { %>
+                    <span class="glyphicon glyphicon-none"></span>
+                    <% } %>
+                    </span>
             </td>
-            <td><font color=<% if (product.product_label != "") { %>
+            <td>
+                <font color=<% if (product.product_label != "") { %>
                 "grey"
                 <% } else { %>
                 "black"
@@ -59,16 +75,25 @@
                 <% } else { %>
                     <%= product.inventory_name %>
                 <% } %>
-            </font></td>
+            </font>
+                
+                <% if (product.discontinued === true) { %>
+                <font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
+                <% } %>
+            </td>
             <td><%= product.product_label %></td>
+            <td><%= product.SKU %><% if (product.unitpriced === 0) { %>
+                <span class="badge"><abbr title="Priced by container" class="glyphicon glyphicon-usd"></abbr></span>
+                <% } %></td>
             <td><%= product.units %></td>
-            <td><%= product.UM %></td>
-            <td><%= product.SKU %></td>
+            <td><%= product.UM %><% if (product.unitpriced === 1) { %>
+                <span class="badge"><abbr title="Priced by unit" class="glyphicon glyphicon-usd"></abbr></span>
+                <% } %></td>
             <td><%= product.SKUlong %></td>
             <td><%= product.note %></td>
             
             
-                <td><a href="/product/edit/<%= product.name %>" class="btn btn-xs btn-custom">Edit</a>
+                <td><a href="/product/edit/<%= product.MPN %>" class="btn btn-xs btn-custom">Edit</a>
                 </td>
         </tr>
     <% }); %>

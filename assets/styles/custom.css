@@ -291,7 +291,17 @@ tbody tr:hover{
     border-radius: 1em;
 }
 
+.label-warning {
+    background-color: #ffd698;
+    color: rgb(37, 109, 22);
+}
+
 .badge {
-    background-color: white;
-    color: #bc7100;
+    background-color: #ffd698;
+    color: rgb(37, 109, 22);
+}
+
+.glyphicon-none:before {
+    content: ".-";
+    color: transparent !important;
 }

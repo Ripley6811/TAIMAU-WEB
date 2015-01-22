@@ -14,7 +14,8 @@
         <% cogroups.forEach(function(cogroup) { %>
         <tr>
             <td>
-                <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-xs btn-custom">View</a>
+                <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-xs btn-custom">信息</a>
+                <a href="/product/show/<%= cogroup.name %>" class="btn btn-xs btn-custom">產品</a>
             </td>
             <td><%= cogroup.name %><font color="#acacac">集團</font></td>
             <td>
