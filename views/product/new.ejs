@@ -29,21 +29,21 @@
             <div class="col-md-4">
                 <div class="input-group">
                     <span class="input-group-addon" id="basic-addon1">容器簡寫</span>
-                    <input type="text" class="form-control" aria-describedby="basic-addon1" placeholder="桶, 包, 瓶, ..." name="SKU" maxlength="2">
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" placeholder="桶, 包, 瓶, ..." name="SKU" maxlength="3">
                 </div>
             </div>
         
             <div class="col-md-4">
                 <div class="input-group">
                     <span class="input-group-addon" id="basic-addon1">容量</span>
-                    <input type="text" class="form-control" aria-describedby="basic-addon1" placeholder="Capacity" name="units">
+                    <input type="number" min="0" step="0.001" class="form-control" aria-describedby="basic-addon1" placeholder="Capacity" name="units">
                 </div>
             </div>
         
             <div class="col-md-4">
                 <div class="input-group">
                     <span class="input-group-addon" id="basic-addon1">單位</span>
-                    <input type="text" class="form-control" aria-describedby="basic-addon1" placeholder="kg, L, gal, 件, 次, ..." name="UM">
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" placeholder="kg, L, gal, 件, 次, ..." name="UM" maxlength="10">
                 </div>
             </div>
         </div>
@@ -56,6 +56,13 @@
         
         <br>
         
+        
+        <% var flash = req.flash('message'); %>
+        <% if(flash.length) { %>
+            <p class="bg-danger">
+                Required fields: <%= Object.keys(flash[0].invalidAttributes).join(', ') %>
+            </p>
+        <% } %>
         
         
 <div class="row vcenter"><div class="col-md-6">

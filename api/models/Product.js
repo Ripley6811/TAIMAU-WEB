@@ -37,7 +37,7 @@ module.exports = {
         },
 
         units: {
-            type: 'integer',
+            type: 'float',
             required: true
         },
         UM: {

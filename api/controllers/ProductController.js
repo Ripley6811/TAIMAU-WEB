@@ -29,14 +29,15 @@ module.exports = {
                 note: req.param('note'),
                 json: req.param('json')
             };
-        console.log('NEw ProduCt:', productObj);
+        
         Product.create(productObj, function (err, product) {
                 if (err) {
                     console.log(err);
                     // If error redirect back to creation page
+                    req.flash('message', err);
                     return res.redirect('/product/new/' + productObj.group);   
                 }
-                console.log('RETURNED PRODUCT:', product);
+            
                 res.redirect('/product/edit/' + productObj.MPN);
             });
     },
