@@ -47,7 +47,7 @@
         <tr>
             <td>
                 <span class="badge">
-                <% if (product.is_supply === 1) { %>
+                <% if (product.is_supply === true) { %>
                 <abbr title="買:We buy"><span class="glyphicon glyphicon-arrow-right"></span></abbr>
                     <% } else { %>
                     <span class="glyphicon glyphicon-none"></span>
@@ -57,7 +57,7 @@
                     <% } else { %>
                     <font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
                     <% } %>
-                <% if (product.is_supply === 0) { %>
+                <% if (product.is_supply === false) { %>
                 <abbr title="賣:We sell"><span class="glyphicon glyphicon-arrow-right"></span></abbr>
                     <% } else { %>
                     <span class="glyphicon glyphicon-none"></span>
@@ -70,8 +70,8 @@
                 <% } else { %>
                 "black"
                 <% } %>>
-                <% if (product.english_name != "") { %>
-                    <abbr title="<%= product.english_name %>"><%= product.inventory_name %></abbr>
+                <% if (product.MPN != "") { %>
+                    <abbr title="<%= product.MPN %>"><%= product.inventory_name %></abbr>
                 <% } else { %>
                     <%= product.inventory_name %>
                 <% } %>
@@ -82,18 +82,18 @@
                 <% } %>
             </td>
             <td><%= product.product_label %></td>
-            <td><%= product.SKU %><% if (product.unitpriced === 0) { %>
+            <td><%= product.SKU %><% if (product.unitpriced === false) { %>
                 <span class="badge"><abbr title="Priced by container" class="glyphicon glyphicon-usd"></abbr></span>
                 <% } %></td>
             <td><%= product.units %></td>
-            <td><%= product.UM %><% if (product.unitpriced === 1) { %>
+            <td><%= product.UM %><% if (product.unitpriced === true) { %>
                 <span class="badge"><abbr title="Priced by unit" class="glyphicon glyphicon-usd"></abbr></span>
                 <% } %></td>
             <td><%= product.SKUlong %></td>
             <td><%= product.note %></td>
             
             
-                <td><a href="/product/edit/<%= product.MPN %>" class="btn btn-xs btn-custom">Edit</a>
+                <td><a href="/product/edit/<%- product.MPN.split('%').join('-percent-') %>" class="btn btn-xs btn-custom">Edit</a>
                 </td>
         </tr>
     <% }); %>

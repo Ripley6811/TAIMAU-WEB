@@ -1,0 +1,72 @@
+<div class="row" style="text-align: center">
+    <form action="/product/create" method="post" class="branch-edit">
+        <h2>Create A New Product Listing for <%= group %></h2>
+        
+        <div class="input-group"><span class="input-group-addon" id="basic-addon1">內用品名</span><input type="text" class="form-control" aria-describedby="basic-addon1" placeholder="Inventory Name" name="inventory_name"></div>
+        
+        <div class="input-group"><span class="input-group-addon" id="basic-addon1">標籤品名</span><input type="text" class="form-control" aria-describedby="basic-addon1" placeholder="Name on Label" name="product_label"></div>
+        
+        <div class="input-group"><span class="input-group-addon" id="basic-addon1">英文品名</span><input type="text" class="form-control" aria-describedby="basic-addon1" placeholder="English Name" name="english_name"></div>
+        
+        
+<label class="radio-inline btn btn-primary">
+  <input type="radio" name="is_supply" value="1" checked>進貨的產品
+</label>
+<label class="radio-inline btn btn-primary">
+  <input type="radio" name="is_supply" value="0">出貨的產品
+</label>
+        <br>
+        
+        
+<label class="radio-inline btn btn-primary">
+  <input type="radio" name="unitpriced" value="0">按容器價格銷售
+</label>
+<label class="radio-inline btn btn-primary">
+  <input type="radio" name="unitpriced" value="1" checked>按單位價格銷售
+</label>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon1">容器簡寫</span>
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" placeholder="桶, 包, 瓶, ..." name="SKU" maxlength="2">
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon1">容量</span>
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" placeholder="Capacity" name="units">
+                </div>
+            </div>
+        
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon1">單位</span>
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" placeholder="kg, L, gal, 件, 次, ..." name="UM">
+                </div>
+            </div>
+        </div>
+        
+        <div class="input-group"><span class="input-group-addon" id="basic-addon1">容器描述</span><input type="text" class="form-control" aria-describedby="basic-addon1" placeholder="Container Description" name="SKUlong"></div>
+        
+        <div class="input-group"><span class="input-group-addon" id="basic-addon1">備註</span><input type="text" class="form-control" aria-describedby="basic-addon1" placeholder="NOTE" name="note"></div>
+        
+        
+        
+        <br>
+        
+        
+        
+<div class="row vcenter"><div class="col-md-6">
+    <input type="submit" class="btn btn-lg btn-primary btn-block" value="CREATE" /></div>
+    <div class="col-md-6">
+        
+        <input type="cancel" class="btn btn-lg btn-danger btn-block" value="EXIT" onclick="javascript:window.location='../../product/show/<%= group %>'" /></div></div>
+        
+        <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+        <input type="hidden" name="group" value="<%= group %>" />
+        
+
+    </form>
+</div>

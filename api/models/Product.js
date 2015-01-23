@@ -23,13 +23,13 @@ module.exports = {
             required: true
         },
 
-        product_label: {
-            type: 'string',
-            defaultsTo: ''
-        },
         inventory_name: {
             type: 'string',
             required: true
+        },
+        product_label: {
+            type: 'string',
+            defaultsTo: ''
         },
         english_name: {
             type: 'string',
@@ -61,6 +61,14 @@ module.exports = {
             via: 'MPN'
         },
         discontinued: {
+            type: 'boolean',
+            defaultsTo: false
+        },
+        is_supply: {
+            type: 'boolean',
+            defaultsTo: false
+        },
+        unitpriced: {
             type: 'boolean',
             defaultsTo: false
         },

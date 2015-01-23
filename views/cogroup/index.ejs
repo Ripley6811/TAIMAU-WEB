@@ -2,12 +2,12 @@
 <table class="table table-condensed">
     <thead class="text-uppercase"><tr>
         <th></th>
-        <th>集團名稱</th>
+        <th>公司名稱</th>
         <th>分公司</th>
         <th>統一編號</th>
         <th>電話</th>
         <th>傳真</th>
-        <th>地址主要</th>
+        <th>辦公室地址</th>
     </tr></thead>
 <!--    <tbody data-bind="foreach: cogroupes">-->
     <tbody>
@@ -17,7 +17,7 @@
                 <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-xs btn-custom">信息</a>
                 <a href="/product/show/<%= cogroup.name %>" class="btn btn-xs btn-custom">產品</a>
             </td>
-            <td><%= cogroup.name %><font color="#acacac">集團</font></td>
+            <td><%= cogroup.name %><font color="#acacac">公司</font></td>
             <td>
                 <% cogroup.branches.forEach(function(branch) { %>
                     <% if (branch.fullname != '') { %>
