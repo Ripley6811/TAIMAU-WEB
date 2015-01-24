@@ -30,5 +30,9 @@ module.exports = {
             });
         });
     },
+    new: function (req, res) {
+        console.log(req.params.all());
+        
+    }
 };
 

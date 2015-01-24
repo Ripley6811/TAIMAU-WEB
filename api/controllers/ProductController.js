@@ -58,15 +58,37 @@ module.exports = {
     show: function (req, res) {
         var id = req.param('id');
         
-        Cogroup.findOne(id)
+        Product.find()
             // Sort numbers are ascending (1) and descending (0).
-            .populate('products', {sort: { is_supply: 0, inventory_name: 1 }})
-            .exec(function (err, cogroup) {
+            .where({group: id})
+            .sort({ is_supply: 0, inventory_name: 1 })
+            .populate('orders', {where: {is_open: true}})
+            .populate('group')
+            .exec(function (err, products) {
                 if (err) res.json({
                     error: err.message
                 }, 400);
+                
+                if (products.length === 0) {
+                    Cogroup.findOne(id)
+                        // Sort numbers are ascending (1) and descending (0).
+                        .populate('products', {sort: { is_supply: 0, inventory_name: 1 }})
+                        .exec(function (err, cogroup) {
+                            if (err) res.json({
+                                error: err.message
+                            }, 400);
 
-                res.view({ cogroup: cogroup });
+                            res.view({ 
+                                cogroup: cogroup,
+                                products: cogroup.products
+                            });
+                        });
+                } else {
+                    res.view({ 
+                        products: products,
+                        cogroup: products[0].group
+                    });
+                }
             });
     },
     // Show product editing form.

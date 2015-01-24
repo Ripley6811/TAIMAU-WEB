@@ -29,6 +29,8 @@
 	<hr>
     
     <h2>產品和服務</h2>
+    
+    <form action="/order/new">
 <table class="table table-condensed">
     <thead class="text-uppercase"><tr>
         <th></th>
@@ -43,7 +45,7 @@
         <th></th>
     </tr></thead>
     <tbody>
-    <% cogroup.products.forEach(function(product) { %>
+    <% products.forEach(function(product) { %>
         <tr>
             <td>
                 <span class="badge">
@@ -64,6 +66,20 @@
                     <% } %>
                     </span>
             </td>
+            
+<!--        Product Manifest selection    -->
+            <td>
+                
+                
+                <% if (product.discontinued === true) { %>
+                <font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
+                <% } else { %>
+                <input type="checkbox" name="product" value="<%= product.MPN %>">
+                <% } %>
+            </td>
+            
+            
+<!--        Product inventory name    -->
             <td>
                 <font color=<% if (product.product_label != "") { %>
                 "grey"
@@ -80,6 +96,10 @@
                 <% if (product.discontinued === true) { %>
                 <font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
                 <% } %>
+                
+                <% if (product.orders.length > 0) { %>
+                <a href="/order/show/<%- product.orders[0].id %>" class="btn btn-xs btn-custom">使用中PO</a>
+                <% } %>
             </td>
             <td><%= product.product_label %></td>
             <td><%= product.SKU %><% if (product.unitpriced === false) { %>
@@ -93,14 +113,19 @@
             <td><%= product.note %></td>
             
             
-                <td><a href="/product/edit/<%- product.MPN.split('%').join('-percent-') %>" class="btn btn-xs btn-custom">Edit</a>
+                <td>
+                    <a href="/product/edit/<%- product.MPN.split('%').join('-percent-') %>" class="btn btn-xs btn-custom">編輯產品信息</a>
                 </td>
         </tr>
     <% }); %>
         </tbody>
 </table>
     
-	<a class="btn btn-medium btn-primary" href="/product/new/<%= cogroup.name %>">Add product</a>
     
+	<a class="btn btn-medium btn-primary" href="/product/new/<%= cogroup.name %>">Add product</a>
+	<input type="submit" class="btn btn-medium btn-primary" name="make_manifest" value="Create Manifest">
+	<input type="submit" class="btn btn-medium btn-primary" name="make_po" value="Create PO">
+    
+    </form>
 
 </div>

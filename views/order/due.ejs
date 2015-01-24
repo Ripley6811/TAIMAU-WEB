@@ -1,4 +1,7 @@
-
+<div class="row">
+    <h2 class="col-md-10">使用中的訂單<span class="label label-warning">到貨日期順序</span></h2>
+</div>
+<!--
 <div class="row">
     <div class="col-md-7 text-center">
         <a class="btn btn-custom" href="/order/due/<%= page-1 %>"><span class="glyphicon glyphicon-arrow-left"></span></a>
@@ -10,6 +13,7 @@
                 <a class="btn btn-custom" href="/order/due/<%= page+1 %>"><span class="glyphicon glyphicon-arrow-right"></span></a>
     </div>
 </div>
+-->
 <br>
 <table class="table table-condensed">
     <thead class="text-uppercase">
@@ -64,9 +68,13 @@
 </table>
 <div class="row">
     <div class="col-md-7 text-center">
-        <a class="btn btn-custom" href="/order/due/<%= page-1 %>"><span class="glyphicon glyphicon-arrow-left"></span></a>
+        <a class="btn btn-custom" href="/order/due/<%= page-1 %>"<% if (page == 1) { %>
+             disabled
+            <% } %>><span class="glyphicon glyphicon-arrow-left"></span></a>
         <% for (var i=1; i <= 3 ; i=i+1) { %>
-            <a class="btn btn-custom" href="/order/due/<%= i %>">
+            <a class="btn btn-custom" href="/order/due/<%= i %>"<% if (page == i) { %>
+             disabled
+            <% } %>>
                 <%=i %>
             </a>
             <% } %>
