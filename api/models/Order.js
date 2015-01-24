@@ -22,6 +22,10 @@ module.exports = {
       duedate: {
           type: 'date'
       },
+      is_open: {
+          type: 'boolean',
+          defaultsTo: true
+      },
       group: {
           model: 'cogroup',
           required: true
@@ -48,12 +52,29 @@ module.exports = {
 //          console.log(this.shipments.length);
             var total = 0;
             for (var i = 0; i < this.shipments.length; i = i +1) {
-//                console.log(shipment);
-//                console.log(this.qty);
                 total += Number(this.shipments[i].qty);
             }
             return total;
-        }
+        },
+      /**
+       * Return true if the requested quantity has all been shipped.
+       * @returns {Boolean} True if order all shipped.
+       */
+      all_shipped: function () {
+          return this.qty === this.qty_shipped();
+      }
+      ,
+      duedate_string: function () {
+          return this.duedate.getFullYear() + 
+              ' / ' + (this.duedate.getMonth()+1) +
+              ' / ' + this.duedate.getDate();
+      }
+      ,
+      orderdate_string: function () {
+          return this.orderdate.getFullYear() + 
+              ' / ' + (1+this.orderdate.getMonth()) +
+              ' / ' + this.orderdate.getDate();
+      }
   }
 };
 

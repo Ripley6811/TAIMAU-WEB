@@ -10,9 +10,10 @@ module.exports = {
     // Sort and show all orders arranged by due date.
     due: function (req, res) {
         var page = req.param('id');
-        if (page === undefined) page = 1;
-        if (page < 1) page = 1;
+        if (page === undefined || page < 1) page = 1;
+        
         Order.find()
+        .where({is_open: true, duedate: {'!': null}})
         .paginate({page: page, limit: 16})
         .sort('duedate DESC')
         .populate('MPN')
