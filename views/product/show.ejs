@@ -1,3 +1,5 @@
+<!--Table view of all products for a single company-->
+
 <div class='container'>
     <div class="row">
         <div class="col-md-4">
@@ -28,12 +30,13 @@
     
 	<hr>
     
-    <h2>產品和服務</h2>
+    <h2>產品/服務</h2>
     
     <form action="/order/new">
 <table class="table table-condensed">
     <thead class="text-uppercase"><tr>
         <th></th>
+        <th>選</th>
         <th>內用品名</th>
         <th>標籤品名</th>
         <th><abbr title="桶, 包, 瓶, 等...">容器</abbr></th>
@@ -123,7 +126,7 @@
     
     
 	<a class="btn btn-medium btn-primary" href="/product/new/<%= cogroup.name %>">Add product</a>
-	<input type="submit" class="btn btn-medium btn-primary" name="make_manifest" value="Create Manifest">
+	<input type="submit" class="btn btn-medium btn-primary" name="make_shipment" value="Create Shipment">
 	<input type="submit" class="btn btn-medium btn-primary" name="make_po" value="Create PO">
     
     </form>

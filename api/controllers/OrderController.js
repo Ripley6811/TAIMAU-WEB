@@ -33,6 +33,35 @@ module.exports = {
     new: function (req, res) {
         console.log(req.params.all());
         
+    },
+    // Get all shipments for an order and order by duedate or id.
+    show: function (req, res) {
+        console.log(req.params.all());
+        
+        Shipmentitem.find()
+        .where({order_id: req.param('id')})
+        .populate('shipment_id')
+        .sort({ duedate: 0, id: 0 })
+        .exec(function (err, shipmentitems) {
+            if (err) res.json({
+                error: err.message
+            }, 400);
+            
+            Order.findOne(req.param('id'))
+            .populate('group')
+            .exec(function (err, order) {
+                if (err) res.json({
+                    error: err.message
+                }, 400);
+
+                res.view({ 
+                    order: order,
+                    cogroup: order.group,
+                    shipments: shipmentitems,
+                    id: order.id
+                });
+            });
+        });
     }
 };
 

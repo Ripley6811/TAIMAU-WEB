@@ -135,6 +135,7 @@ tbody tr:hover{
   -webkit-font-smoothing: antialiased;
 }
 
+/*http://coolestguidesontheplanet.com/styling-placeholder-text-input-fields-forms-css/*/
 ::-webkit-input-placeholder {
  font-size: 14px;
  color: #d0cdfa;

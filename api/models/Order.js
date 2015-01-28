@@ -16,8 +16,14 @@ module.exports = {
           model: 'product',
           required: true
       },
+      orderID: {
+          type: 'string'
+      },
       orderdate: {
           type: 'date'
+      },
+      ordernote: {
+          type: 'string'
       },
       duedate: {
           type: 'date'

@@ -1,0 +1,85 @@
+<!--Table view of all products for a single company-->
+
+<div class='container'>
+    <div class="row">
+        <div class="col-md-4">
+            <h1><span><%= cogroup.name %></span><font color="lightgrey">(公司)</font></h1>
+            
+        </div>
+        <div class="col-md-4">
+            <h2>
+            <a href="/cogroup/toggle_supplier/<%= cogroup.name %>" class=
+        <% if (cogroup.is_supplier) { %>
+                "glyphicon glyphicon-ok btn btn-success"
+        <% } else { %>
+            "glyphicon glyphicon-remove btn btn-danger"
+        <% } %>
+                > 供應商</a>
+            <a href="/cogroup/toggle_customer/<%= cogroup.name %>" class=
+        <% if (cogroup.is_customer) { %>
+                "glyphicon glyphicon-ok btn btn-success"
+        <% } else { %>
+            "glyphicon glyphicon-remove btn btn-danger"
+        <% } %>
+                > 客戶</a>
+            <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom">聯絡信息</a>
+                
+                </h2>
+        </div>
+    </div>
+    
+	<hr>
+    
+    <h2>訂單信息</h2>
+    
+    <div class="row-fluid">
+        <div class="col-md-12">
+        <h3>PO Number: <em><%= order.orderID %></em></h3>
+            </div>
+    </div>
+    
+    <br>
+    <br>
+    
+    <h2>出貨紀錄</h2>
+    
+    <form action="/order/show">
+        
+        <input type="hidden" name="id" value="<%= id %>" />
+<table class="table table-condensed">
+    <thead class="text-uppercase"><tr>
+        <th>Due Date</th>
+        <th>Qty</th>
+        <th>出貨日期</th>
+        <th>出貨編號/ID</th>
+        <th>Lot</th>
+        <th>Edit</th>
+    </tr></thead>
+    <tbody>
+    <% shipments.forEach(function(shipmentitem) { %>
+        <tr>
+            <td><%= shipmentitem.duedate_string() %></td>
+            <td><%= shipmentitem.qty %></td>
+            <% if (shipmentitem.shipment_id !== undefined) { %>
+                <td><%= shipmentitem.shipment_id.shipmentdate_string() %></td>
+                <td><%= shipmentitem.shipment_id.shipment_no %></td>
+            <% } else { %>
+                <td colspan="2">(no shipment record)<%= shipmentitem.shipment_id %></td>
+            <% } %>
+            <td><%= shipmentitem.lot %></td>
+            
+            <td>
+                <a href="/shipmentitem/edit/<%- shipmentitem.id %>" class="btn btn-xs btn-custom">編輯紀錄</a>
+            </td>
+        </tr>
+    <% }); %>
+        </tbody>
+</table>
+    
+    
+	<input type="submit" class="btn btn-medium btn-primary" name="make_shipment" value="Create Shipment">
+	<input type="submit" class="btn btn-medium btn-primary" name="make_po" value="Create PO">
+    
+    </form>
+
+</div>
