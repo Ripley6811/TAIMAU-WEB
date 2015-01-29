@@ -60,15 +60,14 @@ module.exports = {
         
         Product.find()
             // Sort numbers are ascending (1) and descending (0).
-            .where({group: id})
+            .where({group: id, discontinued: false})
             .sort({ is_supply: 0, inventory_name: 1 })
-            .populate('orders', {where: {is_open: true}})
             .populate('group')
             .exec(function (err, products) {
                 if (err) res.json({
                     error: err.message
                 }, 400);
-                
+                // If no products found then send cogroup info to page.
                 if (products.length === 0) {
                     Cogroup.findOne(id)
                         // Sort numbers are ascending (1) and descending (0).
@@ -80,13 +79,30 @@ module.exports = {
 
                             res.view({ 
                                 cogroup: cogroup,
-                                products: cogroup.products
+                                products: [],
+                                orders: []
                             });
                         });
                 } else {
-                    res.view({ 
-                        products: products,
-                        cogroup: products[0].group
+                    // Find all open POs for active products and show on page.
+                    var MPNs = [];
+                    for (var i=0; i<products.length; i=i+1) {
+                        MPNs.push(products[i].MPN);
+                    }
+                    
+                    Order.find({MPN: MPNs, is_open: true})
+                    .populate('shipments')
+                    .populate('MPN')
+                    .exec(function (err, orders) {
+                        if (err) res.json({
+                            error: err.message
+                        }, 400);
+                        
+                        res.view({ 
+                            products: products,
+                            cogroup: products[0].group,
+                            orders: orders
+                        });
                     });
                 }
             });

@@ -23,6 +23,14 @@ module.exports = {
       shipment_no: {
           type: 'string',
           defaultsTo: ''
+      },
+      shipmentnote: {
+          type: 'string',
+          defaultsTo: ''
+      },
+      shipmentdest: {
+          type: 'string',
+          defaultsTo: ''
       }
       
       ,

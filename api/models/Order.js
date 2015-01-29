@@ -48,6 +48,15 @@ module.exports = {
           type: 'integer',
           required: true
       },
+      price: {
+          type: 'integer',
+          required: true
+      },
+      applytax: {
+          type: 'boolean',
+          required: true,
+          defaultsTo: true
+      },
       
       shipments: {
             collection: 'shipmentitem',
@@ -71,9 +80,13 @@ module.exports = {
       }
       ,
       duedate_string: function () {
-          return this.duedate.getFullYear() + 
-              ' / ' + (this.duedate.getMonth()+1) +
-              ' / ' + this.duedate.getDate();
+          if (this.duedate === null) {
+              return '';
+          } else {
+              return this.duedate.getFullYear() + 
+                  ' / ' + (this.duedate.getMonth()+1) +
+                  ' / ' + this.duedate.getDate();
+          }
       }
       ,
       orderdate_string: function () {

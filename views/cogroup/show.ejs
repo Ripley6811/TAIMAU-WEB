@@ -1,4 +1,4 @@
-<!--Table views of a single company's branches and contacts-->
+<!--Table views of a single company's branches, contacts and products-->
 
 <div class='container'>
     <div class="row">
@@ -6,7 +6,7 @@
             <h1><span><%= cogroup.name %></span><font color="lightgrey">(公司)</font></h1>
             
         </div>
-        <div class="col-md-4">
+        <div class="col-md-8">
             <h2>
             <a href="/cogroup/toggle_supplier/<%= cogroup.name %>" class=
         <% if (cogroup.is_supplier) { %>
@@ -22,10 +22,13 @@
             "glyphicon glyphicon-remove btn btn-danger"
         <% } %>
                 > 客戶</a>
-            <a href="/product/show/<%= cogroup.name %>" class="btn btn-custom">產品 <span class="badge"><%= cogroup.products.length %></span></a>
+                
+            <a href="/product/show/<%= cogroup.name %>" class="btn btn-custom">管理訂單</a>
                 
                 </h2>
         </div>
+        
+<!--SHOW DELETE BUTTON IF THERE ARE NO BRANCHES-->
 	   <% if (cogroup.branches.length == 0) { %>
         <div class="col-md-4">
             <a href="/cogroup/destroy/<%= cogroup.name %>" class="btn btn-danger btn-lg">DELETE COMPANY GROUP ID</a>
@@ -33,7 +36,11 @@
         <% } %>
     </div>
     
+    
+    
 	<hr>
+<!--COMPANY BRANCHES LIST-->
+    
     
     <h2>分公司</h2>
 <table class="table table-condensed">
@@ -64,9 +71,14 @@
         </tbody>
 </table>
     
+    
 	<a class="btn btn-medium btn-primary" href="/branch/new/<%= cogroup.name %>">Add branch</a>
     
+    
+    
     <hr>
+<!--CONTACTS LIST-->
+    
     
     <h2>聯絡人</h2>
 	<% if (cogroup.branches.length > 0) { %>
@@ -102,5 +114,114 @@
     <% } else { %>
     <h3><span class="label label-primary">先添加一家分公司</span></h3>
     <% } %>
+    
+    
+    
+    <hr>
+<!--PRODUCT AND SERVICES LIST-->
+    
+    
+    <h2>產品/服務</h2>
+    
+    <form action="/order/new">
+<table class="table table-condensed">
+    <thead class="text-uppercase"><tr>
+        <th></th>
+        <th>選</th>
+        <th>內用品名</th>
+        <th>標籤品名</th>
+        <th><abbr title="桶, 包, 瓶, 等...">容器</abbr></th>
+        <th><abbr title="# of kg, L, gal per container">容量</abbr></th>
+        <th><abbr title="kg, L, gal, etc.">單位</abbr></th>
+<!--        <th><abbr title="Price by container or volume?">價格單位</abbr></th>-->
+        <th>包裝描述</th>
+        <th>備註</th>
+        <th></th>
+    </tr></thead>
+    <tbody>
+    <% products.forEach(function(product) { %>
+        <tr>
+            <td>
+                <span class="badge">
+                <% if (product.is_supply === true) { %>
+                <abbr title="買:We buy"><span class="glyphicon glyphicon-arrow-right"></span></abbr>
+                    <% } else { %>
+                    <span class="glyphicon glyphicon-none"></span>
+                    <% } %>
+                <% if (product.discontinued === false) { %>
+                    <span class="glyphicon glyphicon-home"></span>
+                    <% } else { %>
+                    <font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
+                    <% } %>
+                <% if (product.is_supply === false) { %>
+                <abbr title="賣:We sell"><span class="glyphicon glyphicon-arrow-right"></span></abbr>
+                    <% } else { %>
+                    <span class="glyphicon glyphicon-none"></span>
+                    <% } %>
+                    </span>
+            </td>
+            
+<!--        Product Manifest selection    -->
+            <td>
+                
+                
+                <% if (product.discontinued === true) { %>
+                <font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
+                <% } else { %>
+                <input type="checkbox" name="product" value="<%= product.MPN %>">
+                <% } %>
+            </td>
+            
+            
+<!--        Product inventory name    -->
+            <td>
+                <font color=<% if (product.product_label != "") { %>
+                "grey"
+                <% } else { %>
+                "black"
+                <% } %>>
+                <% if (product.MPN != "") { %>
+                    <abbr title="<%= product.MPN %>"><%= product.inventory_name %></abbr>
+                <% } else { %>
+                    <%= product.inventory_name %>
+                <% } %>
+            </font>
+                
+                <% if (product.discontinued === true) { %>
+                <font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
+                <% } %>
+                
+                <% if (product.orders.length > 0) { %>
+                <a href="/order/show/<%- product.orders[0].id %>" class="btn btn-xs btn-custom">使用中PO</a>
+                <% } %>
+            </td>
+            <td><%= product.product_label %></td>
+            <td><%= product.SKU %><% if (product.unitpriced === false) { %>
+                <span class="badge"><abbr title="Priced by container" class="glyphicon glyphicon-usd"></abbr></span>
+                <% } %></td>
+            <td class="text-right"><%= product.units %></td>
+            <td><%= product.UM %><% if (product.unitpriced === true) { %>
+                <span class="badge"><abbr title="Priced by unit" class="glyphicon glyphicon-usd"></abbr></span>
+                <% } %></td>
+            <td><%= product.SKUlong %></td>
+            <td><%= product.note %></td>
+            
+            
+                <td>
+                    <a href="/product/edit/<%- product.MPN.split('%').join('-percent-') %>" class="btn btn-xs btn-custom">編輯產品信息</a>
+                </td>
+        </tr>
+    <% }); %>
+        </tbody>
+</table>
+    
+    
+    <input type="hidden" name="backlink" value="/cogroup/show/<%= cogroup.name %>" />
+	<a class="btn btn-medium btn-primary" href="/product/new/<%= cogroup.name %>">Add product</a>
+	<a id="CreatePO"></a><input type="submit" class="btn btn-medium btn-primary" name="make_po" value="Create PO">
+	<input type="submit" class="btn btn-medium btn-primary" name="make_shipment" value="Create Shipment Without PO">
+    
+    </form>
+    
 	
 </div>

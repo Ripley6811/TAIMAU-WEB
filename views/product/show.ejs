@@ -22,15 +22,102 @@
             "glyphicon glyphicon-remove btn btn-danger"
         <% } %>
                 > 客戶</a>
-            <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom">聯絡信息</a>
+            <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom">公司信息</a>
                 
                 </h2>
         </div>
     </div>
     
+    
+    
+    
 	<hr>
     
-    <h2>產品/服務</h2>
+<!--CREATE A SHIPMENT FROM PO LIST-->
+    
+    
+    <div class="row-fluid">
+    <h2 class="col-md-6">訂單</h2>
+        <h3><span class="col-md-6 label label-warning">已停用的訂單藏起來了. 看公司信息.</span></h3>
+        </div>
+    
+    <form action="/shipment/new">
+<table class="table table-condensed">
+    <thead class="text-uppercase">
+        <tr>
+        <th>進/出</th>
+        <th>訂單編號</th>
+        <th>選</th>
+        <th>標籤品名</th>
+        <th class="text-center">訂單數量</th>
+        <th class="text-center">已出數量</th>
+        <th class="text-center">剩下數量</th>
+        <th class="text-center">下次到期日</th>
+        <th>備註</th>
+        <th>編輯</th>
+    </tr></thead>
+    <tbody>
+    <% orders.forEach(function(order) { %>
+        <tr>
+                <td>
+                    <a href="/order/show/<%- order.id %>" class="btn btn-xs btn-custom">View</a>
+                </td>
+            
+            <td><%= order.orderID %></td>
+            
+<!--        Product Manifest selection    -->
+            <td>
+                
+                
+                <% if (order.MPN.discontinued === true) { %>
+                <font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
+                <% } else { %>
+                <input type="checkbox" name="orderIDs" value="<%= order.id %>">
+                <% } %>
+            </td>
+            
+<!--        Product label    -->
+            <td>
+                <% if (order.MPN.product_label != "") { %>
+                <abbr title="內用名稱: <%= order.MPN.inventory_name %>"><%= order.MPN.product_label %></abbr>
+                <% } else { %>
+                <%= order.MPN.inventory_name %>
+                <% } %>
+            </td>
+                <% if (order.qty === 2147483647) { %>
+                <td class="text-right">&infin;</td>
+                <td class="text-right"><%= order.qty_shipped() %></td>
+                <td class="text-right">&infin;</td>
+            <% } else { %>
+                <td class="text-right"><%= order.qty %> <%= order.MPN.SKU %></td>
+                <td class="text-right"><%= order.qty_shipped() %> <%= order.MPN.SKU %></td>
+                <td class="text-right"><%= order.qty - order.qty_shipped() %> <%= order.MPN.SKU %></td>
+            <% } %>
+            <td class="text-center"><%= order.duedate_string() %></td>
+            <td><%= order.ordernote %></td>
+            
+                <td>
+                    <a href="/order/edit/<%- order.id %>" class="btn btn-xs btn-custom">編輯</a>
+                </td>
+        </tr>
+    <% }); %>
+        </tbody>
+</table>
+    
+	<input type="hidden" name="back" value="/product/show/<%= cogroup.name %>">
+	<input type="submit" class="btn btn-medium btn-primary" name="make_shipment" value="Create Shipment">
+    </form>
+                
+                
+    
+	<hr>
+    
+    
+    
+    <div class="row-fluid">
+    <h2 class="col-md-6">產品/服務</h2>
+        <h3><span class="col-md-6 label label-warning">已停用的產品藏起來了. 看公司信息.</span></h3>
+        </div>
     
     <form action="/order/new">
 <table class="table table-condensed">
@@ -45,7 +132,7 @@
 <!--        <th><abbr title="Price by container or volume?">價格單位</abbr></th>-->
         <th>包裝描述</th>
         <th>備註</th>
-        <th></th>
+        <th>編輯</th>
     </tr></thead>
     <tbody>
     <% products.forEach(function(product) { %>
@@ -108,7 +195,7 @@
             <td><%= product.SKU %><% if (product.unitpriced === false) { %>
                 <span class="badge"><abbr title="Priced by container" class="glyphicon glyphicon-usd"></abbr></span>
                 <% } %></td>
-            <td><%= product.units %></td>
+            <td class="text-right"><%= product.units %></td>
             <td><%= product.UM %><% if (product.unitpriced === true) { %>
                 <span class="badge"><abbr title="Priced by unit" class="glyphicon glyphicon-usd"></abbr></span>
                 <% } %></td>
@@ -117,7 +204,7 @@
             
             
                 <td>
-                    <a href="/product/edit/<%- product.MPN.split('%').join('-percent-') %>" class="btn btn-xs btn-custom">編輯產品信息</a>
+                    <a href="/product/edit/<%- product.MPN.split('%').join('-percent-') %>" class="btn btn-xs btn-custom">編輯</a>
                 </td>
         </tr>
     <% }); %>
@@ -125,9 +212,8 @@
 </table>
     
     
-	<a class="btn btn-medium btn-primary" href="/product/new/<%= cogroup.name %>">Add product</a>
-	<input type="submit" class="btn btn-medium btn-primary" name="make_shipment" value="Create Shipment">
 	<input type="submit" class="btn btn-medium btn-primary" name="make_po" value="Create PO">
+	<input type="submit" class="btn btn-medium btn-primary" name="make_shipment" value="Create Shipment Without PO">
     
     </form>
 

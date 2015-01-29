@@ -33,6 +33,19 @@ module.exports = {
     new: function (req, res) {
         console.log(req.params.all());
         
+        Product.find({MPN: req.param('product')})
+        .exec(function (err, products) {
+            if (err) res.json({
+                error: err.message
+            }, 400);
+            
+            if ('make_po' in req.params.all()) {
+                console.log('MAKE PO');
+            } else if ('make_shipment' in req.params.all()) {
+                console.log('MAKE SHIPMENT');
+            }
+        });
+        
     },
     // Get all shipments for an order and order by duedate or id.
     show: function (req, res) {
@@ -49,6 +62,8 @@ module.exports = {
             
             Order.findOne(req.param('id'))
             .populate('group')
+            .populate('MPN')
+            .populate('shipments')
             .exec(function (err, order) {
                 if (err) res.json({
                     error: err.message

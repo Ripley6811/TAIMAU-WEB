@@ -30,16 +30,42 @@
     
 	<hr>
     
-    <h2>訂單信息</h2>
-    
-    <div class="row-fluid">
-        <div class="col-md-12">
-        <h3>PO Number: <em><%= order.orderID %></em></h3>
+    <div class="row">
+        <div class="col-md-6 text-center">
+        <h2>訂單編號: <span style="font-weight: 700"><%= order.orderID %></span></h2>
+            </div>
+        <div class="col-md-6 text-center">
+        <h2>產品名稱: <span style="font-weight: 700"><%= order.MPN.inventory_name %></span></h2>
             </div>
     </div>
     
-    <br>
-    <br>
+    <div class="row">
+        <div class="col-md-3 text-center">
+        <h3>件數價格<br><span style="font-weight: 700">$<%= order.price %></span>
+            <% if (order.applytax === true) { %>
+            <span class="label label-warning"><span class="glyphicon glyphicon-plus-sign"></span>稅</span>
+            <% } else { %>
+            <span class="label label-danger"><span class="glyphicon glyphicon-ban-circle"></span>稅</span>
+            <% } %></h3>
+            </div>
+        <div class="col-md-3 text-center">
+        <h3>訂單件數<br><span style="font-weight: 700"><%= order.qty %></span></h3>
+            </div>
+        <div class="col-md-3 text-center">
+        <h3>出貨件數<br><span style="font-weight: 700"><%= order.qty_shipped() %></span></h3>
+            </div>
+        <div class="col-md-3 text-center">
+        <h3>剩下件數<br><span style="font-weight: 700"><%= order.qty - order.qty_shipped() %></span></h3>
+            </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+        <h3>備註: <span style="font-weight: 700"><%= order.ordernote %></span></h3>
+            </div>
+    </div>
+    
+	<hr>
     
     <h2>出貨紀錄</h2>
     
@@ -52,7 +78,7 @@
         <th>Qty</th>
         <th>出貨日期</th>
         <th>出貨編號/ID</th>
-        <th>Lot</th>
+        <th>Lot #</th>
         <th>Edit</th>
     </tr></thead>
     <tbody>
@@ -77,8 +103,8 @@
 </table>
     
     
-	<input type="submit" class="btn btn-medium btn-primary" name="make_shipment" value="Create Shipment">
-	<input type="submit" class="btn btn-medium btn-primary" name="make_po" value="Create PO">
+	<input type="submit" class="btn btn-medium btn-custom" name="make_shipment" value="Create Shipment">
+	<input type="submit" class="btn btn-medium btn-custom" name="make_po" value="Create PO">
     
     </form>
 

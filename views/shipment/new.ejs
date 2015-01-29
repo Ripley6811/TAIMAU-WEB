@@ -1,0 +1,101 @@
+
+<div class="container">
+    <div class="row">
+        <h2 class="col-md-6">新的出貨單</h2>
+    </div>
+
+    <form action="/shipment/create" method="post" class="branch-edit">
+        
+        <div class="row vcenter">
+            <label class="col-md-2 text-center">賣家</label>
+            <div class="col-md-5 text-left input-lg">
+                <select class="form-control" name="seller">
+        <% seller.branches.forEach(function(branch) { %>
+<option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
+        <% }); %>
+</select>
+            </div>
+            
+            <div class="col-md-5 text-center"><h2><u>出 貨 單</u></h2></div>
+        </div>
+        
+        <div class="row vcenter">
+            <label class="col-md-2 text-center">客戶名稱</label>
+            <div class="col-md-5">
+                <select class="form-control" name="buyer">
+        <% buyer.branches.forEach(function(branch) { %>
+<option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
+        <% }); %>
+</select>
+            </div>
+            <label class="col-md-2 text-center">貨單日期</label>
+            <div class="col-md-3">
+                <input type="date" class="form-control" placeholder="" name="shipmentdate" required>
+            </div>
+        </div>
+        <div class="row vcenter">
+            <label class="col-md-2 text-center">聯 絡 人</label>
+            <div class="col-md-5">
+                <select class="form-control" name="contact">
+        <% group.contacts.forEach(function(contact) { %>
+<option value="<%= contact.id %>"><%= contact.position %> : <%= contact.name %> : <%= contact.phone %></option>
+        <% }); %>
+</select>
+            </div>
+            
+            <label class="col-md-2 text-center">貨單編號</label>
+            <div class="col-md-3">
+                <input type="text" class="form-control" maxlength="8" placeholder="" name="shipment_no">
+            </div>
+        </div>
+        <div class="row vcenter">
+            <label class="col-md-2 text-center">送貨地址</label>
+            <div class="col-md-10">
+                <input type="text" class="form-control" placeholder="" name="shipmentdest">
+            </div>
+        </div>
+        
+        
+        
+<table class="table table-condensed">
+    <thead class="text-uppercase">
+    <tr>
+        <th>品 名</th>
+        <th>規格/包裝</th>
+        <th>件數</th>
+        <th>數量</th>
+        <th>出貨資訊</th>
+    </tr></thead>
+    <tbody>
+    <% orders.forEach(function(order) { %>
+        <tr>
+            <td class="text-left"><%= order.MPN.inventory_name %></td>
+            <td class="text-left"><%= order.MPN.SKU %></td>
+            <td class="col-md-2">
+            <div class="input-group">
+              <input type="number" min=1 max=100000 size="6" class="form-control text-right" name="PO_<%= order.id %>"  required />
+              <div class="input-group-addon">
+                  <%= order.MPN.SKU != '槽車' ? order.MPN.SKU : order.MPN.UM %></div>
+            </div>
+            </td>
+            <td class="text-left"><%= order.MPN.units %> <%= order.MPN.UM %></td>
+            <td class="text-left"><%= order.orderID %> <%= order.MPN.note %></td>
+        </tr>
+    <% }); %>
+        </tbody>
+</table>
+        
+        <div class="row vcenter">
+            <div class="col-md-2 text-center">備註</div>
+            <div class="col-md-8">
+                <input type="text" class="form-control" placeholder="" name="shipmentnote">
+            </div>
+        </div>
+    <br>
+	<input type="submit" class="btn btn-medium btn-primary" name="make_po_shipment" value="Submit New Shipment">
+        <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+        <input type="hidden" name="group" value="<%= group.name %>" />
+        <input type="hidden" name="back" value="<%= back %>" />
+    </form>
+    
+    </div>
