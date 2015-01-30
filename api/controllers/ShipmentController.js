@@ -41,9 +41,11 @@ module.exports = {
     },
     
 	create: function (req, res) {
+        console.log('shipments/create/', req.params.all());
         var params = req.params.all(),
-            orderIDs = [],
-            back = req.param('back')
+            orderIDs = req.param('PO'),
+            qty = req.param('qty'),
+            back = req.param('back');
         
         var newShipment = {
             shipmentdate: params['shipmentdate'],
@@ -51,12 +53,6 @@ module.exports = {
             shipmentnote: params['shipmentnote'],
             shipmentdest: params['shipmentdest']
         };
-        
-        for (key in params) {
-            if (key.substr(0,3) === 'PO_') {
-                orderIDs.push(key.substr(3));
-            }
-        }
         
         Shipment.create(newShipment)
         .exec( function (err, shipment) {
@@ -73,12 +69,14 @@ module.exports = {
                 }, 400); 
                 
                 orders.forEach( function (order) {
-                    console.log("ORDERS:", order, params['PO_' + order.id]);
-                    Shipmentitem.create({
+                    console.log("ORDERS:", orderIDs.indexOf(order.id.toString()), qty[orderIDs.indexOf(order.id.toString())]);
+                    var newItem = {
                         order_id: order.id,
                         shipment_id: shipment.id,
-                        qty: params['PO_' + order.id]
-                    }).exec( function (err, shipmentitem) {
+                        qty: qty[orderIDs.indexOf(order.id.toString())]
+                    }
+                    Shipmentitem.create(newItem)
+                    .exec( function (err, shipmentitem) {
                         if (err) res.json({
                             error: err.message
                         }, 400);

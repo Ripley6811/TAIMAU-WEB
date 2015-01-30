@@ -66,22 +66,20 @@
         <th>數量</th>
         <th>出貨資訊</th>
     </tr></thead>
-    <tbody>
-    <% orders.forEach(function(order) { %>
+    <tbody data-bind="foreach: rows">
         <tr>
-            <td class="text-left"><%= order.MPN.inventory_name %></td>
-            <td class="text-left"><%= order.MPN.SKU %></td>
+            <td class="text-left" data-bind="text: label"></td>
+            <td class="text-left" data-bind="text: sku"></td>
             <td class="col-md-2">
             <div class="input-group">
-              <input type="number" min=1 max=100000 size="6" class="form-control text-right" name="PO_<%= order.id %>"  required />
-              <div class="input-group-addon">
-                  <%= order.MPN.SKU != '槽車' ? order.MPN.SKU : order.MPN.UM %></div>
+                <input type="hidden" name="PO" data-bind="value: id">
+              <input type="number" min=1 max=100000 size="6" class="form-control text-right" name="qty"  data-bind="value: qty" required />
+              <div class="input-group-addon" data-bind="text: sku"></div>
             </div>
             </td>
-            <td class="text-left"><%= order.MPN.units %> <%= order.MPN.UM %></td>
-            <td class="text-left"><%= order.orderID %> <%= order.MPN.note %></td>
+            <td class="text-left" data-bind="text: totalUnits"></td>
+            <td class="text-left" data-bind="text: id_note"></td>
         </tr>
-    <% }); %>
         </tbody>
 </table>
         
@@ -99,3 +97,42 @@
     </form>
     
     </div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js"></script>
+<script>
+function ShipmentItemRow(order) {
+    var self = this;
+    self.id = order.id;
+    self.label = order.MPN.inventory_name;
+    self.sku = order.MPN.SKU != '槽車' ? order.MPN.SKU : order.MPN.UM;
+    self.qty = ko.observable();
+    self.um = order.MPN.UM;
+    self.id_note = order.orderID + ' ' + order.MPN.note;
+    self.units = parseFloat(order.MPN.units);
+    
+    self.totalUnits = ko.computed(function () {
+        var val = parseInt(self.qty()) * self.units;
+        if (!isNaN(val)) {
+            return val.toString() + ' ' + self.um;
+        } else {
+            return ['(', self.units, self.um, '/', self.sku, ')'].join(' ');
+        }
+    });
+    
+}
+
+function ItemsModel() {
+    var self = this;
+    
+    self.orders = <%- JSON.stringify(orders, null, ' ') %>;
+    
+    self.rows = ko.observableArray([]);
+    
+    for (var i=0; i<self.orders.length; i=i+1) {
+        self.rows.push(new ShipmentItemRow(self.orders[i]));
+    }
+}
+
+ko.applyBindings(new ItemsModel());
+
+</script>
