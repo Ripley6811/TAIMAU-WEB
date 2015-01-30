@@ -77,6 +77,19 @@ module.exports = {
                 });
             });
         });
+    },
+    // Get all shipments for an order and order by duedate or id.
+    update: function (req, res) {
+        console.log(req.params.all());
+        Order.update({id: req.param('id')}, req.params.all())
+        .exec( function (err, order) {
+            if (err) res.json({
+                error: err.message
+            }, 400);
+            
+            req.flash('message', 'Record Updated!');
+            res.redirect('/order/show/' + order[0].id);
+        });
     }
 };
 

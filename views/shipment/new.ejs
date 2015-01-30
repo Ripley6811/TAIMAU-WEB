@@ -1,57 +1,78 @@
 
 <div class="container">
     <div class="row">
-        <h2 class="col-md-6">新的出貨單</h2>
+        <h2 class="col-md-12 text-center h1">出貨單</h2>
     </div>
 
-    <form action="/shipment/create" method="post" class="branch-edit">
+    <form action="/shipment/create" method="post" class="form-horizontal">
         
-        <div class="row vcenter">
-            <label class="col-md-2 text-center">賣家</label>
-            <div class="col-md-5 text-left input-lg">
-                <select class="form-control" name="seller">
-        <% seller.branches.forEach(function(branch) { %>
-<option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
-        <% }); %>
-</select>
+        <div class="row">
+            <div class="col-md-7">
+                <div class="form-group form-group-lg">
+                    <label class="col-md-3 control-label">賣家</label>
+                    <div class="col-md-9 has-success">
+                        <select class="form-control" name="seller">
+                            <% seller.branches.forEach(function(branch) { %>
+                            <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                </div>
             </div>
-            
-            <div class="col-md-5 text-center"><h2><u>出 貨 單</u></h2></div>
         </div>
         
-        <div class="row vcenter">
-            <label class="col-md-2 text-center">客戶名稱</label>
-            <div class="col-md-5">
-                <select class="form-control" name="buyer">
-        <% buyer.branches.forEach(function(branch) { %>
-<option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
-        <% }); %>
-</select>
+        <div class="row">
+            <div class="col-md-7">
+                <div class="form-group form-group-lg">
+                    <label class="col-md-3 control-label">客戶名稱</label>
+                    <div class="col-md-9 has-success">
+                        <select class="form-control" name="buyer">
+                        <% buyer.branches.forEach(function(branch) { %>
+                        <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
+                        <% }); %>
+                        </select>
+                    </div>
+                </div>
             </div>
-            <label class="col-md-2 text-center">貨單日期</label>
-            <div class="col-md-3">
-                <input type="date" class="form-control" placeholder="" name="shipmentdate" required>
+            <div class="col-md-5">
+                <div class="form-group form-group-lg">
+                    <label class="col-md-4 control-label">貨單日期</label>
+                    <div class="col-md-8 has-success">
+                        <input type="date" class="form-control" name="shipmentdate" required>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row vcenter">
-            <label class="col-md-2 text-center">聯 絡 人</label>
-            <div class="col-md-5">
-                <select class="form-control" name="contact">
-        <% group.contacts.forEach(function(contact) { %>
-<option value="<%= contact.id %>"><%= contact.position %> : <%= contact.name %> : <%= contact.phone %></option>
-        <% }); %>
-</select>
+        <div class="row">
+            <div class="col-md-7">
+                <div class="form-group form-group-lg">
+                    <label class="col-md-3 control-label">聯 絡 人</label>
+                    <div class="col-md-9 has-success">
+                        <select class="form-control" name="contact">
+                        <% group.contacts.forEach(function(contact) { %>
+                        <option value="<%= contact.id %>"><%= contact.position %> : <%= contact.name %> : <%= contact.phone %></option>
+                        <% }); %>
+                        </select>
+                    </div>
+                </div>
             </div>
-            
-            <label class="col-md-2 text-center">貨單編號</label>
-            <div class="col-md-3">
-                <input type="text" class="form-control" maxlength="8" placeholder="" name="shipment_no">
+            <div class="col-md-5">
+                <div class="form-group form-group-lg">
+                    <label class="col-md-4 control-label">貨單編號</label>
+                    <div class="col-md-8 has-success">
+                        <input type="text" class="form-control" maxlength="8" placeholder="" name="shipment_no">
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row vcenter">
-            <label class="col-md-2 text-center">送貨地址</label>
-            <div class="col-md-10">
-                <input type="text" class="form-control" placeholder="" name="shipmentdest">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group form-group-lg">
+                    <label class="col-md-2 control-label">送貨地址</label>
+                    <div class="col-md-9 has-success">
+                        <input type="text" class="form-control" placeholder="" name="shipmentdest">
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -60,40 +81,48 @@
 <table class="table table-condensed">
     <thead class="text-uppercase">
     <tr>
-        <th>品 名</th>
-        <th>規格/包裝</th>
-        <th>件數</th>
-        <th>數量</th>
-        <th>出貨資訊</th>
+        <th class="text-center">品 名</th>
+        <th class="text-center">規格/包裝</th>
+        <th class="text-center">件數</th>
+        <th class="text-center">數量</th>
+        <th class="text-center">出貨資訊</th>
     </tr></thead>
     <tbody data-bind="foreach: rows">
         <tr>
             <td class="text-left" data-bind="text: label"></td>
-            <td class="text-left" data-bind="text: sku"></td>
+            <td class="text-center" data-bind="text: guige"></td>
             <td class="col-md-2">
-            <div class="input-group">
+            <div class="input-group has-success">
                 <input type="hidden" name="PO" data-bind="value: id">
-              <input type="number" min=1 max=100000 size="6" class="form-control text-right" name="qty"  data-bind="value: qty" required />
-              <div class="input-group-addon" data-bind="text: sku"></div>
+                <input style="font-size: 18px;" type="number" min=1 max=100000 size="2" class="form-control text-right" name="qty"  data-bind="value: qty" required />
+                <div class="input-group-addon" data-bind="text: jianshu"></div>
             </div>
             </td>
-            <td class="text-left" data-bind="text: totalUnits"></td>
+            <td class="text-center" data-bind="text: totalUnits"></td>
             <td class="text-left" data-bind="text: id_note"></td>
         </tr>
         </tbody>
 </table>
         
-        <div class="row vcenter">
-            <div class="col-md-2 text-center">備註</div>
-            <div class="col-md-8">
-                <input type="text" class="form-control" placeholder="" name="shipmentnote">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group form-group-lg">
+                    <label class="col-md-2 control-label">備註</label>
+                    <div class="col-md-9 has-success">
+                        <input type="text" class="form-control" name="shipmentnote">
+                    </div>
+                </div>
             </div>
         </div>
     <br>
-	<input type="submit" class="btn btn-medium btn-primary" name="make_po_shipment" value="Submit New Shipment">
-        <input type="hidden" name="_csrf" value="<%= _csrf %>" />
-        <input type="hidden" name="group" value="<%= group.name %>" />
-        <input type="hidden" name="back" value="<%= back %>" />
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <input type="submit" class="btn btn-lg btn-medium btn-success" name="make_po_shipment" value="創造新出貨單">
+            <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+            <input type="hidden" name="group" value="<%= group.name %>" />
+            <input type="hidden" name="back" value="<%= back %>" />
+        </div>
+    </div>
     </form>
     
     </div>
@@ -103,19 +132,24 @@
 function ShipmentItemRow(order) {
     var self = this;
     self.id = order.id;
-    self.label = order.MPN.inventory_name;
-    self.sku = order.MPN.SKU != '槽車' ? order.MPN.SKU : order.MPN.UM;
+    self.label = order.MPN.product_label ? order.MPN.product_label : order.MPN.inventory_name;
+    self.sku = order.MPN.SKU;
+    self.guige = order.MPN.SKU;
     self.qty = ko.observable();
     self.um = order.MPN.UM;
+    self.jianshu = self.sku !== '槽車' ? self.sku : self.um;
     self.id_note = order.orderID + ' ' + order.MPN.note;
     self.units = parseFloat(order.MPN.units);
+    if (self.guige !== '槽車') {
+        self.guige = [self.units, self.um, '/', self.guige].join(' ');
+    }
     
     self.totalUnits = ko.computed(function () {
         var val = parseInt(self.qty()) * self.units;
         if (!isNaN(val)) {
             return val.toString() + ' ' + self.um;
         } else {
-            return ['(', self.units, self.um, '/', self.sku, ')'].join(' ');
+            return '0 ' + self.um;
         }
     });
     

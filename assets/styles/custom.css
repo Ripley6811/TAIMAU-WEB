@@ -46,10 +46,10 @@ body {
 .branch-edit {
     border: 2px solid;
     padding: 0px 29px 10px;
-    width: 80%;
+    width: 100%;
     background-color: rgb(255, 242, 199);
     border-color: rgb(0, 102, 0);
-    margin: 0 auto 20px;
+/*    margin: 0 auto 20px;*/
     margin-top: 20px;
         text-align: center;
     border-radius: 15px;
@@ -174,11 +174,12 @@ tbody tr:hover{
     background-color: rgb(255, 128, 0);
 }
 
+/*
 
 .input-group-addon {
     font-weight: 700;
     
-  background-color: hsl(86, 79%, 51%) !important;
+  background-color: hsl(86, 79%, 51%);
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#caf296", endColorstr="#8fe41f");
   background-image: -khtml-gradient(linear, left top, left bottom, from(#caf296), to(#8fe41f));
@@ -189,10 +190,11 @@ tbody tr:hover{
   background-image: -o-linear-gradient(top, #caf296, #8fe41f);
   background-image: linear-gradient(#caf296, #8fe41f);
   border-color: #8fe41f #8fe41f hsl(86, 79%, 44.5%);
-  color: #333 !important;
+  color: #333;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.42);
   -webkit-font-smoothing: antialiased;
 }
+*/
 
 
 
@@ -305,4 +307,30 @@ tbody tr:hover{
 .glyphicon-none:before {
     content: ".-";
     color: transparent !important;
+}
+
+
+hr {
+    border: 0;
+    height: 3px;
+    background-image: -webkit-linear-gradient(left, rgba(0,0,0,.1), rgba(44, 111, 31, 0.8), rgba(0,0,0,.1)); 
+    background-image:    -moz-linear-gradient(left, rgba(0,0,0,.1), rgba(44, 111, 31, 0.8), rgba(0,0,0,.1)); 
+    background-image:     -ms-linear-gradient(left, rgba(0,0,0,.1), rgba(44, 111, 31, 0.8), rgba(0,0,0,.1)); 
+    background-image:      -o-linear-gradient(left, rgba(0,0,0,.1), rgba(44, 111, 31, 0.8), rgba(0,0,0,.1)); 
+}
+
+.input-30 {
+    font-size: 30px;
+}
+.input-24 {
+    font-size: 24px;
+}
+
+.form-group-lg {
+    font-size: 20px;
+}
+
+.form-horizontal .form-control {
+    font-size: 22px;
+    font-weight: bold;
 }
