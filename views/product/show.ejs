@@ -85,12 +85,12 @@
             </td>
                 <% if (order.qty === 2147483647) { %>
                 <td class="text-right">&infin;</td>
-                <td class="text-right"><%= order.qty_shipped() %></td>
+                <td class="text-right"><%= order.qty_shipped() %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>
                 <td class="text-right">&infin;</td>
             <% } else { %>
-                <td class="text-right"><%= order.qty %> <%= order.MPN.SKU %></td>
-                <td class="text-right"><%= order.qty_shipped() %> <%= order.MPN.SKU %></td>
-                <td class="text-right"><%= order.qty - order.qty_shipped() %> <%= order.MPN.SKU %></td>
+                <td class="text-right"><%= order.qty %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>
+                <td class="text-right"><%= order.qty_shipped() %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>
+                <td class="text-right"><%= order.qty - order.qty_shipped() %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>
             <% } %>
             <td class="text-center"><%= order.duedate_string() %></td>
             <td><%= order.ordernote %></td>
@@ -105,7 +105,7 @@
     <div class="row">
         <div class="col-md-6">
             <input type="hidden" name="back" value="/product/show/<%= cogroup.name %>">
-            <input type="submit" class="btn btn-medium btn-primary" name="make_shipment" value="Create Shipment">
+            <input type="submit" class="btn btn-lg btn-success" name="make_shipment" value="創造訂單的出貨單">
         </div>
         <div class="col-md-6 input-24 text-right">
             <span class="label label-warning">已停用的訂單藏起來了. 看公司信息.</span>
@@ -218,8 +218,8 @@
     
     <div class="row">
         <div class="col-md-6 h4">
-            <input type="submit" class="btn btn-medium btn-primary" name="make_po" value="Create PO">
-            <input type="submit" class="btn btn-medium btn-primary" name="make_shipment" value="Create Shipment Without PO">
+            <input type="submit" class="btn btn-lg btn-success" name="make_po" value="創造訂單">
+            <input type="submit" class="btn btn-lg btn-success" name="make_shipment" value="創造出貨單(自動訂單)">
         </div>
         <div class="col-md-6 input-24 text-right">
             <span class="label label-warning">已停用的產品藏起來了. 看公司信息.</span>
