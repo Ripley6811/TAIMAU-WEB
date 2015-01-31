@@ -2,12 +2,12 @@
 
 <div class='container'>
     <div class="row">
-        <div class="col-md-4">
-            <h1><span><%= cogroup.name %></span><font color="lightgrey">(公司)</font></h1>
+        <div class="col-md-4 h1">
+            <strong><%= cogroup.name %></strong><font color="lightgrey">(公司)</font>
             
         </div>
-        <div class="col-md-4">
-            <h2>
+        <div class="col-md-8">
+            <div class="btn-group-vertical">
             <a href="/cogroup/toggle_supplier/<%= cogroup.name %>" class=
         <% if (cogroup.is_supplier) { %>
                 "glyphicon glyphicon-ok btn btn-success"
@@ -22,9 +22,10 @@
             "glyphicon glyphicon-remove btn btn-danger"
         <% } %>
                 > 客戶</a>
+                </div>
             <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom">公司信息</a>
-                
-                </h2>
+            <a href="/product/show/<%= cogroup.name %>" class="btn btn-custom">管理訂單</a>
+            <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom">訂單歷史</a>
         </div>
     </div>
     
@@ -69,18 +70,14 @@
 <table class="table table-condensed">
     <thead class="text-uppercase">
         <tr>
-        <th>訂單編號</th>
         <th>標籤品名</th>
-        <th>價格</th>
-<!--        <th class="text-center">訂單數量</th>-->
+        <th class="text-center">價格</th>
         <th class="text-center">數量</th>
+        <th class="text-center">總價值</th>
         <th>備註</th>
     </tr></thead>
     <tbody data-bind="foreach: rows">
-        <tr>
-<!--        Editing one updates all other IDs. Will be the same.    -->
-            <td class="text-left" data-bind="text: orderID"></td>
-            
+        <tr>            
 <!--        Product label    -->
             <input type="hidden" name="MPN" data-bind="value: MPN">
             <input type="hidden" name="is_supply" data-bind="value: is_supply">
@@ -90,8 +87,7 @@
             <td style="width:20%">
                 <div class="input-group has-success">
                     <div class="input-group-addon">$</div>
-                    <input style="font-size: 18px;" type="number" min=1 step="0.001" size="2" class="form-control text-right" name="price" data-bind="value: price" required />
-                    
+                    <input style="font-size: 18px;" type="number" min=1 step="0.001" class="form-control text-right" name="price" data-bind="value: price" required />
                     <div class="input-group-addon" data-bind="text: pricing"></div>
                 </div>
             </td>
@@ -99,8 +95,16 @@
 <!--        Quantities    -->
             <td style="width:15%">
                 <div class="input-group has-success">
-                <input style="font-size: 18px;" type="number" min=1 max=100000 size="2" class="form-control text-right" name="qty" data-bind="value: qty" required />
+                <input style="font-size: 18px;" type="number" min=1 max=100000 class="form-control text-right" name="qty" data-bind="value: qty" required />
                 <div class="input-group-addon" data-bind="text: jianshu"></div>
+                </div>
+            </td>
+            
+<!--        Total value    -->
+            <td style="width:15%">
+                <div class="input-group has-success">
+                    <div class="input-group-addon">$</div>
+                    <input disabled style="font-size: 18px;" type="number" min=1 step="0.001" class="form-control text-left total-value" data-bind="value: total_value">
                 </div>
             </td>
                         
@@ -112,14 +116,25 @@
         </tr>
         </tbody>
 </table>
-    <% if (form_type === 'make_po') { %>
+        
     <div class="row">
-        <div class="col-md-5 col-md-offset-1">
+        <div class="col-md-4 col-md-offset-1">
+    <% if (form_type === 'make_po') { %>
             <input type="hidden" name="back" value="/product/show/<%= cogroup.name %>">
             <input type="submit" class="btn btn-lg btn-success" name="make_po" value="創造訂單">
+    <% } %>
+        </div>
+        
+        <div class="col-md-5 form-group form-group-lg form-inline">
+            <label class="control-label">訂單總價</label>
+            <div class="input-group has-success">
+                <div class="input-group-addon">$</div>
+                <input disabled style="font-size: 18px; width: 50%" type="text" class="form-control text-left" data-bind="value: grand_total()">
+            </div>
         </div>
     </div>
-    <% } else { /* FORM EXTENSION FOR ENTERING SHIPMENT */ %>
+
+    <% if (form_type === 'make_shipment') { /* FORM EXTENSION FOR ENTERING SHIPMENT */ %>
         
         
     <hr>
@@ -261,7 +276,6 @@
 <script>
 function ShipmentItemRow(product, orderID) {
     var self = this;
-    self.orderID = orderID;
     self.MPN = product.MPN;
     self.is_supply = product.is_supply;
     self.label = product.product_label ? product.product_label : product.inventory_name;
@@ -269,7 +283,7 @@ function ShipmentItemRow(product, orderID) {
     self.sku = product.SKU;
     self.guige = product.SKU;
     self.qty = ko.observable();
-    self.price = product.curr_price;
+    self.price = ko.observable(product.curr_price);
     self.um = product.UM;
     self.jianshu = self.sku !== '槽車' ? self.sku : self.um;
     self.id_note = product.note;
@@ -289,6 +303,15 @@ function ShipmentItemRow(product, orderID) {
         }
     });
     
+    self.total_value = ko.computed( function () {
+        var total = parseInt(self.qty()) * parseFloat(self.price());
+        if (product.unitpriced) {
+            total = Math.round(total * self.units);
+        }
+        
+        return total;
+    });
+    
 }
 
 function ItemsModel() {
@@ -299,6 +322,14 @@ function ItemsModel() {
     self.products = <%- JSON.stringify(products, null, ' ') %>;
     
     self.rows = ko.observableArray([]);
+    
+    self.grand_total = ko.computed( function () {
+        var total = 0;
+        for (var i=0; i<self.rows().length; i++) {
+            total += self.rows()[i].total_value();
+        }
+        return isNaN(total) ? '' : total;
+    });
     
     for (var i=0; i<self.products.length; i=i+1) {
         self.rows.push(new ShipmentItemRow(self.products[i], self.orderID));

@@ -2,12 +2,12 @@
 
 <div class='container'>
     <div class="row">
-        <div class="col-md-4">
-            <h1><span><%= cogroup.name %></span><font color="lightgrey">(公司)</font></h1>
+        <div class="col-md-4 h1">
+            <strong><%= cogroup.name %></strong><font color="lightgrey">(公司)</font>
             
         </div>
-        <div class="col-md-4">
-            <h2>
+        <div class="col-md-8">
+            <div class="btn-group-vertical">
             <a href="/cogroup/toggle_supplier/<%= cogroup.name %>" class=
         <% if (cogroup.is_supplier) { %>
                 "glyphicon glyphicon-ok btn btn-success"
@@ -22,9 +22,10 @@
             "glyphicon glyphicon-remove btn btn-danger"
         <% } %>
                 > 客戶</a>
+                </div>
             <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom">公司信息</a>
-                
-                </h2>
+            <a href="/product/show/<%= cogroup.name %>" class="btn btn-custom">管理訂單</a>
+            <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom">訂單歷史</a>
         </div>
     </div>
     
