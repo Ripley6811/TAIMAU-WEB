@@ -72,6 +72,10 @@ module.exports = {
             type: 'boolean',
             defaultsTo: false
         },
+        curr_price: {
+            type: 'float',
+            defaultsTo: 0.0
+        },
         json: {
             type: 'json',
             defaultsTo: null

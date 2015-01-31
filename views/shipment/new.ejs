@@ -80,13 +80,14 @@
         
 <table class="table table-condensed">
     <thead class="text-uppercase">
-    <tr>
-        <th class="text-center">品 名</th>
-        <th class="text-center">規格/包裝</th>
-        <th class="text-center">件數</th>
-        <th class="text-center">數量</th>
-        <th class="text-center">出貨資訊</th>
-    </tr></thead>
+        <tr>
+            <th class="text-center">品 名</th>
+            <th class="text-center">規格/包裝</th>
+            <th class="text-center">件數</th>
+            <th class="text-center">數量</th>
+            <th class="text-center">出貨資訊</th>
+        </tr>
+    </thead>
     <tbody data-bind="foreach: rows">
         <tr>
             <td class="text-left" data-bind="text: label"></td>
@@ -138,7 +139,7 @@ function ShipmentItemRow(order) {
     self.qty = ko.observable();
     self.um = order.MPN.UM;
     self.jianshu = self.sku !== '槽車' ? self.sku : self.um;
-    self.id_note = order.orderID + ' ' + order.MPN.note;
+    self.id_note = order.orderID + ' ' + order.ordernote;
     self.units = parseFloat(order.MPN.units);
     if (self.guige !== '槽車') {
         self.guige = [self.units, self.um, '/', self.guige].join(' ');

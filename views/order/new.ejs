@@ -1,4 +1,4 @@
-<!--Form for adding a new PO-->
+<!--Table view of all products for a single company-->
 
 <div class='container'>
     <div class="row">
@@ -6,7 +6,7 @@
             <h1><span><%= cogroup.name %></span><font color="lightgrey">(公司)</font></h1>
             
         </div>
-        <div class="col-md-8">
+        <div class="col-md-4">
             <h2>
             <a href="/cogroup/toggle_supplier/<%= cogroup.name %>" class=
         <% if (cogroup.is_supplier) { %>
@@ -23,7 +23,7 @@
         <% } %>
                 > 客戶</a>
             <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom">公司信息</a>
-            <a href="/product/show/<%= cogroup.name %>" class="btn btn-custom">管理訂單</a>
+                
                 </h2>
         </div>
     </div>
@@ -33,97 +33,278 @@
     
 	<hr>
     
-    
-    
+<!--CREATE A PO LIST-->
     
     <form action="/order/create">
+        <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+        <input type="hidden" name="group" value="<%= cogroup.name %>" />
+<!--    Add default buyer and seller if not making shipment.    -->
+        <% if (form_type === 'make_po') { %>
+        <input type="hidden" name="seller" value="<%= seller.branches[0].name %>" />
+        <input type="hidden" name="buyer" value="<%= buyer.branches[0].name %>" />
+        <% } %>
+    
+    <div class="row-fluid h2">
+        <strong>訂單</strong>
+    </div>
+    <div class="row-fluid">
+        <div class="col-md-5">
+            <div class="form-group form-group-lg">
+                <label class="control-label">訂單編號</label>
+                <div class="has-success">
+                    <input type="text" class="form-control" name="orderID" data-bind="value: orderID">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group form-group-lg">
+                <label class="control-label">訂單日期</label>
+                <div class="has-success">
+                    <input type="date" class="form-control" name="orderdate" required>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+<table class="table table-condensed">
+    <thead class="text-uppercase">
+        <tr>
+        <th>訂單編號</th>
+        <th>標籤品名</th>
+        <th>價格</th>
+<!--        <th class="text-center">訂單數量</th>-->
+        <th class="text-center">數量</th>
+        <th>備註</th>
+    </tr></thead>
+    <tbody data-bind="foreach: rows">
+        <tr>
+<!--        Editing one updates all other IDs. Will be the same.    -->
+            <td class="text-left" data-bind="text: orderID"></td>
+            
+<!--        Product label    -->
+            <input type="hidden" name="MPN" data-bind="value: MPN">
+            <input type="hidden" name="is_supply" data-bind="value: is_supply">
+            <td class="text-left" data-bind="text: label"></td>
+            
+<!--        Price    -->
+            <td style="width:20%">
+                <div class="input-group has-success">
+                    <div class="input-group-addon">$</div>
+                    <input style="font-size: 18px;" type="number" min=1 step="0.001" size="2" class="form-control text-right" name="price" data-bind="value: price" required />
+                    
+                    <div class="input-group-addon" data-bind="text: pricing"></div>
+                </div>
+            </td>
+            
+<!--        Quantities    -->
+            <td style="width:15%">
+                <div class="input-group has-success">
+                <input style="font-size: 18px;" type="number" min=1 max=100000 size="2" class="form-control text-right" name="qty" data-bind="value: qty" required />
+                <div class="input-group-addon" data-bind="text: jianshu"></div>
+                </div>
+            </td>
+                        
+<!--        Notes    -->
+            <td style="width:30%">
+                <input type="text" class="form-control" name="ordernote">
+            </td>
+            
+        </tr>
+        </tbody>
+</table>
+    <% if (form_type === 'make_po') { %>
     <div class="row">
-        <div class="col-md-6">
-            <div class="row">
-                <label class="col-md-4 h2">訂單編號:</label>
-                <div class="col-md-8 h2 has-success">
-                    <input type="text" class="form-control input-lg input-30"  name="orderID" value="<%= order.orderID %>">
+        <div class="col-md-5 col-md-offset-1">
+            <input type="hidden" name="back" value="/product/show/<%= cogroup.name %>">
+            <input type="submit" class="btn btn-lg btn-success" name="make_po" value="創造訂單">
+        </div>
+    </div>
+    <% } else { /* FORM EXTENSION FOR ENTERING SHIPMENT */ %>
+        
+        
+    <hr>
+        
+        
+    <div class="row-fluid h2">
+        <strong>出貨單</strong>
+    </div>
+    
+        <div class="row">
+            <div class="col-md-7">
+                <div class="form-group form-group-lg">
+                    <label class="col-md-3 control-label">賣家</label>
+                    <div class="col-md-9 has-success">
+                        <select class="form-control" name="seller">
+                            <% seller.branches.forEach(function(branch) { %>
+                            <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
+                            <% }); %>
+                        </select>
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-4 h2">
-                    產品名稱:
-                </div>
-                <div class="col-md-6 h2">
-                    <select>
-                        <% order.MPN.inventory_name %>
-                    </select>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-7">
+                <div class="form-group form-group-lg">
+                    <label class="col-md-3 control-label">客戶名稱</label>
+                    <div class="col-md-9 has-success">
+                        <select class="form-control" name="buyer">
+                        <% buyer.branches.forEach(function(branch) { %>
+                        <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
+                        <% }); %>
+                        </select>
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-4 h2">
-                    件數價格:
+            <div class="col-md-5">
+                <div class="form-group form-group-lg">
+                    <label class="col-md-4 control-label">貨單日期</label>
+                    <div class="col-md-8 has-success">
+                        <input type="date" class="form-control" name="shipmentdate" required>
+                    </div>
                 </div>
-                <div class="col-md-8 h2">
-                    <div class="input-group input-group-lg has-success">
-                        <div class="input-group-addon">$</div>
-                        <input type="number" step="0.001" class="form-control input-lg input-24" name="price">
-                        <div class="input-group-addon">
-                            <input type="radio" name="applytax" value="true" checked>應稅
-                            <input type="radio" name="applytax" value="false">無稅
-                        </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-7">
+                <div class="form-group form-group-lg">
+                    <label class="col-md-3 control-label">聯 絡 人</label>
+                    <div class="col-md-9 has-success">
+                        <select class="form-control" name="contact">
+                        <% group.contacts.forEach(function(contact) { %>
+                        <option value="<%= contact.id %>"><%= contact.position %> : <%= contact.name %> : <%= contact.phone %></option>
+                        <% }); %>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group form-group-lg">
+                    <label class="col-md-4 control-label">貨單編號</label>
+                    <div class="col-md-8 has-success">
+                        <input type="text" class="form-control" maxlength="8" placeholder="" name="shipment_no">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group form-group-lg">
+                    <label class="col-md-2 control-label">送貨地址</label>
+                    <div class="col-md-9 has-success">
+                        <input type="text" class="form-control" placeholder="" name="shipmentdest">
                     </div>
                 </div>
             </div>
         </div>
         
         
-        <div class="col-md-6">
-            <div class="row">
-                <div class="col-md-4 h2">
-                    訂單件數:
-                </div>
-                <div class="col-md-8 h2 has-success">
-                    <input class="form-control input-lg input-24" min="1" type="number" name="qty" value="<%= order.qty %>">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4 h2">
-                    出貨件數:
-                </div>
-                <div class="col-md-8 h2">
-                    <strong><%= order.qty_shipped() %></strong>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4 h2">
-                    剩下件數:
-                </div>
-                <div class="col-md-8 h2">
-                    <strong><%= order.qty - order.qty_shipped() %></strong>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-2 h2">
-            備註:
-        </div>
-        <div class="col-md-10 h3 has-success">
-            <input class="form-control input-lg input-24" type="text" name="ordernote" value="<%= order.ordernote %>">
-        </div>
-    </div>
-    
-        <% var flash = req.flash('message'); %>
-        <% if(flash.length) { %>
-        <p class="bg-success text-center">
-        <%- flash %>
-            </p>
-        <% } %>
         
+<table class="table table-condensed">
+    <thead class="text-uppercase">
+        <tr>
+            <th class="text-center">品 名</th>
+            <th class="text-center">規格/包裝</th>
+            <th class="text-center">件數</th>
+            <th class="text-center">數量</th>
+            <th class="text-center">出貨資訊</th>
+        </tr>
+    </thead>
+    <tbody data-bind="foreach: rows">
+        <tr>
+            <td class="text-left" data-bind="text: label"></td>
+            <td class="text-center" data-bind="text: guige"></td>
+            <td class="col-md-2" style="width:15%">
+            <div class="input-group has-success">
+                <input style="font-size: 18px;" type="number" min=1 max=100000 size="2" class="form-control text-right" data-bind="value: qty" required />
+                <div class="input-group-addon" data-bind="text: jianshu"></div>
+            </div>
+            </td>
+            <td class="text-center" data-bind="text: totalUnits"></td>
+            <td class="text-left" data-bind="text: id_note"></td>
+        </tr>
+        </tbody>
+</table>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group form-group-lg">
+                    <label class="col-md-2 control-label">備註</label>
+                    <div class="col-md-9 has-success">
+                        <input type="text" class="form-control" name="shipmentnote">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
     <div class="row">
-        <div class="col-md-12 h3 text-center">
-	       <input type="submit" class="btn btn-medium btn-custom" value="提交新訂單">
+        <div class="col-md-5 col-md-offset-1">
+            <input type="hidden" name="back" value="/product/show/<%= cogroup.name %>">
+            <input type="submit" class="btn btn-lg btn-success" name="make_shipment" value="創造出貨單(+訂單)">
         </div>
     </div>
+        
+        
+        
+        
+    <% } /* END OF ELSE BRACKET */ %>
     </form>
+                
+                
     
-    
-    
+
 </div>
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js"></script>
+<script>
+function ShipmentItemRow(product, orderID) {
+    var self = this;
+    self.orderID = orderID;
+    self.MPN = product.MPN;
+    self.is_supply = product.is_supply;
+    self.label = product.product_label ? product.product_label : product.inventory_name;
+    self.inventory_name = product.inventory_name;
+    self.sku = product.SKU;
+    self.guige = product.SKU;
+    self.qty = ko.observable();
+    self.price = product.curr_price;
+    self.um = product.UM;
+    self.jianshu = self.sku !== '槽車' ? self.sku : self.um;
+    self.id_note = product.note;
+    self.units = parseFloat(product.units);
+    if (self.guige !== '槽車') {
+        self.guige = [self.units, self.um, '/', self.guige].join(' ');
+    }
+    
+    self.pricing = product.unitpriced ? '/ ' + self.um : '/ ' + self.sku;
+    
+    self.totalUnits = ko.computed(function () {
+        var val = parseInt(self.qty()) * self.units;
+        if (!isNaN(val)) {
+            return val.toString() + ' ' + self.um;
+        } else {
+            return '0 ' + self.um;
+        }
+    });
+    
+}
+
+function ItemsModel() {
+    var self = this;
+    
+    self.orderID = ko.observable();
+    
+    self.products = <%- JSON.stringify(products, null, ' ') %>;
+    
+    self.rows = ko.observableArray([]);
+    
+    for (var i=0; i<self.products.length; i=i+1) {
+        self.rows.push(new ShipmentItemRow(self.products[i], self.orderID));
+    }
+}
+
+ko.applyBindings(new ItemsModel());
+
+</script>

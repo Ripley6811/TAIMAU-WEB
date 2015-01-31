@@ -44,17 +44,18 @@
 <table class="table table-condensed">
     <thead class="text-uppercase">
         <tr>
-        <th>進/出</th>
-        <th>訂單編號</th>
-        <th>選</th>
-        <th>標籤品名</th>
-        <th class="text-center">訂單數量</th>
-        <th class="text-center">已出數量</th>
-        <th class="text-center">剩下數量</th>
-        <th class="text-center">下次到期日</th>
-        <th>備註</th>
-        <th>編輯</th>
-    </tr></thead>
+            <th></th>
+            <th>訂單編號</th>
+            <th>選</th>
+            <th>標籤品名</th>
+            <th>價格</th>
+    <!--        <th class="text-center">訂單數量</th>-->
+            <th class="text-center">已出數量</th>
+            <th class="text-center">剩下數量</th>
+            <th class="text-center">下次到期日</th>
+            <th>備註</th>
+        </tr>
+    </thead>
     <tbody>
     <% orders.forEach(function(order) { %>
         <tr>
@@ -83,27 +84,27 @@
                 <%= order.MPN.inventory_name %>
                 <% } %>
             </td>
+            <td class="text-center">$ <%= order.price %></td>
+            
+<!--        Quantities    -->
                 <% if (order.qty === 2147483647) { %>
-                <td class="text-right">&infin;</td>
+<!--                <td class="text-right">&infin;</td>-->
                 <td class="text-right"><%= order.qty_shipped() %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>
                 <td class="text-right">&infin;</td>
             <% } else { %>
-                <td class="text-right"><%= order.qty %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>
+<!--                <td class="text-right"><%= order.qty %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>-->
                 <td class="text-right"><%= order.qty_shipped() %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>
                 <td class="text-right"><%= order.qty - order.qty_shipped() %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>
             <% } %>
             <td class="text-center"><%= order.duedate_string() %></td>
             <td><%= order.ordernote %></td>
             
-                <td>
-                    <a href="/order/edit/<%- order.id %>" class="btn btn-xs btn-custom">編輯</a>
-                </td>
         </tr>
     <% }); %>
         </tbody>
 </table>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-5 col-md-offset-1">
             <input type="hidden" name="back" value="/product/show/<%= cogroup.name %>">
             <input type="submit" class="btn btn-lg btn-success" name="make_shipment" value="創造訂單的出貨單">
         </div>
@@ -217,7 +218,7 @@
     
     
     <div class="row">
-        <div class="col-md-6 h4">
+        <div class="col-md-5 col-md-offset-1">
             <input type="submit" class="btn btn-lg btn-success" name="make_po" value="創造訂單">
             <input type="submit" class="btn btn-lg btn-success" name="make_shipment" value="創造出貨單(自動訂單)">
         </div>
