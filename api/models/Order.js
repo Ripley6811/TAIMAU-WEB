@@ -49,7 +49,7 @@ module.exports = {
           required: true
       },
       price: {
-          type: 'integer',
+          type: 'float',
           required: true
       },
       applytax: {
