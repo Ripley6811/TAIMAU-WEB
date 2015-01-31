@@ -146,7 +146,7 @@ module.exports = {
     },
     // Get all shipments for an order and order by duedate or id.
     show: function (req, res) {
-        console.log(req.params.all());
+        console.log('SHOW\n', req.params.all());
         
         Shipmentitem.find()
         .where({order_id: req.param('id')})
@@ -173,6 +173,63 @@ module.exports = {
                     id: order.id
                 });
             });
+        });
+    },
+	
+    showall: function (req, res) {
+        console.log('SHOWALL\n', req.params.all());
+        var groupName = req.param('id'),
+            page = parseInt(req.param('page')),
+            pageLimit = 16; // Records per page.
+        
+        // Calculate number of pages.
+        Order.count({group: groupName}, function(e, count){
+            var maxPage = Math.ceil(count / pageLimit);
+            if (page === undefined || isNaN(page) || page < 1) page = 1;
+            if (page > maxPage) page = maxPage;
+            
+            Order.find({group: groupName})
+            .sort('orderdate DESC')
+            .populate('MPN')
+            .populate('group')
+            .paginate({page: page, limit: 16})
+            .exec(function (err, orders) {
+                if (err) res.json({
+                    error: err.message
+                }, 400);
+
+                Cogroup.findOne(req.param('id'), function (err, cogroup) {
+                    res.view({ 
+                        cogroup: cogroup,
+                        orders: orders,
+                        page: page,
+                        maxPage: maxPage,
+                    });
+                });
+            });
+        });
+    },
+    // Toggle open/close on orders
+    toggle_open: function (req, res) {
+        console.log('TOGGLE OPEN\n', req.params.all());
+        
+        Order.find(req.param('orderIDs'), function (err, orders) {
+            if (err) res.json({
+                where: 'Order.find',
+                error: err.message
+            }, 400);
+            
+            orders.forEach( function (order) {
+                order.is_open = !order.is_open;
+                order.save( function (err, newOrder) {
+                    if (err) res.json({
+                        where: 'order.save',
+                        error: err.message
+                    }, 400);
+                });
+            }); 
+            
+            res.redirect(req.param('back'));
         });
     },
     // Get all shipments for an order and order by duedate or id.

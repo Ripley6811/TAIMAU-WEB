@@ -34,20 +34,20 @@ module.exports = {
 	
     show: function (req, res) {
         Cogroup.findOne(req.param('id'))
-            .populate('branches')
-            .populate('contacts')
-            .populate('products', {sort: { is_supply: 0, inventory_name: 1 }})
-            .exec(function (err, cogroup) {
-                if (err) res.json({
-                    error: err.message
-                }, 400);
+        .populate('branches')
+        .populate('contacts')
+        .populate('products', {sort: { is_supply: 0, inventory_name: 1 }})
+        .exec(function (err, cogroup) {
+            if (err) res.json({
+                error: err.message
+            }, 400);
 
-                res.view({ 
-                    cogroup: cogroup,
-                    contacts: cogroup.contacts,
-                    products: cogroup.products
-                });
+            res.view({ 
+                cogroup: cogroup,
+                contacts: cogroup.contacts,
+                products: cogroup.products
             });
+        });
     },
     
     create: function (req, res) {
