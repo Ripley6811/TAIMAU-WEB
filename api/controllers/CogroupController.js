@@ -71,44 +71,28 @@ module.exports = {
         
     },
     
-    toggle_supplier: function(req, res) {
-        var name = req.param('id');
-        Cogroup.findOne(name)
-            .exec(function (err, cogroup) {
-                if (err) res.json({
-                    error: err.message
-                }, 400);
-            
-                var updateParams = {};
-                updateParams.is_supplier = !cogroup.is_supplier;
+    toggle: function(req, res) {
+        var name = req.param('cogroup'),
+            toggle = req.param('toggle');
+        
+        Cogroup.findOneByName(name, function (err, group) {
+            if (err) res.json({
+                error: err.message
+            }, 400);
 
-                Cogroup.update(name, updateParams)
-                    .exec(function cogroupUpdated(err, cogroup) {
-                        if (err) return err;
+            if (toggle === 'supplier') {
+                group.is_supplier = !group.is_supplier;
+            }
+            if (toggle === 'customer') {
+                group.is_customer = !group.is_customer;
+            }
+            // Save changes
+            group.save(function cogroupUpdated(err, cogroup) {
+                if (err) return err;
 
-                        res.redirect('/cogroup/show/' + name);
-                    });
+                res.redirect(req.param('back'));
             });
-    },
-    
-    toggle_customer: function(req, res) {
-        var name = req.param('id');
-        Cogroup.findOne(name)
-            .exec(function (err, cogroup) {
-                if (err) res.json({
-                    error: err.message
-                }, 400);
-            
-                var updateParams = {};
-                updateParams.is_customer = !cogroup.is_customer;
-
-                Cogroup.update(name, updateParams)
-                    .exec(function cogroupUpdated(err, cogroup) {
-                        if (err) return err;
-
-                        res.redirect('/cogroup/show/' + name);
-                    });
-            });
+        });
     },
 
     destroy: function (req, res, next) {

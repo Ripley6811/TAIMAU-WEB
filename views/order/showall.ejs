@@ -1,30 +1,39 @@
 <!--Table view of all POs ordered by order date-->
-
+<div class="container">
     <div class="row">
-        <div class="col-md-4 h1">
+        <div class="col-md-4 h1 text-center">
+            <div class="row">
             <strong><%= cogroup.name %></strong><font color="lightgrey">(公司)</font>
-            
+            </div>
+            <div class="row">
+                <form action="/cogroup/toggle" method="post"><input type="hidden" name="_csrf" value="<%= _csrf %>" />
+                    <input type="hidden" name="cogroup" value="<%= cogroup.name %>">
+                    <input type="hidden" name="back" value="/order/showall/<%= cogroup.name %>">
+                    <div class="btn-group">
+                    <button type="submit" name="toggle" value="supplier" class=
+                                    <% if (cogroup.is_supplier) { %>
+                                    "glyphicon glyphicon-ok btn btn-success"
+                                    <% } else { %>
+                                    "glyphicon glyphicon-remove btn btn-danger"
+                                    <% } %>
+                        > 供應商</button>
+                    <button type="submit" name="toggle" value="customer" class=
+                                    <% if (cogroup.is_customer) { %>
+                                    "glyphicon glyphicon-ok btn btn-success"
+                                    <% } else { %>
+                                    "glyphicon glyphicon-remove btn btn-danger"
+                                    <% } %>
+                        > 客戶</button>
+                    </div>
+                </form>
+            </div>
         </div>
         <div class="col-md-8">
             <div class="btn-group-vertical">
-            <a href="/cogroup/toggle_supplier/<%= cogroup.name %>" class=
-        <% if (cogroup.is_supplier) { %>
-                "glyphicon glyphicon-ok btn btn-success"
-        <% } else { %>
-            "glyphicon glyphicon-remove btn btn-danger"
-        <% } %>
-                > 供應商</a>
-            <a href="/cogroup/toggle_customer/<%= cogroup.name %>" class=
-        <% if (cogroup.is_customer) { %>
-                "glyphicon glyphicon-ok btn btn-success"
-        <% } else { %>
-            "glyphicon glyphicon-remove btn btn-danger"
-        <% } %>
-                > 客戶</a>
-                </div>
-            <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom">公司信息</a>
-            <a href="/product/show/<%= cogroup.name %>" class="btn btn-custom">管理訂單</a>
-            <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom">訂單歷史</a>
+                <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-info-sign"></i> <strong>公司,聯絡人,產品信息</strong></a>
+                <a href="/product/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-pencil"></i> <strong>管理使用中訂單,創造出貨單</strong></a>
+                <a disabled href="/order/showall/<%= cogroup.name %>" class="active btn btn-custom"><i class="glyphicon glyphicon-folder-open"></i> <strong>全部訂單歷史</strong></a>
+            </div>
         </div>
     </div>
     
@@ -37,7 +46,7 @@
 <form action="/order/toggle_open" method="post">
 <input type="hidden" name="_csrf" value="<%= _csrf %>" />
 <input type="hidden" name="back" value="/order/showall/<%= cogroup.name %>?page=<%= page %>">
-<div class="row h2">
+<div class="row-fluid h2">
     訂單紀錄
 </div>
 <br>
@@ -132,3 +141,4 @@
     </div>
 </div>
     </form>
+    </div>

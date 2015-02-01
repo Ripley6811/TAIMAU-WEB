@@ -1,5 +1,5 @@
 <!--Form for adding a new product for a single company to the database-->
-
+<div class="container">
 <div class="row" style="text-align: center">
     <form action="/product/create" method="post" class="branch-edit">
         <h2>Create A New Product Listing for <%= group %></h2>
@@ -67,15 +67,20 @@
         <% } %>
         
         
-<div class="row vcenter"><div class="col-md-6">
-    <input type="submit" class="btn btn-lg btn-primary btn-block" value="CREATE" /></div>
-    <div class="col-md-6">
-        
-        <input type="cancel" class="btn btn-lg btn-danger btn-block" value="EXIT" onclick="javascript:window.location='../../product/show/<%= group %>'" /></div></div>
-        
-        <input type="hidden" name="_csrf" value="<%= _csrf %>" />
-        <input type="hidden" name="group" value="<%= group %>" />
+        <div class="row vcenter">
+            <div class="col-md-6">
+                <input type="submit" class="btn btn-lg btn-primary btn-block" value="CREATE" />
+            </div>
+            <div class="col-md-6">
+
+                <input type="cancel" class="btn btn-lg btn-danger btn-block" value="EXIT" onclick="javascript:window.location='../../product/show/<%= group %>'" />
+            </div>
+        </div>
+
+            <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+            <input type="hidden" name="group" value="<%= group %>" />
         
 
     </form>
+</div>
 </div>
