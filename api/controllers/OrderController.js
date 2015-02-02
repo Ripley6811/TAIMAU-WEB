@@ -80,6 +80,13 @@ module.exports = {
         var newOrders = [],
             productUpdates = [],
             prodMPNs = [];
+        if (!(params.MPN instanceof Array)) {
+            params.MPN = [params.MPN];
+            params.price = [params.price];
+            params.qty = [params.qty];
+            params.ordernote = [params.ordernote];
+            params.is_supply = [params.is_supply];
+        }
         for (var i=0; i<params.MPN.length; i=i+1) {
             newOrders.push({
                 group: params.group,

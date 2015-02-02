@@ -42,10 +42,16 @@ module.exports = {
     
 	create: function (req, res) {
         console.log('shipments/create/', req.params.all());
-        var params = req.params.all(),
-            orderIDs = req.param('PO'),
-            qty = req.param('qty'),
-            back = req.param('back');
+        var params = req.params.all();
+        
+        if (!(params.PO instanceof Array)) {
+            params.PO = [params.PO];
+            params.qty = [params.qty];
+        }
+        
+        var orderIDs = params.PO,
+            qty = params.qty,
+            back = params.back;
         
         var newShipment = {
             shipmentdate: params['shipmentdate'],
@@ -61,7 +67,8 @@ module.exports = {
             }, 400);
             
             console.log('SHIPMENT:', shipment);
-            Order.find({id: orderIDs})
+            
+            Order.find(orderIDs)
             .populate('MPN')
             .exec( function (err, orders) {
                 if (err) res.json({
