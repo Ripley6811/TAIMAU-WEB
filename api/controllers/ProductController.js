@@ -233,18 +233,14 @@ module.exports = {
             for (var i=0; i<products.length; i++) {
                 if (products[i].json.rank === newRank) {
                     products[i].json.rank = oldRank;
-                    products[i].save(function (err, prod) {
-                        console.log('product down');
-                    });
+                    products[i].save(function (err, prod) {});
                     break;
                 }
             }
             for (var i=0; i<products.length; i++) {
                 if (products[i].MPN === sel_MPN) {
                     products[i].json.rank = newRank;
-                    products[i].save(function (err, prod) {
-                        console.log('product up');
-                    });
+                    products[i].save(function (err, prod) {});
                     break;
                 }
             }
@@ -272,18 +268,14 @@ module.exports = {
             for (var i=0; i<products.length; i++) {
                 if (products[i].json.rank === newRank) {
                     products[i].json.rank = oldRank;
-                    products[i].save(function (err, prod) {
-                        console.log('product up');
-                    });
+                    products[i].save(function (err, prod) {});
                     break;
                 }
             }
             for (var i=0; i<products.length; i++) {
                 if (products[i].MPN === sel_MPN) {
                     products[i].json.rank = newRank;
-                    products[i].save(function (err, prod) {
-                        console.log('product down');
-                    });
+                    products[i].save(function (err, prod) {});
                     break;
                 }
             }
