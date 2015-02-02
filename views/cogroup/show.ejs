@@ -1,9 +1,9 @@
 <!--Table views of a single company's branches, contacts and products-->
 
-<div class='container'>
+<div class='container-fluid'>
     
     
-    <div class="row">
+    <div class="row text-center">
         <div class="col-md-4 h1 text-center">
             <div class="row">
             <strong><%= cogroup.name %></strong><font color="lightgrey">(公司)</font>
@@ -93,35 +93,39 @@
     
     <h2>聯絡人</h2>
 	<% if (cogroup.branches.length > 0) { %>
-<table class="table table-condensed">
-    <thead class="text-uppercase"><tr>
-        <th>職位</th>
-        <th>姓名</th>
-        <th>分公司</th>
-        <th>電話</th>
-        <th>傳真</th>
-        <th>Email</th>
-        <th>備註</th>
-        <th></th>
-    </tr></thead>
-    <tbody>
-    <% cogroup.contacts.forEach(function(contact) { %>
-        
-        <tr>
-            <td><%= contact.position %></td>
-            <td><%= contact.name %></td>
-            <td><%= contact.branch %></td>
-            <td><%= contact.phone %></td>
-            <td><%= contact.fax %></td>
-            <td><%= contact.email %></td>
-            <td><%= contact.note %></td>
-                <td><a href="/contact/edit/<%= contact.id %>" class="btn btn-xs btn-custom">Edit</a>
+    <table class="table table-condensed">
+        <thead class="text-uppercase">
+            <tr>
+                <th>分公司</th>
+                <th>職位</th>
+                <th>姓名</th>
+                <th>電話</th>
+                <th>傳真</th>
+                <th>Email</th>
+                <th>備註</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: contacts">
+            <tr>
+                <td><select data-bind="options: branchOptions, value: branch"></select></td>
+                <td><input size="5" placeholder="position" data-bind="value: position"></td>
+                <td><input size="4" placeholder="name" data-bind="value: name"></td>
+<!--                <td><input data-bind="value: branch"></td>-->
+                <td style="width: 20%"><input placeholder="phone" style="width: 100%;" data-bind="value: phone"></td>
+                <td style="width: 20%"><input placeholder="fax" style="width: 100%;" data-bind="value: fax"></td>
+                <td style="width: 20%"><input placeholder="email" style="width: 100%;" data-bind="value: email"></td>
+                <td style="width: 25%"><input placeholder="note" style="width: 100%;" data-bind="value: note"></td>
+                <td>
+                    <button class="btn btn-xs btn-danger" data-bind="click: $parent.removeContact">刪除</button>
                 </td>
-        </tr>
-    <% }); %>
+            </tr>
         </tbody>
-</table>
-	<a class="btn btn-medium btn-primary" href="/contact/new/<%= cogroup.name %>">Add contact</a>
+    </table>
+    
+    
+    <button class="btn btn-medium btn-primary" data-bind="click: addContact">Add contact</button>
+    <button class="btn btn-medium btn-primary" data-bind="click: saveContacts"><span data-bind="text: saveMessage"></span></button>
+<!--	<a class="btn btn-medium btn-primary" href="/contact/new/<%= cogroup.name %>">Add contact</a>-->
     <% } else { %>
     <h3><span class="label label-primary">先添加一家分公司</span></h3>
     <% } %>
@@ -243,3 +247,106 @@
     
 	
 </div>
+
+<script>
+var co_name = '<%= cogroup.name %>';
+var db_contacts = <%- JSON.stringify(cogroup.contacts) %>;
+var db_branches = <%- JSON.stringify(cogroup.branches) %>;
+var _csrf = '<%= _csrf %>';
+
+function KO_Contact(data) {
+    var self = this,
+        data = data || {};
+    
+    self.id = ko.observable(data.id || null);
+    self.group = ko.observable(data.group || '<%= cogroup.name %>');
+    self.branch = ko.observable(data.branch || '');
+    self.name = ko.observable(data.name || '');
+    self.position = ko.observable(data.position || '');
+    self.phone = ko.observable(data.phone || '');
+    self.fax = ko.observable(data.fax || '');
+    self.email = ko.observable(data.email || '');
+    self.note = ko.observable(data.note || '');
+    
+    self.delete = false;
+    
+    // Branch name options for select list.
+    self.branchOptions = [];
+    for (var branch in db_branches) {
+        self.branchOptions.push(db_branches[branch].name);
+    }
+    
+//    self.debug = ko.computed( function() {
+//        console.log(self.name(), self);
+//    });
+}
+
+function PageModel() {
+    var self = this;
+    
+    self.saveMessage = ko.observable('Save');
+    
+    self.contacts = ko.observableArray();
+    self.deleteIDs = ko.observableArray();
+    self.addContact = function() {
+        self.contacts.push(new KO_Contact());
+    };
+    self.removeContact = function(contact) {
+        if (contact.id !== null) {
+            self.deleteIDs.push(contact.id);
+        }
+        self.contacts.remove(contact);
+    };
+    
+    self.saveContacts = function() {
+        // Temporarily change save button message and prevent multiple clicks.
+        if (self.saveMessage() === 'Save') {
+            self.saveMessage('Please wait ...');   
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                    self.getContacts();
+                    setTimeout(function(){
+                        // Reset save button message.
+                        self.saveMessage('Save');
+                    }, 500);
+                }
+            };
+            xmlhttp.open('POST', '/contact/merge', true);
+            xmlhttp.setRequestHeader('Content-type', 'application/json');
+            xmlhttp.send(ko.toJSON({
+                _csrf: _csrf, 
+                id: co_name, 
+                contactList: self.contacts,
+                deleteIDs: self.deleteIDs,
+            }));
+        }
+        
+//        
+    };
+    
+    self.getContacts = function () {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState !== 4) return;
+            
+            var db_contacts = JSON.parse(xmlhttp.response);
+            
+            self.contacts.removeAll();
+            for (var i=0; i<db_contacts.length; i++) {
+                self.contacts.push(new KO_Contact(db_contacts[i]));
+            }
+        };
+        xmlhttp.open('POST', '/contact/contactList', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON({
+            _csrf: _csrf, 
+            id: co_name
+        }));
+    };
+    
+    self.getContacts();
+}
+
+ko.applyBindings(new PageModel());
+</script>

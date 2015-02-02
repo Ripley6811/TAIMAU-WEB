@@ -98,6 +98,51 @@ module.exports = {
 
             res.redirect('/cogroup/show/' + contact[0].group);
         });
+    },
+    // Process updates, creation and deletions from "cogroup/show" page.
+    merge: function (req, res, next) {
+        console.log('CONTACTS MERGE:\n', req.params.all());
+        var co_name = req.param('id'),
+            contactList = req.param('contactList'),
+            deleteIDs = req.param('deleteIDs');
+        
+        for (var i=0; i<contactList.length; i++) {
+            if (contactList[i].id === null) {
+                // Add new contact to database.
+                Contact.create(contactList[i])
+                .exec(function (err, contact) {
+                    console.log(err, contact);
+                });
+                    
+            } else {
+                // Update contact in database.
+                Contact.update(contactList[i].id, contactList[i])
+                .exec(function (err, contact) {
+                    console.log(err, contact);
+                });
+            }
+        }
+        if (deleteIDs instanceof Array) {
+            for (var i=0; i<deleteIDs.length; i++) {
+                if (!isNaN(parseInt(deleteIDs[i]))) {
+                    // Delete contact from database.
+                    Contact.destroy(deleteIDs[i], function (err, contact) {
+                        console.log(err, 'DESTROYED', contact);
+                    });
+                }
+            }
+        }
+        
+        res.send(true);
+    },
+    
+    contactList: function (req, res, next) {
+        var co_name = req.param('id');
+        
+        Contact.find({group: co_name}, function (err, contacts) {
+//            console.log(err, contacts);
+            res.send(contacts);
+        });
     }
     
 };
