@@ -33,7 +33,7 @@
         </div>
         <div class="col-md-8">
             <div class="btn-group-vertical">
-                <a disabled href="/cogroup/show/<%= cogroup.name %>" class="active btn btn-custom"><i class="glyphicon glyphicon-info-sign"></i> <strong>公司,聯絡人,產品信息</strong></a>
+                <a disabled href="/cogroup/show/<%= cogroup.name %>" class="active btn btn-custom"><i class="glyphicon glyphicon-info-sign"></i> <strong>公司,聯絡人,產品訊息</strong></a>
                 <a href="/product/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-pencil"></i> <strong>管理使用中訂單,創造出貨單</strong></a>
                 <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-folder-open"></i> <strong>全部訂單歷史</strong></a>
             </div>
@@ -147,7 +147,8 @@
 <!--        <th><abbr title="Price by container or volume?">價格單位</abbr></th>-->
         <th>包裝描述</th>
         <th>備註</th>
-        <th></th>
+        <th>編輯</th>
+        <th>順序</th>
     </tr></thead>
     <tbody>
     <% products.forEach(function(product) { %>
@@ -219,8 +220,14 @@
             
             
                 <td>
-                    <a href="/product/edit/<%- product.MPN.split('%').join('-percent-') %>" class="btn btn-xs btn-custom">編輯產品信息</a>
+                    <a href="/product/edit/<%- product.MPN.split('%').join('-percent-') %>" class="btn btn-xs btn-custom">編輯</a>
                 </td>
+            <td>
+                <div class="btn-group-vertical btn-group-xs">
+                    <a href="/product/up/<%= product.MPN %>?cogroup=<%= cogroup.name %>" class="btn btn-xs btn-custom"><i class="glyphicon glyphicon-triangle-top"></i></a>
+                    <a href="/product/down/<%= product.MPN %>?cogroup=<%= cogroup.name %>" class="btn btn-xs btn-custom"><i class="glyphicon glyphicon-triangle-bottom"></i></a>
+                </div>
+            </td>
         </tr>
     <% }); %>
         </tbody>

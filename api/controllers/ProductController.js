@@ -87,6 +87,22 @@ module.exports = {
                     // Find all open POs for active products and show on page.
                     var MPNs = [];
                     for (var i=0; i<products.length; i=i+1) {
+                        if (products[i].json === null) {
+                            products[i].json = {rank: i};
+                            products[i].save(function (err, prod) {
+                                console.log('Save Prod Rank:', prod.inventory_name, prod.json.rank);
+                            });
+                        } else if (products[i].json.rank === undefined) {
+                            products[i].json.rank = i;
+                            products[i].save(function (err, prod) {
+                                console.log('Save Prod Rank:', prod.inventory_name, prod.json.rank);
+                            });
+                        }
+                    }
+                    // Sort by product rank
+                    products.sort(function (a, b) {return a.json.rank - b.json.rank});
+                    
+                    for (var i=0; i<products.length; i=i+1) {
                         MPNs.push(products[i].MPN);
                     }
                     
@@ -97,6 +113,10 @@ module.exports = {
                         if (err) res.json({
                             error: err.message
                         }, 400);
+                        
+                        orders.sort(function (a, b) {
+                            return a.MPN.json.rank - b.MPN.json.rank;
+                        });
                         
                         res.view({ 
                             products: products,
@@ -191,7 +211,84 @@ module.exports = {
                 });
             }
         });
+    },
+    
+    up: function (req, res) {
+//        console.log('UP:\n', req.params.all());
+        var sel_MPN = req.param('id'),
+            co_name = req.param('cogroup');
+        Cogroup.findOne(co_name)
+        .populate('products')
+        .exec(function (err, cogroup) {
+            var products = cogroup.products,
+                oldRank = null,
+                newRank = null;
+            for (var i=0; i<products.length; i++) {
+                if (products[i].MPN === sel_MPN) {
+                    oldRank = products[i].json.rank;
+                    newRank = Math.max(parseInt(oldRank) - 1, 0);
+                    break;
+                }
+            }
+            for (var i=0; i<products.length; i++) {
+                if (products[i].json.rank === newRank) {
+                    products[i].json.rank = oldRank;
+                    products[i].save(function (err, prod) {
+                        console.log('product down');
+                    });
+                    break;
+                }
+            }
+            for (var i=0; i<products.length; i++) {
+                if (products[i].MPN === sel_MPN) {
+                    products[i].json.rank = newRank;
+                    products[i].save(function (err, prod) {
+                        console.log('product up');
+                    });
+                    break;
+                }
+            }
+            res.redirect('/cogroup/show/' + co_name);
+        });
+    },
+    
+    down: function (req, res) {
+//        console.log('DOWN:\n', req.params.all());
+        var sel_MPN = req.param('id'),
+            co_name = req.param('cogroup');
+        Cogroup.findOne(co_name)
+        .populate('products')
+        .exec(function (err, cogroup) {
+            var products = cogroup.products,
+                oldRank = null,
+                newRank = null;
+            for (var i=0; i<products.length; i++) {
+                if (products[i].MPN === sel_MPN) {
+                    oldRank = products[i].json.rank;
+                    newRank = Math.min(parseInt(oldRank) + 1, products.length - 1);
+                    break;
+                }
+            }
+            for (var i=0; i<products.length; i++) {
+                if (products[i].json.rank === newRank) {
+                    products[i].json.rank = oldRank;
+                    products[i].save(function (err, prod) {
+                        console.log('product up');
+                    });
+                    break;
+                }
+            }
+            for (var i=0; i<products.length; i++) {
+                if (products[i].MPN === sel_MPN) {
+                    products[i].json.rank = newRank;
+                    products[i].save(function (err, prod) {
+                        console.log('product down');
+                    });
+                    break;
+                }
+            }
+            res.redirect('/cogroup/show/' + co_name);
+        });
     }
-	
 };
 

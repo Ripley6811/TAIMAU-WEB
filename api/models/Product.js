@@ -78,7 +78,7 @@ module.exports = {
         },
         json: {
             type: 'json',
-            defaultsTo: null
+            defaultsTo: {}
         }
     }
 };

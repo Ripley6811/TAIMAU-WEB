@@ -33,8 +33,14 @@ module.exports = {
     // Form for creating default POs along with new shipment
     new: function (req, res) {
         var params = req.params.all();
+        console.log('order/new', params);
         if (!('make_po' in params || 'make_shipment' in params)) {
-            res.redirect(params.back);
+            res.redirect(req.param('back'));
+            return;
+        }
+        if (!('product' in params)) {
+            res.redirect(req.param('back'));
+            return;
         }
         
         Product.find({MPN: req.param('product')})
@@ -43,6 +49,10 @@ module.exports = {
             if (err) res.json({
                 error: err.message
             }, 400);
+            // Sort products by rank
+            products.sort(function (a, b) {
+                return a.json.rank - b.json.rank;
+            });
             
             if (products.length === 0) {
                 res.redirect(req.param('back'));

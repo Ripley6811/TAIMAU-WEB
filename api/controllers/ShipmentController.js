@@ -19,6 +19,10 @@ module.exports = {
             if (orders.length === 0) {
                 res.redirect(req.param('back'));
             } else {
+                orders.sort(function (a, b) {
+                    return a.MPN.json.rank - b.MPN.json.rank;
+                });
+                
                 Cogroup.findOne(orders[0].group.name)
                 .populate('branches')
                 .populate('contacts')

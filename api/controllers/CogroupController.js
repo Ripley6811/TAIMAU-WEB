@@ -45,11 +45,29 @@ module.exports = {
             if (err) res.json({
                 error: err.message
             }, 400);
+            
+            // Add default product ranking if not entered already.
+            var products = cogroup.products;
+            for (var i=0; i<products.length; i=i+1) {
+                if (products[i].json === null) {
+                    products[i].json = {rank: i};
+                    products[i].save(function (err, prod) {
+                        console.log('Save Prod Rank:', prod.inventory_name, prod.json.rank);
+                    });
+                } else if (products[i].json.rank === undefined) {
+                    products[i].json.rank = i;
+                    products[i].save(function (err, prod) {
+                        console.log('Save Prod Rank:', prod.inventory_name, prod.json.rank);
+                    });
+                }
+            }
+            // Sort products by rank
+            products.sort(function (a, b) {return a.json.rank - b.json.rank});
 
             res.view({ 
                 cogroup: cogroup,
                 contacts: cogroup.contacts,
-                products: cogroup.products
+                products: products
             });
         });
     },
