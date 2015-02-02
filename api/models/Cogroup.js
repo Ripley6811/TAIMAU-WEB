@@ -43,6 +43,10 @@ module.exports = {
         products: {
             collection: 'product',
             via: 'group'
+        },
+        orders: {
+            collection: 'order',
+            via: 'group'
         }
     }
 };

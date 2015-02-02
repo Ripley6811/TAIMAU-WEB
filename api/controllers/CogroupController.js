@@ -18,14 +18,18 @@ module.exports = {
             findParams.where = { is_customer: true };
         }
         Cogroup.find(findParams)
-            .populate('branches')
-            .exec(function (err, cogroups) {
-                if (err) res.json({
-                    error: err.message
-                }, 400);
+        .populate('branches')
+        .populate('orders')
+        .exec(function (err, cogroups) {
+            if (err) res.json({
+                error: err.message
+            }, 400);
+            
+            // Sort by the number of attached order records.
+            cogroups.sort(function(a, b) {return b.orders.length - a.orders.length})
 
-                res.view({ cogroups: cogroups });
-            });
+            res.view({ cogroups: cogroups });
+        });
     },
 	
     'new': function (req, res) {
