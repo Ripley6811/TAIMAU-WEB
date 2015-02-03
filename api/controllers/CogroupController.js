@@ -92,7 +92,7 @@ module.exports = {
         });
         
     },
-    
+    // Obsolete??
     toggle: function(req, res) {
         var name = req.param('cogroup'),
             toggle = req.param('toggle');
@@ -144,6 +144,22 @@ module.exports = {
                     });
                 }
             });
+    },
+    // Return a cogroup record.
+    get: function (req, res, next) {
+        var name = req.param('id');
+        Cogroup.findOne(name, function (err, cogroup) {
+            res.send(cogroup);
+        });
+    },
+    // Update record from parameter.
+    update: function (req, res, next) {
+        var updateObject = req.param('cogroup_update');
+        
+        Cogroup.update({name: updateObject.name}, updateObject)
+        .exec(function (err, cogroup) {
+            res.send(cogroup);
+        });
     }
 };
 

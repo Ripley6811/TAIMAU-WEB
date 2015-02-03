@@ -107,27 +107,24 @@ module.exports = {
             deleteIDs = req.param('deleteIDs');
         
         for (var i=0; i<contactList.length; i++) {
-            if (contactList[i].id === null) {
-                // Add new contact to database.
-                Contact.create(contactList[i])
-                .exec(function (err, contact) {
-                    console.log(err, contact);
-                });
-                    
-            } else {
-                // Update contact in database.
-                Contact.update(contactList[i].id, contactList[i])
-                .exec(function (err, contact) {
-                    console.log(err, contact);
-                });
-            }
+            // Update contact in database.
+            Contact.update({id: contactList[i].id, group: co_name}, contactList[i])
+            .exec(function (err, contact) {
+                console.log('CONTACT UPDATE:', err, contact);
+            });
+            // Add contact to database if it doesn't exist.
+            Contact.findOrCreate({id: contactList[i].id, group: co_name}, contactList[i])
+            .exec(function (err, contact) {
+                console.log('CONTACT FINDorCREATE:', err, contact);
+            });
         }
-        if (deleteIDs instanceof Array) {
+        if (deleteIDs instanceof Array && deleteIDs.length > 0) {
             for (var i=0; i<deleteIDs.length; i++) {
                 if (!isNaN(parseInt(deleteIDs[i]))) {
                     // Delete contact from database.
-                    Contact.destroy(deleteIDs[i], function (err, contact) {
-                        console.log(err, 'DESTROYED', contact);
+                    Contact.destroy({id: deleteIDs[i], group: co_name})
+                    .exec(function (err, contact) {
+                        console.log('CONTACT DESTROY:', err, contact);
                     });
                 }
             }

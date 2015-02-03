@@ -6,27 +6,16 @@
     <div class="row text-center">
         <div class="col-md-4 h1 text-center">
             <div class="row">
-            <strong><%= cogroup.name %></strong><font color="lightgrey">(公司)</font>
+                <strong data-bind="text: co_name"></strong>
+                <font color="lightgrey">(公司)</font>
             </div>
             <div class="row">
                 <form action="/cogroup/toggle" method="post"><input type="hidden" name="_csrf" value="<%= _csrf %>" />
                     <input type="hidden" name="cogroup" value="<%= cogroup.name %>">
                     <input type="hidden" name="back" value="/cogroup/show/<%= cogroup.name %>">
                     <div class="btn-group">
-                    <button type="submit" name="toggle" value="supplier" class=
-                                    <% if (cogroup.is_supplier) { %>
-                                    "glyphicon glyphicon-ok btn btn-success"
-                                    <% } else { %>
-                                    "glyphicon glyphicon-remove btn btn-danger"
-                                    <% } %>
-                        > 供應商</button>
-                    <button type="submit" name="toggle" value="customer" class=
-                                    <% if (cogroup.is_customer) { %>
-                                    "glyphicon glyphicon-ok btn btn-success"
-                                    <% } else { %>
-                                    "glyphicon glyphicon-remove btn btn-danger"
-                                    <% } %>
-                        > 客戶</button>
+                        <button data-bind="click: toggleSupplier, attr: {'class': supplierStatus}"> 供應商</button>
+                        <button data-bind="click: toggleCustomer, attr: {'class': customerStatus}"> 客戶</button>
                     </div>
                 </form>
             </div>
@@ -55,35 +44,50 @@
     
     <h2>分公司</h2>
 <table class="table table-condensed">
-    <thead class="text-uppercase"><tr>
-        <th>縮寫</th>
-        <th>名稱</th>
-        <th>統一編號</th>
-        <th>電話</th>
-        <th>傳真</th>
-        <th>辦公室地址</th>
-        <th>備註</th>
-        <th></th>
-    </tr></thead>
-    <tbody>
-    <% cogroup.branches.forEach(function(branch) { %>
+    <thead class="text-uppercase">
         <tr>
-            <td><%= branch.name %></td>
-            <td><%= branch.fullname %></td>
-            <td><%= branch.tax_id %></td>
-            <td><%= branch.phone %></td>
-            <td><%= branch.fax %></td>
-            <td><%= branch.address_office %></td>
-            <td><%= branch.note %></td>
-                <td><a href="/branch/edit/<%= branch.name %>" class="btn btn-xs btn-custom">Edit</a>
-                </td>
+            <th>縮寫</th>
+            <th>名稱 / 統一編號</th>
+            <th>電話 / 傳真</th>
+            <th>地址 (辦公室 / 運輸 / 發票)</th>
+            <th>備註</th>
+            <th></th>
         </tr>
-    <% }); %>
+    </thead>
+    <tbody data-bind="foreach: branches">
+        <tr>
+            <td><input size="4" placeholder="name" data-bind="value: name, disable: saved"></td>
+            <td style="width: 20%">
+                <input placeholder="full name" style="width: 100%;" data-bind="value: fullname">
+                <br>
+                <input size="6" placeholder="tax id" data-bind="value: tax_id">
+            </td>
+            <td style="width: 20%">
+                <input placeholder="phone" style="width: 100%;" data-bind="value: phone">
+                <br>
+                <input placeholder="fax" style="width: 100%;" data-bind="value: fax">
+            </td>
+            <td style="width: 30%">
+                <input placeholder="office address" style="width: 100%;" data-bind="value: address_office">
+                <br>
+                <input placeholder="shipping address" style="width: 100%;" data-bind="value: address_shipping">
+                <br>
+                <input placeholder="billing address" style="width: 100%;" data-bind="value: address_billing">
+            </td>
+            <td style="width: 25%">
+                <textarea rows="3" placeholder="note" style="width: 100%;" data-bind="value: note"></textarea>
+            </td>
+            <td>
+                <button class="btn btn-xs btn-danger" data-bind="click: $parent.removeBranch">刪除</button>
+            </td>
+        </tr>
         </tbody>
 </table>
     
     
-	<a class="btn btn-medium btn-primary" href="/branch/new/<%= cogroup.name %>">Add branch</a>
+<!--	<a class="btn btn-medium btn-primary" href="/branch/new/<%= cogroup.name %>">Add branch</a>-->
+    <button class="btn btn-medium btn-primary" data-bind="click: addBranch">Add branch</button>
+    <button class="btn btn-medium btn-primary" data-bind="click: saveBranches"><span data-bind="text: saveMessage"></span></button>
     
     
     
@@ -103,11 +107,12 @@
                 <th>傳真</th>
                 <th>Email</th>
                 <th>備註</th>
+                <th>刪除</th>
             </tr>
         </thead>
         <tbody data-bind="foreach: contacts">
             <tr>
-                <td><select data-bind="options: branchOptions, value: branch"></select></td>
+                <td><select data-bind="options: $root.branchOptions, value: branch"></select></td>
                 <td><input size="5" placeholder="position" data-bind="value: position"></td>
                 <td><input size="4" placeholder="name" data-bind="value: name"></td>
 <!--                <td><input data-bind="value: branch"></td>-->
@@ -249,16 +254,47 @@
 </div>
 
 <script>
+var cogroup = <%- JSON.stringify(cogroup) %>;
 var co_name = '<%= cogroup.name %>';
-var db_contacts = <%- JSON.stringify(cogroup.contacts) %>;
-var db_branches = <%- JSON.stringify(cogroup.branches) %>;
 var _csrf = '<%= _csrf %>';
+
+function KO_Cogroup(data) {
+    var self = this,
+        data = data || {};
+    
+    self.name = ko.observable(data.name); // ID - Primary Key
+    self.is_active = ko.observable(data.is_active);
+    self.is_supplier = ko.observable(data.is_supplier);
+    self.is_customer = ko.observable(data.is_customer);
+}
+
+function KO_Branch(data) {
+    var self = this,
+        data = data || {};
+    
+    self.name = ko.observable(data.name || null); // ID - Primary Key
+    self.group = ko.observable(data.group || '<%= cogroup.name %>');
+    self.fullname = ko.observable(data.fullname || '');
+    self.english_name = ko.observable(data.english_name || '');
+    self.tax_id = ko.observable(data.tax_id || '');
+    self.phone = ko.observable(data.phone || '');
+    self.fax = ko.observable(data.fax || '');
+    self.email = ko.observable(data.email || '');
+    self.note = ko.observable(data.note || '');
+    self.address_office = ko.observable(data.address_office || '');
+    self.address_shipping = ko.observable(data.address_shipping || '');
+    self.address_billing = ko.observable(data.address_billing || '');
+    self.address = ko.observable(data.address || '');
+    self.is_active = ko.observable(data.is_active === undefined ? true : data.is_active);
+    
+    self.saved = self.name() !== null ? true : false;
+}
 
 function KO_Contact(data) {
     var self = this,
         data = data || {};
     
-    self.id = ko.observable(data.id || null);
+    self.id = ko.observable(data.id || null); // ID - Primary Key
     self.group = ko.observable(data.group || '<%= cogroup.name %>');
     self.branch = ko.observable(data.branch || '');
     self.name = ko.observable(data.name || '');
@@ -267,24 +303,184 @@ function KO_Contact(data) {
     self.fax = ko.observable(data.fax || '');
     self.email = ko.observable(data.email || '');
     self.note = ko.observable(data.note || '');
+}
+
+function KO_Product(data) {
+    var self = this,
+        data = data || {};
     
-    self.delete = false;
-    
-    // Branch name options for select list.
-    self.branchOptions = [];
-    for (var branch in db_branches) {
-        self.branchOptions.push(db_branches[branch].name);
-    }
-    
-//    self.debug = ko.computed( function() {
-//        console.log(self.name(), self);
-//    });
+    self.MPN = ko.observable(data.MPN || null); // ID - Primary Key
+    self.group = ko.observable(data.group || '<%= cogroup.name %>');
+    self.product_label = ko.observable(data.product_label || '');
+    self.inventory_name = ko.observable(data.inventory_name || '');
+    self.english_name = ko.observable(data.english_name || '');
+    self.units = ko.observable(data.units || '');
+    self.UM = ko.observable(data.UM || '');
+    self.SKU = ko.observable(data.SKU || '');
+    self.SKUlong = ko.observable(data.SKUlong || '');
+    self.note = ko.observable(data.note || '');
+    self.curr_price = ko.observable(data.curr_price || '');
+    self.unitpriced = ko.observable(data.unitpriced === undefined ? false : data.unitpriced);
+    self.is_supply = ko.observable(data.is_supply === undefined ? false : data.is_supply);
+    self.discontinued = ko.observable(data.discontinued === undefined ? false : data.discontinued);
 }
 
 function PageModel() {
     var self = this;
     
-    self.saveMessage = ko.observable('Save');
+    // Branch name options for select list.
+    self.branchOptions = ko.observableArray();
+    
+    
+    
+    
+    /**
+     * COGROUP section controls
+     * 
+     * 
+     */
+    self.cogroup = new KO_Cogroup(cogroup);
+    
+    self.supplierStatus = ko.computed(function () {
+        return self.cogroup.is_supplier() === true ? "glyphicon glyphicon-ok btn btn-success" : "glyphicon glyphicon-remove btn btn-danger";
+    });
+    
+    self.customerStatus = ko.computed(function () {
+        return self.cogroup.is_customer() === true ? "glyphicon glyphicon-ok btn btn-success" : "glyphicon glyphicon-remove btn btn-danger";
+    });
+    
+    self.toggleCustomer = function () {
+        self.cogroup.is_customer(!self.cogroup.is_customer());
+        self.cogroupUpdate();
+    };
+    self.toggleSupplier = function () {
+        self.cogroup.is_supplier(!self.cogroup.is_supplier());
+        self.cogroupUpdate();
+    };
+                
+    self.cogroupUpdate = function () {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState !== 4) return;
+            
+        };
+        xmlhttp.open('POST', '/cogroup/update', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON({
+            _csrf: _csrf, 
+            cogroup_update: self.cogroup
+        }));
+    };
+    
+    
+    
+    /**
+     * BRANCH section controls
+     * 
+     * 
+     */
+    self.branches = ko.observableArray();
+    self.branchDeleteIDs = ko.observableArray();
+    self.addBranch = function() {
+        self.branches.push(new KO_Branch());
+    };
+    self.removeBranch = function(branch) {
+        /**
+         * !! BUG: This is tricky, a new unsaved name could be added that exists
+         * in the database and then if deleted before adding could delete another 
+         * existing record. Need to be careful with overwriting existing records.
+         * But any attached records will prevent an existing record from being
+         * deleted.
+         */ 
+        if (branch.name() !== null && branch.name() !== '') {
+            self.branchDeleteIDs.push(branch.name());
+        }
+        self.branches.remove(branch);
+    };
+    
+    self.getBranches = function () {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState !== 4) return;
+            
+            var db_branches = JSON.parse(xmlhttp.response);
+            
+            self.branches.removeAll();
+            self.branchDeleteIDs.removeAll();
+            self.branchOptions.removeAll();
+            for (var i=0; i<db_branches.length; i++) {
+                self.branches.push(new KO_Branch(db_branches[i]));
+                self.branchOptions.push(db_branches[i].name);
+            }
+            // Refresh Contacts so that the correct branch is set.
+            self.getContacts();
+        };
+        xmlhttp.open('POST', '/branch/branchList', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON({
+            _csrf: _csrf, 
+            id: co_name
+        }));
+    };
+    
+    self.saveBranches = function() {
+        // Check that all branch names are unique to preventing overwriting.
+        function all_branch_names_are_unique() {
+            var checklist = [];
+            for (var i in self.branches()) {
+                if (checklist.indexOf(self.branches()[i].name()) !== -1) {
+                    return false;
+                }
+                checklist.push(self.branches()[i].name());
+            }
+            return true;
+        }
+           
+        if (!all_branch_names_are_unique()) {
+            console.log('Branch names are not unique!');
+            return false;
+        }
+        
+        // Temporarily change save button message and prevent multiple clicks.
+        if (self.saveMessage() === 'Save Changes') {
+            self.saveMessage('Please wait ...');   
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                    setTimeout(function(){
+                        // Reset save button message.
+                        self.getBranches();
+                    }, 100);
+                    setTimeout(function(){
+                        // Reset save button message.
+                        self.saveMessage('Save Changes');
+                    }, 500);
+                }
+            };
+            xmlhttp.open('POST', '/branch/merge', true);
+            xmlhttp.setRequestHeader('Content-type', 'application/json');
+            xmlhttp.send(ko.toJSON({
+                _csrf: _csrf, 
+                id: co_name, 
+                branchList: self.branches,
+                branchDeleteIDs: self.branchDeleteIDs,
+            }));
+        }
+    };
+    
+    self.getBranches();
+    
+    
+    
+    
+    
+    /**
+     * CONTACT section controls
+     * 
+     * 
+     */
+    // Save button text
+    self.saveMessage = ko.observable('Save Changes');
     
     self.contacts = ko.observableArray();
     self.deleteIDs = ko.observableArray();
@@ -292,7 +488,7 @@ function PageModel() {
         self.contacts.push(new KO_Contact());
     };
     self.removeContact = function(contact) {
-        if (contact.id !== null) {
+        if (contact.id !== null && contact.id !== '') {
             self.deleteIDs.push(contact.id);
         }
         self.contacts.remove(contact);
@@ -300,7 +496,7 @@ function PageModel() {
     
     self.saveContacts = function() {
         // Temporarily change save button message and prevent multiple clicks.
-        if (self.saveMessage() === 'Save') {
+        if (self.saveMessage() === 'Save Changes') {
             self.saveMessage('Please wait ...');   
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function() {
@@ -308,7 +504,7 @@ function PageModel() {
                     self.getContacts();
                     setTimeout(function(){
                         // Reset save button message.
-                        self.saveMessage('Save');
+                        self.saveMessage('Save Changes');
                     }, 500);
                 }
             };
@@ -321,8 +517,6 @@ function PageModel() {
                 deleteIDs: self.deleteIDs,
             }));
         }
-        
-//        
     };
     
     self.getContacts = function () {
@@ -333,6 +527,7 @@ function PageModel() {
             var db_contacts = JSON.parse(xmlhttp.response);
             
             self.contacts.removeAll();
+            self.deleteIDs.removeAll();
             for (var i=0; i<db_contacts.length; i++) {
                 self.contacts.push(new KO_Contact(db_contacts[i]));
             }
@@ -346,6 +541,13 @@ function PageModel() {
     };
     
     self.getContacts();
+    
+    
+    /**
+     * PRODUCT section controls
+     * 
+     * 
+     */
 }
 
 ko.applyBindings(new PageModel());

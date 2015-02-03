@@ -160,6 +160,47 @@ module.exports = {
                     }
                 });
             });
+    },
+    // Process updates, creation and deletions from "cogroup/show" page.
+    merge: function (req, res, next) {
+        console.log('BRANCHES MERGE:\n', req.params.all());
+        var co_name = req.param('id'),
+            branchList = req.param('branchList'),
+            deleteIDs = req.param('branchDeleteIDs');
+        
+        for (var i=0; i<branchList.length; i++) {
+            Branch.update({name: branchList[i].name, group: co_name}, branchList[i])
+            .exec(function (err, record) {
+                console.log('BRANCH UPDATE', i, err, record);
+            });
+            // Find or create branch in database or create.
+            Branch.findOrCreate({name: branchList[i].name, group: co_name}, branchList[i])
+            .exec(function (err, newRecord) {
+                console.log('BRANCH FINDorCREATE:', i, err, newRecord);
+            });
+        }
+        if (deleteIDs instanceof Array && deleteIDs.length > 0) {
+            for (var i=0; i<deleteIDs.length; i++) {
+                if (deleteIDs[i].length > 0) {
+                    // Delete branch from database.
+                    Branch.destroy({name: deleteIDs[i], group: co_name})
+                    .exec(function (err, branch) {
+                        console.log('BRANCH DESTROY:', err, branch);
+                    });
+                }
+            }
+        }
+        
+        res.send(true);
+    },
+    
+    branchList: function (req, res, next) {
+        var co_name = req.param('id');
+        
+        Branch.find({group: co_name}, function (err, branches) {
+//            console.log(err, contacts);
+            res.send(branches);
+        });
     }
 
 };
