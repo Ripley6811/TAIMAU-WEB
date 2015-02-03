@@ -212,75 +212,27 @@ module.exports = {
             }
         });
     },
-    
-    up: function (req, res) {
-//        console.log('UP:\n', req.params.all());
-        var sel_MPN = req.param('id'),
-            co_name = req.param('cogroup');
-        Cogroup.findOne(co_name)
-        .populate('products')
-        .exec(function (err, cogroup) {
-            var products = cogroup.products,
-                oldRank = null,
-                newRank = null;
-            for (var i=0; i<products.length; i++) {
-                if (products[i].MPN === sel_MPN) {
-                    oldRank = products[i].json.rank;
-                    newRank = Math.max(parseInt(oldRank) - 1, 0);
-                    break;
-                }
-            }
-            for (var i=0; i<products.length; i++) {
-                if (products[i].json.rank === newRank) {
-                    products[i].json.rank = oldRank;
-                    products[i].save(function (err, prod) {});
-                    break;
-                }
-            }
-            for (var i=0; i<products.length; i++) {
-                if (products[i].MPN === sel_MPN) {
-                    products[i].json.rank = newRank;
-                    products[i].save(function (err, prod) {});
-                    break;
-                }
-            }
-            res.redirect('/cogroup/show/' + co_name);
+    // Retrieve all products for a company.
+    get: function (req, res, next) {
+        var co_name = req.param('id');
+        Product.find({group: co_name}, function (err, products) {
+            res.send(products);
         });
     },
     
-    down: function (req, res) {
-//        console.log('DOWN:\n', req.params.all());
-        var sel_MPN = req.param('id'),
-            co_name = req.param('cogroup');
-        Cogroup.findOne(co_name)
-        .populate('products')
-        .exec(function (err, cogroup) {
-            var products = cogroup.products,
-                oldRank = null,
-                newRank = null;
-            for (var i=0; i<products.length; i++) {
-                if (products[i].MPN === sel_MPN) {
-                    oldRank = products[i].json.rank;
-                    newRank = Math.min(parseInt(oldRank) + 1, products.length - 1);
-                    break;
-                }
+    merge: function (req, res, next) {
+        var co_name = req.param('id'),
+            products = req.param('products');
+        
+        for (var i=0; i<products.length; i++) {
+            if (isNaN(products[i].curr_price) || products[i].curr_price === '') {
+                products[i].curr_price = 0.0;
             }
-            for (var i=0; i<products.length; i++) {
-                if (products[i].json.rank === newRank) {
-                    products[i].json.rank = oldRank;
-                    products[i].save(function (err, prod) {});
-                    break;
-                }
-            }
-            for (var i=0; i<products.length; i++) {
-                if (products[i].MPN === sel_MPN) {
-                    products[i].json.rank = newRank;
-                    products[i].save(function (err, prod) {});
-                    break;
-                }
-            }
-            res.redirect('/cogroup/show/' + co_name);
-        });
+            Product.update({MPN: products[i].MPN, group: co_name}, products[i])
+            .exec(function (err, records) {
+                console.log('PRODUCT UPDATE:', err, records);
+            });
+        }
     }
 };
 

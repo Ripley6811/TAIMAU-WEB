@@ -144,9 +144,18 @@
     <h2>產品/服務</h2>
     
     <form action="/order/new">
+    
+        
+        
+        
+        
+        
+        
+        
+        
 <table class="table table-condensed">
     <thead class="text-uppercase"><tr>
-        <th></th>
+        <th>順序</th>
         <th>選</th>
         <th>內用品名</th>
         <th>標籤品名</th>
@@ -157,91 +166,56 @@
         <th>包裝描述</th>
         <th>備註</th>
         <th>編輯</th>
-        <th>順序</th>
     </tr></thead>
-    <tbody>
-    <% products.forEach(function(product) { %>
+    <tbody data-bind="foreach: products">
         <tr>
             <td>
-                <span class="badge">
-                <% if (product.is_supply === true) { %>
-                <abbr title="買:We buy"><span class="glyphicon glyphicon-arrow-right"></span></abbr>
-                    <% } else { %>
-                    <span class="glyphicon glyphicon-none"></span>
-                    <% } %>
-                <% if (product.discontinued === false) { %>
-                    <span class="glyphicon glyphicon-home"></span>
-                    <% } else { %>
-                    <font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
-                    <% } %>
-                <% if (product.is_supply === false) { %>
-                <abbr title="賣:We sell"><span class="glyphicon glyphicon-arrow-right"></span></abbr>
-                    <% } else { %>
-                    <span class="glyphicon glyphicon-none"></span>
-                    <% } %>
-                    </span>
+                <div class="btn-group btn-group-xs">
+                    <button class="btn btn-xs btn-custom" data-bind="click: $parent.productUpOne"><i class="glyphicon glyphicon-triangle-top"></i></button>
+                    <button class="btn btn-xs btn-custom" data-bind="click: $parent.productDownOne"><i class="glyphicon glyphicon-triangle-bottom"></i></button>
+                </div>
             </td>
             
 <!--        Product Manifest selection    -->
             <td>
-                
-                
-                <% if (product.discontinued === true) { %>
-                <font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
-                <% } else { %>
-                <input type="checkbox" name="product" value="<%= product.MPN %>">
-                <% } %>
+                <input type="checkbox" name="product" data-bind="value: MPN, disable: discontinued">
             </td>
             
             
 <!--        Product inventory name    -->
             <td>
-                <font color=<% if (product.product_label != "") { %>
-                "grey"
-                <% } else { %>
-                "black"
-                <% } %>>
-                <% if (product.MPN != "") { %>
-                    <abbr title="<%= product.MPN %>"><%= product.inventory_name %></abbr>
-                <% } else { %>
-                    <%= product.inventory_name %>
-                <% } %>
-            </font>
+                <font data-bind="style: {color :product_label().length > 0 ? 'grey' : 'black' }">
+                    <abbr data-bind="title: english_name, text: inventory_name"></abbr>
+                </font>
                 
-                <% if (product.discontinued === true) { %>
-                <font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
-                <% } %>
-                
-                <% if (product.orders.length > 0) { %>
-                <a href="/order/show/<%- product.orders[0].id %>" class="btn btn-xs btn-custom">使用中PO</a>
-                <% } %>
+                <font color="red" data-bind="visible: discontinued">
+                    <abbr title="已停用:Not currently used">
+                        <span class="glyphicon glyphicon-ban-circle"></span>
+                    </abbr>
+                </font>
             </td>
-            <td><%= product.product_label %></td>
-            <td><%= product.SKU %><% if (product.unitpriced === false) { %>
-                <span class="badge"><abbr title="Priced by container" class="glyphicon glyphicon-usd"></abbr></span>
-                <% } %></td>
-            <td class="text-right"><%= product.units %></td>
-            <td><%= product.UM %><% if (product.unitpriced === true) { %>
-                <span class="badge"><abbr title="Priced by unit" class="glyphicon glyphicon-usd"></abbr></span>
-                <% } %></td>
-            <td><%= product.SKUlong %></td>
-            <td><%= product.note %></td>
-            
-            
-                <td>
-                    <a href="/product/edit/<%- product.MPN.split('%').join('-percent-') %>" class="btn btn-xs btn-custom">編輯</a>
-                </td>
+            <td data-bind="text: product_label"></td>
+            <td data-bind="text: SKU">
+                <span class="badge" data-bind="visible: unitpriced() === false"><abbr title="Priced by container" class="glyphicon glyphicon-usd"></abbr></span>
+            </td>
+            <td class="text-right" data-bind="text: units"></td>
             <td>
-                <div class="btn-group btn-group-xs">
-                    <a href="/product/up/<%= product.MPN %>?cogroup=<%= cogroup.name %>" class="btn btn-xs btn-custom"><i class="glyphicon glyphicon-triangle-top"></i></a>
-                    <a href="/product/down/<%= product.MPN %>?cogroup=<%= cogroup.name %>" class="btn btn-xs btn-custom"><i class="glyphicon glyphicon-triangle-bottom"></i></a>
-                </div>
+                <span data-bind="text: UM"></span>
+                <span data-bind="visible: unitpriced() === true" class="badge"><abbr title="Priced by unit" class="glyphicon glyphicon-usd"></abbr></span>
             </td>
+            <td data-bind="text: SKUlong"></td>
+            <td data-bind="text: note"></td>
         </tr>
-    <% }); %>
-        </tbody>
+    </tbody>
 </table>
-    
+        
+        
+        
+        
+        
+        
+        
+        
     
     <input type="hidden" name="backlink" value="/cogroup/show/<%= cogroup.name %>" />
 	<a class="btn btn-medium btn-primary" href="/product/new/<%= cogroup.name %>">Add product</a>
@@ -320,9 +294,12 @@ function KO_Product(data) {
     self.SKUlong = ko.observable(data.SKUlong || '');
     self.note = ko.observable(data.note || '');
     self.curr_price = ko.observable(data.curr_price || '');
-    self.unitpriced = ko.observable(data.unitpriced === undefined ? false : data.unitpriced);
+    self.unitpriced = ko.observable(data.unitpriced === undefined ? true : data.unitpriced);
+    // !! Need to add 'unitcounted' to database.
+    self.unitcounted = ko.observable(data.unitcounted === undefined ? true : data.unitcounted);
     self.is_supply = ko.observable(data.is_supply === undefined ? false : data.is_supply);
     self.discontinued = ko.observable(data.discontinued === undefined ? false : data.discontinued);
+    self.json = ko.observable(data.json || {});
 }
 
 function PageModel() {
@@ -548,6 +525,81 @@ function PageModel() {
      * 
      * 
      */
+    self.products = ko.observableArray();
+    self.productsToDelete = ko.observableArray();
+    self.productsGet = function () {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState !== 4) return;
+            
+            var db_products = JSON.parse(xmlhttp.response);
+            
+            self.products.removeAll();
+            self.productsToDelete.removeAll();
+            for (var i=0; i<db_products.length; i++) {
+                self.products.push(new KO_Product(db_products[i]));
+            }
+            self.productsSort();
+        };
+        xmlhttp.open('POST', '/product/get', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON({
+            _csrf: _csrf, 
+            id: co_name
+        }));
+    };
+    
+    self.productsGet();
+    // Sort products by rank value (in json data).
+    self.productsSort = function () {
+        self.products.sort(function (a, b) {
+            return a.json().rank - b.json().rank;
+        });
+    }
+    
+    self.productUpOne = function (prod) {
+        var index = self.products().indexOf(prod);
+        if (index > 0) {
+            var temp = self.products()[index].json().rank;
+            self.products()[index].json().rank = self.products()[index-1].json().rank;
+            self.products()[index-1].json().rank = temp;
+        }
+        self.productsSort();
+        self.productsUpdate(self.products.slice(index-1, index+1));
+    };
+    self.productDownOne = function (prod) {
+        var index = self.products().indexOf(prod);
+        if (index < self.products().length-1) {
+            var temp = self.products()[index].json().rank;
+            self.products()[index].json().rank = self.products()[index+1].json().rank;
+            self.products()[index+1].json().rank = temp;
+        }
+        self.productsSort();
+        self.productsUpdate(self.products.slice(index, index+2));
+    };
+    
+    self.productsUpdate = function (prods) {
+        // Verify product rank numbers and update all products if incorrect.
+        for (var i=0; i<self.products().length; i++) {
+            if (self.products()[i].json().rank !== i) {
+                prods = self.products;
+                self.products()[i].json().rank = i;
+            }
+        }
+        
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState !== 4) return;
+            
+        };
+        xmlhttp.open('POST', '/product/merge', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON({
+            _csrf: _csrf, 
+            id: co_name,
+            products: prods
+        }));
+    };
 }
 
 ko.applyBindings(new PageModel());
