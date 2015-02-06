@@ -65,82 +65,68 @@ module.exports = {
                 res.view({ contact: contact });
             });
     },
-
-    update: function (req, res, next) {
+    /**
+     * Update or create a single record.
+     * @param   {String}   co_name Name of company group.
+     * @param   {Object}   contact Object with contact information.
+     */
+    updateOrCreate: function (req, res, next) {
         // console.log('BRANCH_UPDATE');
-        var id = req.param('id'),
-            updates = {
-                name: req.param('name'),
-                group: req.param('group'),
-                branch: req.param('branch'),
-                position: req.param('position'),
-                phone: req.param('phone'),
-                fax: req.param('fax'),
-                email: req.param('email'),
-                note: req.param('note')
-            };
+        var co_name = req.param('co_name'),
+            contact = req.param('contact');
 
-        Contact.update(id, updates)
-            .exec(function(err, contact) {
-                if (err) return err;
-            
-                req.flash('message', 'Record Updated!');
-                res.redirect('/contact/edit/' + id);
-            });
-    },
-
-    destroy: function (req, res, next) {
-        var delRecord = req.param('id');
-        Contact.destroy(delRecord).exec(function (err, contact) {
-            if (err) res.json({
-                error: err.message
-            }, 400);
-
-            res.redirect('/cogroup/show/' + contact[0].group);
-        });
-    },
-    // Process updates, creation and deletions from "cogroup/show" page.
-    merge: function (req, res, next) {
-        console.log('CONTACTS MERGE:\n', req.params.all());
-        var co_name = req.param('id'),
-            contactList = req.param('contactList'),
-            deleteIDs = req.param('deleteIDs');
-        
-        for (var i=0; i<contactList.length; i++) {
-            // Update contact in database.
-            Contact.update({id: contactList[i].id, group: co_name}, contactList[i])
-            .exec(function (err, contact) {
-                console.log('CONTACT UPDATE:', err, contact);
-            });
-            // Add contact to database if it doesn't exist.
-            Contact.findOrCreate({id: contactList[i].id, group: co_name}, contactList[i])
-            .exec(function (err, contact) {
-                console.log('CONTACT FINDorCREATE:', err, contact);
-            });
-        }
-        if (deleteIDs instanceof Array && deleteIDs.length > 0) {
-            for (var i=0; i<deleteIDs.length; i++) {
-                if (!isNaN(parseInt(deleteIDs[i]))) {
-                    // Delete contact from database.
-                    Contact.destroy({id: deleteIDs[i], group: co_name})
-                    .exec(function (err, contact) {
-                        console.log('CONTACT DESTROY:', err, contact);
-                    });
+        if (contact.id !== null) {
+            Contact.update({id: contact.id, group: co_name}, contact)
+            .exec(function(err, recs) {
+                if (err) {
+                    res.send(false);
+                    return false;
                 }
-            }
+
+                res.send(recs[0]);
+            });
+        } else {
+            Contact.create(contact, function (err, rec) {
+                if (err) {
+                    res.send(false);
+                    return false;
+                }
+
+                res.send(rec);
+            });
         }
+    },
+    /**
+     * Destroy a single record.
+     * @param   {String}   co_name Name of company group.
+     * @param   {String}   id Database id for record.
+     */
+    destroy: function (req, res, next) {
+        var co_name = req.param('co_name'),
+            id = req.param('id');
         
-        res.send(true);
+        Contact.destroy({id: id, group: co_name})
+        .exec(function (err, recs) {
+            if (err) {
+                res.send(false);
+                return false;
+            }
+            
+            res.send(recs[0]);
+        });
     },
     
     contactList: function (req, res, next) {
         var co_name = req.param('id');
         
         Contact.find({group: co_name}, function (err, contacts) {
+            if (err) {
+                res.send(false);
+                return false;
+            }
 //            console.log(err, contacts);
             res.send(contacts);
         });
     }
-    
 };
 

@@ -51,16 +51,21 @@
             <th>電話 / 傳真</th>
             <th>地址 (辦公室 / 運輸 / 發票)</th>
             <th>備註</th>
-            <th></th>
+            <th>修改</th>
         </tr>
     </thead>
     <tbody data-bind="foreach: branches">
         <tr>
-            <td><input size="4" placeholder="name" data-bind="value: name, disable: saved"></td>
+            <td style="width: 8%">
+                <label style="width: 100%;" data-bind="text: name, visible: nameLock()"></label>
+                <input size="4" placeholder="簡寫" data-bind="value: name, visible: !nameLock()">
+            </td>
             <td style="width: 20%">
+                <input size="6" placeholder="tax id" data-bind="value: tax_id">
+                <br>
                 <input placeholder="full name" style="width: 100%;" data-bind="value: fullname">
                 <br>
-                <input size="6" placeholder="tax id" data-bind="value: tax_id">
+                <input placeholder="english name" style="width: 100%;" data-bind="value: english_name">
             </td>
             <td style="width: 20%">
                 <input placeholder="phone" style="width: 100%;" data-bind="value: phone">
@@ -74,20 +79,21 @@
                 <br>
                 <input placeholder="billing address" style="width: 100%;" data-bind="value: address_billing">
             </td>
-            <td style="width: 25%">
+            <td style="width: 22%">
                 <textarea rows="3" placeholder="note" style="width: 100%;" data-bind="value: note"></textarea>
             </td>
             <td>
-                <button class="btn btn-xs btn-danger" data-bind="click: $parent.removeBranch">刪除</button>
+                <div class="btn-group-vertical btn-group-sm">
+                <button class="btn btn-primary" data-bind="click: $parent.saveBranch, disable: saved">保留</button>
+                <button class="btn btn-danger" data-bind="click: $parent.removeBranch, enable: saved">刪除</button>
+                </div>
             </td>
         </tr>
         </tbody>
 </table>
     
     
-<!--	<a class="btn btn-medium btn-primary" href="/branch/new/<%= cogroup.name %>">Add branch</a>-->
     <button class="btn btn-medium btn-primary" data-bind="click: addBranch">Add branch</button>
-    <button class="btn btn-medium btn-primary" data-bind="click: saveBranches"><span data-bind="text: saveMessage"></span></button>
     
     
     
@@ -96,7 +102,6 @@
     
     
     <h2>聯絡人</h2>
-	<% if (cogroup.branches.length > 0) { %>
     <table class="table table-condensed">
         <thead class="text-uppercase">
             <tr>
@@ -107,7 +112,7 @@
                 <th>傳真</th>
                 <th>Email</th>
                 <th>備註</th>
-                <th>刪除</th>
+                <th>修改</th>
             </tr>
         </thead>
         <tbody data-bind="foreach: contacts">
@@ -121,7 +126,10 @@
                 <td style="width: 20%"><input placeholder="email" style="width: 100%;" data-bind="value: email"></td>
                 <td style="width: 25%"><input placeholder="note" style="width: 100%;" data-bind="value: note"></td>
                 <td>
-                    <button class="btn btn-xs btn-danger" data-bind="click: $parent.removeContact">刪除</button>
+                    <div class="btn-group-vertical">
+                    <button class="btn btn-xs btn-primary" data-bind="click: $parent.saveContact, disable: saved">保留</button>
+                    <button class="btn btn-xs btn-danger" data-bind="click: $parent.removeContact, enable: saved">刪除</button>
+                    </div>
                 </td>
             </tr>
         </tbody>
@@ -129,11 +137,7 @@
     
     
     <button class="btn btn-medium btn-primary" data-bind="click: addContact">Add contact</button>
-    <button class="btn btn-medium btn-primary" data-bind="click: saveContacts"><span data-bind="text: saveMessage"></span></button>
-<!--	<a class="btn btn-medium btn-primary" href="/contact/new/<%= cogroup.name %>">Add contact</a>-->
-    <% } else { %>
-    <h3><span class="label label-primary">先添加一家分公司</span></h3>
-    <% } %>
+
     
     
     
@@ -154,57 +158,89 @@
         
         
 <table class="table table-condensed">
-    <thead class="text-uppercase"><tr>
-        <th>順序</th>
-        <th>選</th>
-        <th>內用品名</th>
-        <th>標籤品名</th>
-        <th><abbr title="桶, 包, 瓶, 等...">容器</abbr></th>
-        <th><abbr title="# of kg, L, gal per container">容量</abbr></th>
-        <th><abbr title="kg, L, gal, etc.">單位</abbr></th>
-<!--        <th><abbr title="Price by container or volume?">價格單位</abbr></th>-->
-        <th>包裝描述</th>
-        <th>備註</th>
-        <th>編輯</th>
-    </tr></thead>
-    <tbody data-bind="foreach: products">
+    <thead class="text-uppercase">
         <tr>
+            <th>順序</th>
+            <th></th>
+            <th>品名 (內用 / 客戶用)</th>
+            <th>
+                <abbr title="# of kg, L, gal per container">容量</abbr>
+                <abbr title="kg, L, gal, etc.">單位</abbr>
+            </th>
+            <th><abbr title="桶, 包, 瓶, 等...">容器</abbr></th>
+            <th>英文品名 / 包裝描述</th>
+    <!--        <th><abbr title="Price by container or volume?">價格單位</abbr></th>-->
+            <th>備註</th>
+            <th>修改</th>
+        </tr>
+    </thead>
+    <tbody data-bind="foreach: products">
+        <tr data-bind="style: {'background-color': discontinued() ? 'pink' : null}">
             <td>
-                <div class="btn-group btn-group-xs">
-                    <button class="btn btn-xs btn-custom" data-bind="click: $parent.productUpOne"><i class="glyphicon glyphicon-triangle-top"></i></button>
-                    <button class="btn btn-xs btn-custom" data-bind="click: $parent.productDownOne"><i class="glyphicon glyphicon-triangle-bottom"></i></button>
+                <div class="btn-group-vertical btn-group-sm">
+                    <button class="btn btn-custom" data-bind="click: $parent.productUpOne"><i class="glyphicon glyphicon-triangle-top"></i></button>
+                    <button class="btn btn-custom" data-bind="click: $parent.productDownOne"><i class="glyphicon glyphicon-triangle-bottom"></i></button>
                 </div>
             </td>
             
-<!--        Product Manifest selection    -->
+<!--        Product Manifest Availability    -->
             <td>
-                <input type="checkbox" name="product" data-bind="value: MPN, disable: discontinued">
-            </td>
-            
-            
-<!--        Product inventory name    -->
-            <td>
-                <font data-bind="style: {color :product_label().length > 0 ? 'grey' : 'black' }">
-                    <abbr data-bind="title: english_name, text: inventory_name"></abbr>
-                </font>
-                
                 <font color="red" data-bind="visible: discontinued">
                     <abbr title="已停用:Not currently used">
                         <span class="glyphicon glyphicon-ban-circle"></span>
                     </abbr>
                 </font>
+                <div data-bind="visible: !locked()">
+                    <label><input type="radio" name="a" data-bind="checked: is_supply, checkedValue: true">進貨</label>
+                    <label><input type="radio" name="a" data-bind="checked: is_supply, checkedValue: false">出貨</label>
+                </div>
             </td>
-            <td data-bind="text: product_label"></td>
-            <td data-bind="text: SKU">
-                <span class="badge" data-bind="visible: unitpriced() === false"><abbr title="Priced by container" class="glyphicon glyphicon-usd"></abbr></span>
+            
+            
+<!--        Product inventory name    -->
+            <td style="width: 18%">
+                <input placeholder="內用" style="width: 100%;" data-bind="value: inventory_name">
+                <input placeholder="標籤(選修的)" style="width: 100%;" data-bind="value: product_label">
             </td>
-            <td class="text-right" data-bind="text: units"></td>
+            <td class="text-center">
+                <span data-bind="text: units, visible: locked()"></span>
+                <input size="2" placeholder="#" data-bind="value: units, visible: !locked()">
+                <span data-bind="text: UM, visible: locked()"></span>
+                <input size="3" placeholder="kg, L, ..." data-bind="value: UM, visible: !locked()">
+                <br>
+                <span data-bind="visible: unitpriced() && locked()" class="badge"><abbr title="Priced by unit" class="glyphicon glyphicon-usd"></abbr></span>
+                <div data-bind="visible: !locked()">
+                    <label><input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: false">用包裝價格</label>
+                    <label><input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: true">用單位價格</label>
+                </div>
+            </td>
+            <td class="text-center">
+                <span data-bind="text: SKU, visible: locked()"></span>
+                <input size="4" placeholder="槽車,桶,包,..." data-bind="value: SKU, visible: !locked()">
+                <br>
+                <span class="badge" data-bind="visible: !unitpriced() && locked()"><abbr title="Priced by container" class="glyphicon glyphicon-usd"></abbr></span>
+
+                <div data-bind="visible: !locked()">
+                    <label><input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: false">用包裝件數</label>
+                    <label><input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: true">用單位件數</label>
+                </div>
+            </td>
+            <td style="width: 20%">
+                <input placeholder="英文品名" style="width: 100%;" data-bind="value: english_name">
+                <input placeholder="包裝描述" style="width: 100%;" data-bind="value: SKUlong">
+            </td>
+            <td style="width: 25%">
+                <input placeholder="note" style="width: 100%;" data-bind="value: note">
+                <input placeholder="PN (ASE)" style="width: 49%;" data-bind="value: ASE_PN">
+                <input placeholder="RT (ASE)" style="width: 49%;" data-bind="value: ASE_RT">
+            </td>
+            
             <td>
-                <span data-bind="text: UM"></span>
-                <span data-bind="visible: unitpriced() === true" class="badge"><abbr title="Priced by unit" class="glyphicon glyphicon-usd"></abbr></span>
+                <div class="btn-group-vertical btn-group-sm">
+                <button class="btn btn-primary" data-bind="click: $parent.saveProduct, disable: saved">保留</button>
+                <button class="btn btn-danger" data-bind="click: $parent.removeProduct, enable: saved">刪除</button>
+                </div>
             </td>
-            <td data-bind="text: SKUlong"></td>
-            <td data-bind="text: note"></td>
         </tr>
     </tbody>
 </table>
@@ -213,14 +249,7 @@
         
         
         
-        
-        
-        
-    
-    <input type="hidden" name="backlink" value="/cogroup/show/<%= cogroup.name %>" />
-	<a class="btn btn-medium btn-primary" href="/product/new/<%= cogroup.name %>">Add product</a>
-	<a id="CreatePO"></a><input type="submit" class="btn btn-medium btn-primary" name="make_po" value="Create PO">
-	<input type="submit" class="btn btn-medium btn-primary" name="make_shipment" value="Create Shipment Without PO">
+    <button class="btn btn-medium btn-primary" data-bind="enable: productsAllSaved(), click: addProduct">Add product</button>
     
     </form>
     
@@ -231,76 +260,6 @@
 var cogroup = <%- JSON.stringify(cogroup) %>;
 var co_name = '<%= cogroup.name %>';
 var _csrf = '<%= _csrf %>';
-
-function KO_Cogroup(data) {
-    var self = this,
-        data = data || {};
-    
-    self.name = ko.observable(data.name); // ID - Primary Key
-    self.is_active = ko.observable(data.is_active);
-    self.is_supplier = ko.observable(data.is_supplier);
-    self.is_customer = ko.observable(data.is_customer);
-}
-
-function KO_Branch(data) {
-    var self = this,
-        data = data || {};
-    
-    self.name = ko.observable(data.name || null); // ID - Primary Key
-    self.group = ko.observable(data.group || '<%= cogroup.name %>');
-    self.fullname = ko.observable(data.fullname || '');
-    self.english_name = ko.observable(data.english_name || '');
-    self.tax_id = ko.observable(data.tax_id || '');
-    self.phone = ko.observable(data.phone || '');
-    self.fax = ko.observable(data.fax || '');
-    self.email = ko.observable(data.email || '');
-    self.note = ko.observable(data.note || '');
-    self.address_office = ko.observable(data.address_office || '');
-    self.address_shipping = ko.observable(data.address_shipping || '');
-    self.address_billing = ko.observable(data.address_billing || '');
-    self.address = ko.observable(data.address || '');
-    self.is_active = ko.observable(data.is_active === undefined ? true : data.is_active);
-    
-    self.saved = self.name() !== null ? true : false;
-}
-
-function KO_Contact(data) {
-    var self = this,
-        data = data || {};
-    
-    self.id = ko.observable(data.id || null); // ID - Primary Key
-    self.group = ko.observable(data.group || '<%= cogroup.name %>');
-    self.branch = ko.observable(data.branch || '');
-    self.name = ko.observable(data.name || '');
-    self.position = ko.observable(data.position || '');
-    self.phone = ko.observable(data.phone || '');
-    self.fax = ko.observable(data.fax || '');
-    self.email = ko.observable(data.email || '');
-    self.note = ko.observable(data.note || '');
-}
-
-function KO_Product(data) {
-    var self = this,
-        data = data || {};
-    
-    self.MPN = ko.observable(data.MPN || null); // ID - Primary Key
-    self.group = ko.observable(data.group || '<%= cogroup.name %>');
-    self.product_label = ko.observable(data.product_label || '');
-    self.inventory_name = ko.observable(data.inventory_name || '');
-    self.english_name = ko.observable(data.english_name || '');
-    self.units = ko.observable(data.units || '');
-    self.UM = ko.observable(data.UM || '');
-    self.SKU = ko.observable(data.SKU || '');
-    self.SKUlong = ko.observable(data.SKUlong || '');
-    self.note = ko.observable(data.note || '');
-    self.curr_price = ko.observable(data.curr_price || '');
-    self.unitpriced = ko.observable(data.unitpriced === undefined ? true : data.unitpriced);
-    // !! Need to add 'unitcounted' to database.
-    self.unitcounted = ko.observable(data.unitcounted === undefined ? true : data.unitcounted);
-    self.is_supply = ko.observable(data.is_supply === undefined ? false : data.is_supply);
-    self.discontinued = ko.observable(data.discontinued === undefined ? false : data.discontinued);
-    self.json = ko.observable(data.json || {});
-}
 
 function PageModel() {
     var self = this;
@@ -357,22 +316,55 @@ function PageModel() {
      * 
      */
     self.branches = ko.observableArray();
-    self.branchDeleteIDs = ko.observableArray();
     self.addBranch = function() {
-        self.branches.push(new KO_Branch());
+        var newBranch = new KO_Branch();
+        newBranch.group(co_name);
+        newBranch.nameLock(false);
+        newBranch.saved(false);
+        self.branches.push(newBranch);
     };
     self.removeBranch = function(branch) {
-        /**
-         * !! BUG: This is tricky, a new unsaved name could be added that exists
-         * in the database and then if deleted before adding could delete another 
-         * existing record. Need to be careful with overwriting existing records.
-         * But any attached records will prevent an existing record from being
-         * deleted.
-         */ 
-        if (branch.name() !== null && branch.name() !== '') {
-            self.branchDeleteIDs.push(branch.name());
-        }
-        self.branches.remove(branch);
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                var response = JSON.parse(xmlhttp.response);
+                console.log(typeof response, response);
+                if (response !== false && response.group === co_name) {
+                    branch.name(null);
+                    branch.saved(false);
+                    self.branches.remove(branch);
+                }
+            }
+        };
+        xmlhttp.open('POST', '/branch/destroy', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON({
+            _csrf: _csrf, 
+            co_name: co_name, 
+            name: branch.name
+        }));
+    };
+    
+    self.saveBranch = function(branch) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                var response = JSON.parse(xmlhttp.response);
+                console.log(typeof response, response);
+                if (response !== false && response.group === co_name) {
+                    branch.name(response.name);
+                    branch.saved(true);
+                    branch.nameLock(true);
+                }
+            }
+        };
+        xmlhttp.open('POST', '/branch/updateOrCreate', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON({
+            _csrf: _csrf, 
+            co_name: co_name, 
+            branch: branch
+        }));
     };
     
     self.getBranches = function () {
@@ -383,7 +375,6 @@ function PageModel() {
             var db_branches = JSON.parse(xmlhttp.response);
             
             self.branches.removeAll();
-            self.branchDeleteIDs.removeAll();
             self.branchOptions.removeAll();
             for (var i=0; i<db_branches.length; i++) {
                 self.branches.push(new KO_Branch(db_branches[i]));
@@ -400,50 +391,6 @@ function PageModel() {
         }));
     };
     
-    self.saveBranches = function() {
-        // Check that all branch names are unique to preventing overwriting.
-        function all_branch_names_are_unique() {
-            var checklist = [];
-            for (var i in self.branches()) {
-                if (checklist.indexOf(self.branches()[i].name()) !== -1) {
-                    return false;
-                }
-                checklist.push(self.branches()[i].name());
-            }
-            return true;
-        }
-           
-        if (!all_branch_names_are_unique()) {
-            console.log('Branch names are not unique!');
-            return false;
-        }
-        
-        // Temporarily change save button message and prevent multiple clicks.
-        if (self.saveMessage() === 'Save Changes') {
-            self.saveMessage('Please wait ...');   
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange = function() {
-                if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-                    setTimeout(function(){
-                        // Reset save button message.
-                        self.getBranches();
-                    }, 100);
-                    setTimeout(function(){
-                        // Reset save button message.
-                        self.saveMessage('Save Changes');
-                    }, 500);
-                }
-            };
-            xmlhttp.open('POST', '/branch/merge', true);
-            xmlhttp.setRequestHeader('Content-type', 'application/json');
-            xmlhttp.send(ko.toJSON({
-                _csrf: _csrf, 
-                id: co_name, 
-                branchList: self.branches,
-                branchDeleteIDs: self.branchDeleteIDs,
-            }));
-        }
-    };
     
     self.getBranches();
     
@@ -457,43 +404,54 @@ function PageModel() {
      * 
      */
     // Save button text
-    self.saveMessage = ko.observable('Save Changes');
-    
     self.contacts = ko.observableArray();
-    self.deleteIDs = ko.observableArray();
     self.addContact = function() {
-        self.contacts.push(new KO_Contact());
+        var newContact = new KO_Contact();
+        newContact.group(co_name);
+        self.contacts.push(newContact);
     };
     self.removeContact = function(contact) {
-        if (contact.id !== null && contact.id !== '') {
-            self.deleteIDs.push(contact.id);
-        }
-        self.contacts.remove(contact);
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                var response = JSON.parse(xmlhttp.response);
+                console.log(typeof response, response);
+                if (response !== false && response.group === co_name) {
+                    contact.id(null);
+                    contact.saved(false);
+                    // Optionally remove contact from view.
+//                    self.contacts.remove(contact);
+                }
+            }
+        };
+        xmlhttp.open('POST', '/contact/destroy', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON({
+            _csrf: _csrf, 
+            co_name: co_name, 
+            id: contact.id
+        }));
     };
     
-    self.saveContacts = function() {
-        // Temporarily change save button message and prevent multiple clicks.
-        if (self.saveMessage() === 'Save Changes') {
-            self.saveMessage('Please wait ...');   
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange = function() {
-                if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-                    self.getContacts();
-                    setTimeout(function(){
-                        // Reset save button message.
-                        self.saveMessage('Save Changes');
-                    }, 500);
+    self.saveContact = function(contact) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                var response = JSON.parse(xmlhttp.response);
+                console.log(typeof response, response);
+                if (response !== false && response.group === co_name) {
+                    contact.id(response.id);
+                    contact.saved(true);
                 }
-            };
-            xmlhttp.open('POST', '/contact/merge', true);
-            xmlhttp.setRequestHeader('Content-type', 'application/json');
-            xmlhttp.send(ko.toJSON({
-                _csrf: _csrf, 
-                id: co_name, 
-                contactList: self.contacts,
-                deleteIDs: self.deleteIDs,
-            }));
-        }
+            }
+        };
+        xmlhttp.open('POST', '/contact/updateOrCreate', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON({
+            _csrf: _csrf, 
+            co_name: co_name, 
+            contact: contact
+        }));
     };
     
     self.getContacts = function () {
@@ -504,7 +462,6 @@ function PageModel() {
             var db_contacts = JSON.parse(xmlhttp.response);
             
             self.contacts.removeAll();
-            self.deleteIDs.removeAll();
             for (var i=0; i<db_contacts.length; i++) {
                 self.contacts.push(new KO_Contact(db_contacts[i]));
             }
@@ -520,13 +477,70 @@ function PageModel() {
     self.getContacts();
     
     
+    
     /**
      * PRODUCT section controls
      * 
      * 
      */
     self.products = ko.observableArray();
-    self.productsToDelete = ko.observableArray();
+    self.productsAllSaved = ko.computed(function () {
+        for (var i=0; i<self.products().length; i++) {
+            if (self.products()[i].saved() === false) return false;
+        }
+        return true;
+    });
+    self.addProduct = function() {
+        var newProduct = new KO_Product();
+        newProduct.group(co_name);
+        newProduct.locked(false);
+        newProduct.saved(false);
+        self.products.push(newProduct);
+    };
+    self.removeProduct= function(product) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                var response = JSON.parse(xmlhttp.response);
+                console.log(typeof response, response);
+                if (response !== false && response.group === co_name) {
+                    product.MPN(null);
+                    product.saved(false);
+                    self.products.remove(product);
+                }
+            }
+        };
+        xmlhttp.open('POST', '/product/destroy', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON({
+            _csrf: _csrf, 
+            co_name: co_name, 
+            MPN: product.MPN
+        }));
+    };
+    
+    self.saveProduct = function(product) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                var response = JSON.parse(xmlhttp.response);
+                console.log(typeof response, response);
+                if (response !== false && response.group === co_name) {
+                    product.MPN(response.MPN);
+                    product.saved(true);
+                    product.locked(true);
+                }
+            }
+        };
+        xmlhttp.open('POST', '/product/updateOrCreate', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON({
+            _csrf: _csrf, 
+            co_name: co_name, 
+            product: product
+        }));
+    };
+    
     self.productsGet = function () {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
@@ -535,7 +549,6 @@ function PageModel() {
             var db_products = JSON.parse(xmlhttp.response);
             
             self.products.removeAll();
-            self.productsToDelete.removeAll();
             for (var i=0; i<db_products.length; i++) {
                 self.products.push(new KO_Product(db_products[i]));
             }

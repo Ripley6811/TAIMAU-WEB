@@ -124,83 +124,72 @@ module.exports = {
                 });
         }
     },
-
-    destroy: function (req, res, next) {
-        var qstring = 'SELECT COUNT(*) AS NumberOfRecords FROM `order` WHERE `group` = ?;';
-        var name = req.param('id');
-        Branch.findOne(name)
-            .exec(function (err, branch) {
-
-                if (err) res.json({
-                    error: err.message
-                }, 400);
-
-                if (!branch) return next('Branch doesn\'t exist.');
-
-//                console.log(qstring);
-                Branch.query(qstring, [branch.group], function (err, rows) {
-                    if (err) res.json({
-                        error: err.message
-                    }, 400);
-
-                    // If no orders exist then it can be deleted.
-                    if (rows[0].NumberOfRecords === 0) {
-                        var delRecord = {
-                            name: branch.name
-                        };
-//                        console.log('DELETING', delRecord, rows[0]);
-                        Branch.destroy(delRecord).exec(function (err, branches) {
-                            if (err) res.json({
-                                error: err.message
-                            }, 400);
-
-//                            console.log('DESTROYED:', err, branches);
-                            res.redirect('/cogroup/show/'+branch.group);
-                        });
-                    }
-                });
-            });
-    },
-    // Process updates, creation and deletions from "cogroup/show" page.
-    merge: function (req, res, next) {
-        console.log('BRANCHES MERGE:\n', req.params.all());
-        var co_name = req.param('id'),
-            branchList = req.param('branchList'),
-            deleteIDs = req.param('branchDeleteIDs');
-        
-        for (var i=0; i<branchList.length; i++) {
-            Branch.update({name: branchList[i].name, group: co_name}, branchList[i])
-            .exec(function (err, record) {
-                console.log('BRANCH UPDATE', i, err, record);
-            });
-            // Find or create branch in database or create.
-            Branch.findOrCreate({name: branchList[i].name, group: co_name}, branchList[i])
-            .exec(function (err, newRecord) {
-                console.log('BRANCH FINDorCREATE:', i, err, newRecord);
-            });
-        }
-        if (deleteIDs instanceof Array && deleteIDs.length > 0) {
-            for (var i=0; i<deleteIDs.length; i++) {
-                if (deleteIDs[i].length > 0) {
-                    // Delete branch from database.
-                    Branch.destroy({name: deleteIDs[i], group: co_name})
-                    .exec(function (err, branch) {
-                        console.log('BRANCH DESTROY:', err, branch);
-                    });
-                }
-            }
-        }
-        
-        res.send(true);
-    },
     
     branchList: function (req, res, next) {
         var co_name = req.param('id');
         
         Branch.find({group: co_name}, function (err, branches) {
-//            console.log(err, contacts);
+//            console.log(err, branches);
             res.send(branches);
         });
-    }
+    },
+    
+    /**
+     * Update or create a single record.
+     * @param   {String}   co_name Name of company group.
+     * @param   {Object}   branch Object with branch information.
+     */
+    updateOrCreate: function (req, res, next) {
+        // console.log('BRANCH_UPDATE');
+        var co_name = req.param('co_name'),
+            branch = req.param('branch');
+        
+        // Blank name IDs are not allowed.
+        if (branch.name === '') {
+            res.send(false);
+            return false;
+        }
+
+        Branch.findOrCreate({name: branch.name, group: co_name}, branch)
+        .exec(function(err, rec) {
+            if (err) {
+                res.send(false);
+                return false;
+            }
+            
+//            console.log('BRANCH FINDorCREATE:', typeof rec, rec);
+            
+            Branch.update({name: branch.name, group: co_name}, branch)
+            .exec(function (err, recs) {
+                if (err) {
+                    res.send(false);
+                    return false;
+                }
+
+//                console.log('BRANCH UPDATE:', typeof recs, recs);
+                res.send(recs[0]);
+            });
+        });
+    },
+    
+    /**
+     * Destroy a single record.
+     * @param   {String}   co_name Name of company group.
+     * @param   {String}   name Database id for record.
+     */
+    destroy: function (req, res, next) {
+        var co_name = req.param('co_name'),
+            name = req.param('name');
+        
+        Branch.destroy({name: name, group: co_name})
+        .exec(function (err, recs) {
+            if (err) {
+                res.send(false);
+                return false;
+            }
+            console.log('BRANCH DESTROY:', typeof recs, recs);
+            res.send(recs[0]);
+        });
+    },
 
 };

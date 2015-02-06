@@ -185,33 +185,64 @@ module.exports = {
                     });
             });
     },
-    // Delete the product and redirect to company product list.
-    destroy: function (req, res) {
-        var id = req.param('id').replace('-percent-','%');
+    
+    /**
+     * Update or create a single record.
+     * @param   {String}   co_name Name of company group.
+     * @param   {Object}   product Object with product information.
+     */
+    updateOrCreate: function (req, res, next) {
+        // console.log('BRANCH_UPDATE');
+        var co_name = req.param('co_name'),
+            product = req.param('product');
         
-        Product.findOne(id)
-        .populate('group')
-        .populate('orders')
-        .exec(function (err, product) {
-            if (err) res.json({
-                error: err.message
-            }, 400);
-            
-            var group = product.group !== undefined ? product.group.name : undefined;
-            if (product.orders.length === 0) {
-                Product.destroy(id)
-                .exec(function(err, product) {
-                    if (err) return err;
-                    
-                    if (group !== undefined) {
-                        res.redirect('/product/show/' + group);
-                    } else {
-                        res.redirect('/product/');
-                    }
-                });
+        // Blank name IDs are not allowed.
+        if (product.MPN === null || product.MPN === '') {
+            product.MPN = String(Math.round(Math.random()*100000000))
+        }
+
+        Product.findOrCreate({MPN: product.MPN, group: co_name}, product)
+        .exec(function(err, rec) {
+            if (err) {
+                res.send(false);
+                return false;
             }
+            
+            console.log('PRODUCT FINDorCREATE:', typeof rec, rec);
+            
+            Product.update({MPN: product.MPN, group: co_name}, product)
+            .exec(function (err, recs) {
+                if (err) {
+                    res.send(false);
+                    return false;
+                }
+
+                console.log('PRODUCT UPDATE:', typeof recs, recs);
+                res.send(recs[0]);
+            });
         });
     },
+    
+    /**
+     * Destroy a single record.
+     * @param   {String}   co_name Name of company group.
+     * @param   {String}   MPN Database id for record.
+     */
+    destroy: function (req, res, next) {
+        var co_name = req.param('co_name'),
+            MPN = req.param('MPN');
+        
+        Product.destroy({MPN: MPN, group: co_name})
+        .exec(function (err, recs) {
+            if (err) {
+                res.send(false);
+                return false;
+            }
+            console.log('PRODUCT DESTROY:', typeof recs, recs);
+            res.send(recs[0]);
+        });
+    },
+    
     // Retrieve all products for a company.
     get: function (req, res, next) {
         var co_name = req.param('id');

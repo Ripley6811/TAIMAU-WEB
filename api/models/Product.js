@@ -56,6 +56,14 @@ module.exports = {
             type: 'string',
             defaultsTo: ''
         },
+        ASE_PN: {
+            type: 'string',
+            defaultsTo: ''
+        },
+        ASE_RT: {
+            type: 'string',
+            defaultsTo: ''
+        },
         orders: {
             collection: 'order',
             via: 'MPN'
