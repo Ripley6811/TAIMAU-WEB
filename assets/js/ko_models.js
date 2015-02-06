@@ -91,14 +91,14 @@ function KO_Product(data) {
     self.product_label = ko.observable(data.product_label || '');
     self.inventory_name = ko.observable(data.inventory_name || '');
     self.english_name = ko.observable(data.english_name || '');
-    self.units = ko.observable(data.units || '');
+    self.units = ko.observable(data.units || 0.0).extend({ numeric: 3 });
     self.UM = ko.observable(data.UM || '');
     self.SKU = ko.observable(data.SKU || '');
     self.SKUlong = ko.observable(data.SKUlong || '');
     self.note = ko.observable(data.note || '');
     self.ASE_PN = ko.observable(data.ASE_PN || '');
     self.ASE_RT = ko.observable(data.ASE_RT || '');
-    self.curr_price = ko.observable(data.curr_price || '');
+    self.curr_price = ko.observable(data.curr_price || 0.0);
     self.unitpriced = ko.observable(data.unitpriced === undefined ? true : data.unitpriced);
     self.unitcounted = ko.observable(data.unitcounted === undefined ? true : data.unitcounted);
     self.is_supply = ko.observable(data.is_supply === undefined ? false : data.is_supply);

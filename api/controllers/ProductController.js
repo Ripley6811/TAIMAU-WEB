@@ -198,26 +198,27 @@ module.exports = {
         
         // Blank name IDs are not allowed.
         if (product.MPN === null || product.MPN === '') {
-            product.MPN = String(Math.round(Math.random()*100000000))
+            product.MPN = String(Math.round(Math.random()*100000000)+100)
         }
 
         Product.findOrCreate({MPN: product.MPN, group: co_name}, product)
         .exec(function(err, rec) {
             if (err) {
-                res.send(false);
+                console.log('PRODUCT FINDorCREATE:');
+                console.log(JSON.stringify(err, null, '   '));
+                res.send(err);
                 return false;
             }
-            
-            console.log('PRODUCT FINDorCREATE:', typeof rec, rec);
-            
+            // Update when either found or created.
             Product.update({MPN: product.MPN, group: co_name}, product)
             .exec(function (err, recs) {
                 if (err) {
-                    res.send(false);
+                    console.log('PRODUCT UPDATE:');
+                    console.log(JSON.stringify(err, null, '   '));
+                    res.send(err);
                     return false;
                 }
-
-                console.log('PRODUCT UPDATE:', typeof recs, recs);
+                console.log(recs);
                 res.send(recs[0]);
             });
         });
@@ -225,6 +226,9 @@ module.exports = {
     
     /**
      * Destroy a single record.
+     * 
+     * Returns status 500 error if product cannot be deleted due to linked 
+     * records.
      * @param   {String}   co_name Name of company group.
      * @param   {String}   MPN Database id for record.
      */
@@ -235,7 +239,9 @@ module.exports = {
         Product.destroy({MPN: MPN, group: co_name})
         .exec(function (err, recs) {
             if (err) {
-                res.send(false);
+                console.log('PRODUCT DESTROY:');
+                console.log(JSON.stringify(err, null, '   '));
+                res.send(err);
                 return false;
             }
             console.log('PRODUCT DESTROY:', typeof recs, recs);

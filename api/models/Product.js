@@ -88,5 +88,10 @@ module.exports = {
             type: 'json',
             defaultsTo: {}
         }
-    }
+    },
+    
+//    beforeValidate: function (values, cb) {
+//        //calling cb() with an argument returns an error. Useful for canceling the entire operation if some criteria fails.
+//        cb();
+//    }
 };
