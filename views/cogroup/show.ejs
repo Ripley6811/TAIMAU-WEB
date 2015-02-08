@@ -23,6 +23,7 @@
         <div class="col-md-8">
             <div class="btn-group-vertical">
                 <a disabled href="/cogroup/show/<%= cogroup.name %>" class="active btn btn-custom"><i class="glyphicon glyphicon-info-sign"></i> <strong>公司,聯絡人,產品訊息</strong></a>
+                <a href="/order/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-pencil"></i> <strong>創造訂單</strong></a>
                 <a href="/product/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-pencil"></i> <strong>管理使用中訂單,創造出貨單</strong></a>
                 <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-folder-open"></i> <strong>全部訂單歷史</strong></a>
             </div>
@@ -161,7 +162,6 @@
     <thead class="text-uppercase">
         <tr>
             <th>順序</th>
-            <th></th>
             <th>品名 (內用 / 客戶用)</th>
             <th>
                 <abbr title="# of kg, L, gal per container">容量</abbr>
@@ -171,28 +171,16 @@
             <th>英文品名 / 包裝描述</th>
     <!--        <th><abbr title="Price by container or volume?">價格單位</abbr></th>-->
             <th>備註</th>
+            <th>可用</th>
             <th>修改</th>
         </tr>
     </thead>
     <tbody data-bind="foreach: products">
         <tr data-bind="style: {'background-color': discontinued() ? 'pink' : null}">
-            <td>
+            <td style="width: 5%">
                 <div class="btn-group-vertical btn-group-sm" data-bind="visible: locked()">
                     <button class="btn btn-custom" data-bind="click: $parent.productUpOne"><i class="glyphicon glyphicon-triangle-top"></i></button>
                     <button class="btn btn-custom" data-bind="click: $parent.productDownOne"><i class="glyphicon glyphicon-triangle-bottom"></i></button>
-                </div>
-            </td>
-            
-<!--        Product Manifest Availability    -->
-            <td>
-                <font color="red" data-bind="visible: discontinued">
-                    <abbr title="已停用:Not currently used">
-                        <span class="glyphicon glyphicon-ban-circle"></span>
-                    </abbr>
-                </font>
-                <div data-bind="visible: !locked()">
-                    <label><input type="radio" name="a" data-bind="checked: is_supply, checkedValue: true">進貨</label>
-                    <label><input type="radio" name="a" data-bind="checked: is_supply, checkedValue: false">出貨</label>
                 </div>
             </td>
             
@@ -233,6 +221,15 @@
                 <input placeholder="note" style="width: 100%;" data-bind="textInput: note">
                 <input placeholder="PN (ASE)" style="width: 49%;" data-bind="textInput: ASE_PN">
                 <input placeholder="RT (ASE)" style="width: 49%;" data-bind="textInput: ASE_RT">
+            </td>
+            
+<!--        Product Manifest Availability    -->
+            <td style="width: 5%">
+                <button class="btn btn-custom btn-lg" data-bind="click: $parent.toggleActive, html: toggleMessage, visible: locked()"></button>
+                <div data-bind="visible: !locked()">
+                    <label><input type="radio" name="a" data-bind="checked: is_supply, checkedValue: true">進貨</label>
+                    <label><input type="radio" name="a" data-bind="checked: is_supply, checkedValue: false">出貨</label>
+                </div>
             </td>
             
             <td>
@@ -329,10 +326,12 @@ function PageModel() {
             if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
                 var response = JSON.parse(xmlhttp.response);
                 console.log(typeof response, response);
-                if (response !== false && response.group === co_name) {
+                if (response.status !== 400 && response.group === co_name) {
                     branch.name(null);
                     branch.saved(false);
                     self.branches.remove(branch);
+                } else {
+                    alert(JSON.stringify(response, null, '  '));
                 }
             }
         };
@@ -351,10 +350,12 @@ function PageModel() {
             if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
                 var response = JSON.parse(xmlhttp.response);
                 console.log(typeof response, response);
-                if (response !== false && response.group === co_name) {
+                if (response.status !== 400 && response.group === co_name) {
                     branch.name(response.name);
                     branch.saved(true);
                     branch.nameLock(true);
+                } else {
+                    alert(JSON.stringify(response, null, '  '));
                 }
             }
         };
@@ -416,11 +417,13 @@ function PageModel() {
             if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
                 var response = JSON.parse(xmlhttp.response);
                 console.log(typeof response, response);
-                if (response !== false && response.group === co_name) {
+                if (response.status !== 400 && response.group === co_name) {
                     contact.id(null);
                     contact.saved(false);
                     // Optionally remove contact from view.
 //                    self.contacts.remove(contact);
+                } else {
+                    alert(JSON.stringify(response, null, '  '));
                 }
             }
         };
@@ -439,9 +442,11 @@ function PageModel() {
             if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
                 var response = JSON.parse(xmlhttp.response);
                 console.log(typeof response, response);
-                if (response !== false && response.group === co_name) {
+                if (response.status !== 400 && response.group === co_name) {
                     contact.id(response.id);
                     contact.saved(true);
+                } else {
+                    alert(JSON.stringify(response, null, '  '));
                 }
             }
         };
@@ -490,12 +495,18 @@ function PageModel() {
         }
         return true;
     });
+    self.toggleActive = function(product) {
+        product.discontinued(!product.discontinued());
+        
+        var index = self.products().indexOf(product);
+        self.productsUpdate(self.products.slice(index, index+1));
+    }
     self.addProduct = function() {
         var newProduct = new KO_Product();
         newProduct.group(co_name);
         newProduct.locked(false);
         newProduct.saved(false);
-        newProduct.json().rank = self.products().length; // Place as last item.
+        newProduct.json().rank = self.products().length; // Set as last item.
         self.products.push(newProduct);
     };
     self.removeProduct= function(product) {
@@ -508,6 +519,8 @@ function PageModel() {
                     product.MPN(null);
                     product.saved(false);
                     self.products.remove(product);
+                } else {
+                    alert(JSON.stringify(response, null, '  '));
                 }
             }
         };
@@ -531,6 +544,8 @@ function PageModel() {
                     product.MPN(response.MPN);
                     product.saved(true);
                     product.locked(true);
+                } else {
+                    alert(JSON.stringify(response, null, '  '));
                 }
             }
         };
@@ -544,33 +559,20 @@ function PageModel() {
     };
     
     self.productsGet = function () {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState !== 4) return;
-            
-            var db_products = JSON.parse(xmlhttp.response);
-            
-            self.products.removeAll();
-            for (var i=0; i<db_products.length; i++) {
-                self.products.push(new KO_Product(db_products[i]));
-            }
-            self.productsSort();
-        };
-        xmlhttp.open('POST', '/product/get', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
+        params = {
             _csrf: _csrf, 
-            id: co_name
-        }));
+            id: co_name,
+        };
+        callback = function (products) {
+            self.products.removeAll();
+            for (var i=0; i<products.length; i++) {
+                self.products.push(new KO_Product(products[i]));
+            }
+        };
+        getProducts(params, callback);
     };
     
     self.productsGet();
-    // Sort products by rank value (in json data).
-    self.productsSort = function () {
-        self.products.sort(function (a, b) {
-            return a.json().rank - b.json().rank;
-        });
-    }
     
     self.productUpOne = function (prod) {
         var index = self.products().indexOf(prod);

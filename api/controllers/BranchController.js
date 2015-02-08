@@ -153,7 +153,7 @@ module.exports = {
         Branch.findOrCreate({name: branch.name, group: co_name}, branch)
         .exec(function(err, rec) {
             if (err) {
-                res.send(false);
+                res.send(err);
                 return false;
             }
             
@@ -162,7 +162,7 @@ module.exports = {
             Branch.update({name: branch.name, group: co_name}, branch)
             .exec(function (err, recs) {
                 if (err) {
-                    res.send(false);
+                    res.send(err);
                     return false;
                 }
 
@@ -184,7 +184,7 @@ module.exports = {
         Branch.destroy({name: name, group: co_name})
         .exec(function (err, recs) {
             if (err) {
-                res.send(false);
+                res.send(err);
                 return false;
             }
             console.log('BRANCH DESTROY:', typeof recs, recs);

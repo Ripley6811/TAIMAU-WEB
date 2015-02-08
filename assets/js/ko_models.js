@@ -121,5 +121,73 @@ function KO_Product(data) {
         self.saved(false);
     });
     
+    self.toggleMessage = ko.computed(function () {
+        if (self.discontinued()) {
+            return '<font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>';
+        } else {
+            return '<font color="green"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ok"></span></abbr></font>';
+        }
+    });
+    
     self.saved(true);
+    
+    self.selected = ko.observable(false);
 }
+
+function KO_PurchaseOrder(product, orderID) {
+    var self = this;
+    self.MPN = product.MPN;
+    self.is_supply = product.is_supply;
+    self.label = product.product_label ? product.product_label : product.inventory_name;
+    self.inventory_name = product.inventory_name;
+    self.sku = product.SKU;
+    self.guige = product.SKU;
+    self.qty = ko.observable();
+    self.price = ko.observable(product.curr_price);
+    self.um = product.UM;
+    self.jianshu = self.sku !== '槽車' ? self.sku : self.um;
+    self.id_note = product.note;
+    self.units = parseFloat(product.units);
+    if (self.guige !== '槽車') {
+        self.guige = [self.units, self.um, '/', self.guige].join(' ');
+    }
+    
+    self.pricing = product.unitpriced ? '/ ' + self.um : '/ ' + self.sku;
+    
+    self.totalUnits = ko.computed(function () {
+        var val = parseInt(self.qty()) * self.units;
+        if (!isNaN(val)) {
+            return val.toString() + ' ' + self.um;
+        } else {
+            return '0 ' + self.um;
+        }
+    });
+    
+    self.total_value = ko.computed( function () {
+        var total = parseInt(self.qty()) * parseFloat(self.price());
+        if (product.unitpriced) {
+            total = Math.round(total * self.units);
+        }
+        
+        return total;
+    });
+}
+
+
+    
+getProducts = function (params, callback) {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState !== 4) return;
+
+        var db_products = JSON.parse(xmlhttp.response);
+        // Sort by rank value.
+        db_products.sort(function (a, b) {
+            return a.json.rank - b.json.rank;
+        });
+        callback(db_products);
+    };
+    xmlhttp.open('POST', '/product/get', true);
+    xmlhttp.setRequestHeader('Content-type', 'application/json');
+    xmlhttp.send(ko.toJSON(params));
+};

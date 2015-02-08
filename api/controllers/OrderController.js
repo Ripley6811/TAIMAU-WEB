@@ -30,56 +30,16 @@ module.exports = {
             });
         });
     },
-    // Form for creating default POs along with new shipment
+    // Form for creating POs
     new: function (req, res) {
         var params = req.params.all();
-        console.log('order/new', params);
-        if (!('make_po' in params || 'make_shipment' in params)) {
-            res.redirect(req.param('back'));
-            return;
-        }
-        if (!('product' in params)) {
-            res.redirect(req.param('back'));
-            return;
-        }
         
-        Product.find({MPN: req.param('product')})
-        .populate('group')
-        .exec(function (err, products) {
-            if (err) res.json({
-                error: err.message
-            }, 400);
-            // Sort products by rank
-            products.sort(function (a, b) {
-                return a.json.rank - b.json.rank;
+        Cogroup.findOne(params.id)
+        .exec( function (err, cogroup) {
+                res.view({
+                    cogroup: cogroup,
             });
-            
-            if (products.length === 0) {
-                res.redirect(req.param('back'));
-            } else {
-                Cogroup.findOne(products[0].group.name)
-                .populate('branches')
-                .populate('contacts')
-                .exec( function (err, group) {
-                    Cogroup.findOne('台茂')
-                    .populate('branches')
-                    .populate('contacts')
-                    .exec( function (err, taimau) {
-                        res.view({
-                            form_type: 'make_po' in params ? 'make_po' : 'make_shipment',
-                            products: products,
-                            cogroup: group,
-                            group: group,
-                            seller: products[0].is_supply ? group : taimau,
-                            buyer: products[0].is_supply ? taimau : group,
-                            back: params.back
-                        });
-                    });
-                });
-            }
-            
         });
-        
     },
     // Form for creating default POs along with new shipment
     create: function (req, res) {
@@ -100,8 +60,8 @@ module.exports = {
         for (var i=0; i<params.MPN.length; i=i+1) {
             newOrders.push({
                 group: params.group,
-                seller: params.seller,
-                buyer: params.buyer,
+                seller: params.is_supply[i] ? params.group : '台茂',
+                buyer: !params.is_supply[i] ? params.group : '台茂',
                 orderID: params.orderID,
                 MPN: params.MPN[i],
                 price: params.price[i],
@@ -120,11 +80,15 @@ module.exports = {
             );
         }
         
+        console.log('CREATE PO\n', newOrders, '\n');
         Order.create(newOrders, function (err, orders) {
-            if (err) res.json({
-                where: 'Order.create(newOrders)',
-                error: err.message
-            }, 400);
+            if (err) {
+                res.json({
+                    where: 'Order.create(newOrders)',
+                    error: err
+                }, 400);
+                return;
+            }
         
             console.log('ORDERS RETURNED:\n', orders);
             // Create Shipment for item group

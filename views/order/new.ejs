@@ -1,6 +1,6 @@
 <!--Table view of all products for a single company-->
 
-<div class='container'>
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-4 h1 text-center">
             <div class="row">
@@ -29,7 +29,7 @@
                 </form>
             </div>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-8 text-center">
             <div class="btn-group-vertical">
                 <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-info-sign"></i> <strong>公司,聯絡人,產品信息</strong></a>
                 <a href="/product/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-pencil"></i> <strong>管理使用中訂單,創造出貨單</strong></a>
@@ -45,14 +45,103 @@
     
 <!--CREATE A PO LIST-->
     
+<div class="row">
+    <div class="col-md-4">
+    
+    
+        <div class="row-fluid">
+            <h2 class="col-md-12">產品/服務</h2>
+        </div>
+    
+<table class="table table-condensed">
+    <thead class="text-uppercase"><tr>
+<!--        <th></th>-->
+        <th>選</th>
+        <th>品名</th>
+        <th class="text-center">
+            <abbr title="桶, 包, 瓶, 等...">容器</abbr>
+        </th>
+        <th class="text-center">
+            <abbr title="# of kg, L, gal per container">容量</abbr>
+            <abbr title="kg, L, gal, etc.">單位</abbr>
+        </th>
+        <th>備註</th>
+    </tr></thead>
+    <tbody data-bind="foreach: products">
+        <tr>
+<!--
+            <td>
+                <span class="badge" data-bind="visible: is_supply()">
+                    <abbr title="買:We buy"><span class="glyphicon glyphicon-arrow-right"></span></abbr>
+                    <span class="glyphicon glyphicon-home"></span>
+                    <span class="glyphicon glyphicon-none"></span>
+                </span>
+                
+                <span class="badge" data-bind="visible: !is_supply()">
+                    <span class="glyphicon glyphicon-none"></span>
+                    <span class="glyphicon glyphicon-home"></span>
+                    <abbr title="賣:We sell"><span class="glyphicon glyphicon-arrow-right"></span></abbr>
+                </span>
+            </td>
+-->
+            
+<!--        Product Manifest selection    -->
+            <td>
+                <input style="width:26px; height:26px;" type="checkbox" name="product" data-bind="checked: selected">
+            </td>
+            
+            
+<!--        Product inventory name    -->
+            <td>
+                <span data-bind="text: inventory_name"></span>
+                <br>
+                <label class="label label-success" data-bind="text: product_label"></label>
+                <br>
+                <span style="white-space: normal;" class="label label-primary" data-bind="text: english_name"></span>
+            </td>
+            <td class="text-center">
+                <span data-bind="text: SKU, visible: locked()"></span>
+                <input size="4" placeholder="槽車,桶,包,..." data-bind="textInput: SKU, visible: !locked()">
+                <br>
+                <span class="badge" data-bind="visible: !unitpriced() && locked()"><abbr title="Priced by container" class="glyphicon glyphicon-usd"></abbr></span>
+            </td>
+            <td class="text-center">
+                <span data-bind="text: units, visible: locked()"></span>
+                <input size="2" placeholder="#" data-bind="textInput: units, visible: !locked()">
+                <span data-bind="text: UM, visible: locked()"></span>
+                <input size="3" placeholder="kg, L, ..." data-bind="textInput: UM, visible: !locked()">
+                <br>
+                <span data-bind="visible: unitpriced() && locked()" class="badge"><abbr title="Priced by unit" class="glyphicon glyphicon-usd"></abbr></span>
+            </td>
+            <td>
+                <span data-bind="text: note"></span>
+            </td>
+            
+        </tr>
+        </tbody>
+</table>
+    
+    
+        <div class="row">
+            <div class="col-md-5 col-md-offset-1">
+                <input type="hidden" name="back" value="/product/show/<%= cogroup.name %>">
+                <input type="submit" class="btn btn-lg btn-success" name="make_po" value="創造訂單">
+            </div>
+            <div class="col-md-6 input-24 text-right">
+                <span class="label label-warning">已停用的產品藏起來了. 看公司訊息.</span>
+            </div>
+        </div>
+    </div>
+    
+    
+    
+    
+    <div class="col-md-8">
+    
+    
     <form action="/order/create">
         <input type="hidden" name="_csrf" value="<%= _csrf %>" />
         <input type="hidden" name="group" value="<%= cogroup.name %>" />
-<!--    Add default buyer and seller if not making shipment.    -->
-        <% if (form_type === 'make_po') { %>
-        <input type="hidden" name="seller" value="<%= seller.branches[0].name %>" />
-        <input type="hidden" name="buyer" value="<%= buyer.branches[0].name %>" />
-        <% } %>
     
     <div class="row-fluid h2">
         <strong>訂單</strong>
@@ -90,13 +179,15 @@
 <!--        Product label    -->
             <input type="hidden" name="MPN" data-bind="value: MPN">
             <input type="hidden" name="is_supply" data-bind="value: is_supply">
-            <td class="text-left" data-bind="text: label"></td>
+            <td style="width: 15%">
+                <span class="text-left" data-bind="text: label"></span>
+            </td>
             
 <!--        Price    -->
             <td style="width:20%">
                 <div class="input-group has-success">
                     <div class="input-group-addon">$</div>
-                    <input style="font-size: 18px;" type="number" min=1 step="0.001" class="form-control text-right" name="price" data-bind="value: price" required />
+                    <input style="font-size: 18px;" type="number" min=1 step="0.001" class="form-control text-right" name="price" data-bind="textInput: price" required />
                     <div class="input-group-addon" data-bind="text: pricing"></div>
                 </div>
             </td>
@@ -104,7 +195,7 @@
 <!--        Quantities    -->
             <td style="width:15%">
                 <div class="input-group has-success">
-                <input style="font-size: 18px;" type="number" min=1 max=100000 class="form-control text-right" name="qty" data-bind="value: qty" required />
+                <input style="font-size: 18px;" type="number" min=1 max=100000 class="form-control text-right" name="qty" data-bind="textInput: qty" required />
                 <div class="input-group-addon" data-bind="text: jianshu"></div>
                 </div>
             </td>
@@ -118,8 +209,8 @@
             </td>
                         
 <!--        Notes    -->
-            <td style="width:30%">
-                <input type="text" class="form-control" name="ordernote">
+            <td style="width:20%">
+                <input type="text" style="width: 100%" class="form-control" name="ordernote">
             </td>
             
         </tr>
@@ -128,10 +219,10 @@
         
     <div class="row">
         <div class="col-md-4 col-md-offset-1">
-    <% if (form_type === 'make_po') { %>
+            
             <input type="hidden" name="back" value="/product/show/<%= cogroup.name %>">
             <input type="submit" class="btn btn-lg btn-success" name="make_po" value="創造訂單">
-    <% } %>
+            
         </div>
         
         <div class="col-md-5 form-group form-group-lg form-inline">
@@ -143,192 +234,49 @@
         </div>
     </div>
 
-    <% if (form_type === 'make_shipment') { /* FORM EXTENSION FOR ENTERING SHIPMENT */ %>
-        
-        
-    <hr>
-        
-        
-    <div class="row-fluid h2">
-        <strong>出貨單</strong>
-    </div>
     
-        <div class="row">
-            <div class="col-md-7">
-                <div class="form-group form-group-lg">
-                    <label class="col-md-3 control-label">賣家</label>
-                    <div class="col-md-9 has-success">
-                        <select class="form-control" name="seller">
-                            <% seller.branches.forEach(function(branch) { %>
-                            <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
-                            <% }); %>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-7">
-                <div class="form-group form-group-lg">
-                    <label class="col-md-3 control-label">客戶名稱</label>
-                    <div class="col-md-9 has-success">
-                        <select class="form-control" name="buyer">
-                        <% buyer.branches.forEach(function(branch) { %>
-                        <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
-                        <% }); %>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="form-group form-group-lg">
-                    <label class="col-md-4 control-label">貨單日期</label>
-                    <div class="col-md-8 has-success">
-                        <input type="date" class="form-control" name="shipmentdate" required>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-7">
-                <div class="form-group form-group-lg">
-                    <label class="col-md-3 control-label">聯 絡 人</label>
-                    <div class="col-md-9 has-success">
-                        <select class="form-control" name="contact">
-                        <% group.contacts.forEach(function(contact) { %>
-                        <option value="<%= contact.id %>"><%= contact.position %> : <%= contact.name %> : <%= contact.phone %></option>
-                        <% }); %>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="form-group form-group-lg">
-                    <label class="col-md-4 control-label">貨單編號</label>
-                    <div class="col-md-8 has-success">
-                        <input type="text" class="form-control" maxlength="8" placeholder="" name="shipment_no">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="form-group form-group-lg">
-                    <label class="col-md-2 control-label">送貨地址</label>
-                    <div class="col-md-9 has-success">
-                        <input type="text" class="form-control" placeholder="" name="shipmentdest">
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        
-        
-<table class="table table-condensed">
-    <thead class="text-uppercase">
-        <tr>
-            <th class="text-center">品 名</th>
-            <th class="text-center">規格/包裝</th>
-            <th class="text-center">件數</th>
-            <th class="text-center">數量</th>
-            <th class="text-center">出貨資訊</th>
-        </tr>
-    </thead>
-    <tbody data-bind="foreach: rows">
-        <tr>
-            <td class="text-left" data-bind="text: label"></td>
-            <td class="text-center" data-bind="text: guige"></td>
-            <td class="col-md-2" style="width:15%">
-            <div class="input-group has-success">
-                <input style="font-size: 18px;" type="number" min=1 max=100000 size="2" class="form-control text-right" data-bind="value: qty" required />
-                <div class="input-group-addon" data-bind="text: jianshu"></div>
-            </div>
-            </td>
-            <td class="text-center" data-bind="text: totalUnits"></td>
-            <td class="text-left" data-bind="text: id_note"></td>
-        </tr>
-        </tbody>
-</table>
-        
-        <div class="row">
-            <div class="col-md-12">
-                <div class="form-group form-group-lg">
-                    <label class="col-md-2 control-label">備註</label>
-                    <div class="col-md-9 has-success">
-                        <input type="text" class="form-control" name="shipmentnote">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <br>
-    <div class="row">
-        <div class="col-md-5 col-md-offset-1">
-            <input type="hidden" name="back" value="/product/show/<%= cogroup.name %>">
-            <input type="submit" class="btn btn-lg btn-success" name="make_shipment" value="創造出貨單(+訂單)">
-        </div>
     </div>
-        
-        
-        
-        
-    <% } /* END OF ELSE BRACKET */ %>
-    </form>
-                
-                
+</div>
     
+        
+        
+    
+
 
 </div>
 
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js"></script>
+    
+    
+    
+    
 <script>
-function ShipmentItemRow(product, orderID) {
-    var self = this;
-    self.MPN = product.MPN;
-    self.is_supply = product.is_supply;
-    self.label = product.product_label ? product.product_label : product.inventory_name;
-    self.inventory_name = product.inventory_name;
-    self.sku = product.SKU;
-    self.guige = product.SKU;
-    self.qty = ko.observable();
-    self.price = ko.observable(product.curr_price);
-    self.um = product.UM;
-    self.jianshu = self.sku !== '槽車' ? self.sku : self.um;
-    self.id_note = product.note;
-    self.units = parseFloat(product.units);
-    if (self.guige !== '槽車') {
-        self.guige = [self.units, self.um, '/', self.guige].join(' ');
-    }
+var cogroup = <%- JSON.stringify(cogroup) %>;
+var co_name = '<%= cogroup.name %>';
+var _csrf = '<%= _csrf %>';
     
-    self.pricing = product.unitpriced ? '/ ' + self.um : '/ ' + self.sku;
-    
-    self.totalUnits = ko.computed(function () {
-        var val = parseInt(self.qty()) * self.units;
-        if (!isNaN(val)) {
-            return val.toString() + ' ' + self.um;
-        } else {
-            return '0 ' + self.um;
-        }
-    });
-    
-    self.total_value = ko.computed( function () {
-        var total = parseInt(self.qty()) * parseFloat(self.price());
-        if (product.unitpriced) {
-            total = Math.round(total * self.units);
-        }
-        
-        return total;
-    });
-    
-}
-
 function ItemsModel() {
     var self = this;
     
     self.orderID = ko.observable();
     
-    self.products = <%- JSON.stringify(products, null, ' ') %>;
+    self.products = ko.observableArray([]);
+    self.productsGet = function () {
+        params = {
+            _csrf: _csrf, 
+            id: co_name,
+        };
+        callback = function (products) {
+            self.products.removeAll();
+            for (var i=0; i<products.length; i++) {
+                if (!products[i].discontinued) {
+                    self.products.push(new KO_Product(products[i]));
+                }
+            }
+        };
+        getProducts(params, callback);
+    };
+    self.productsGet();
     
     self.rows = ko.observableArray([]);
     
@@ -341,8 +289,17 @@ function ItemsModel() {
     });
     
     for (var i=0; i<self.products.length; i=i+1) {
-        self.rows.push(new ShipmentItemRow(self.products[i], self.orderID));
+        self.rows.push(new KO_PurchaseOrder(self.products[i], self.orderID));
     }
+    
+    var selectCompute = ko.computed(function () {
+        self.rows.removeAll()
+        for (var i=0; i<self.products().length; i++) {
+            if (self.products()[i].selected()) {
+                self.rows.push(new KO_PurchaseOrder(ko.toJS(self.products()[i]), self.orderID));
+            }
+        }
+    });
 }
 
 ko.applyBindings(new ItemsModel());
