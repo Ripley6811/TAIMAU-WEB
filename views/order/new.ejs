@@ -57,7 +57,12 @@
     <thead class="text-uppercase"><tr>
 <!--        <th></th>-->
         <th>選</th>
-        <th>品名</th>
+        <th>
+            品名
+            <span class="label label-warning">備註</span>
+            <span class="label label-success">標籤</span>
+            <span class="label label-primary">英文</span>
+        </th>
         <th class="text-center">
             <abbr title="桶, 包, 瓶, 等...">容器</abbr>
         </th>
@@ -93,10 +98,9 @@
             
 <!--        Product inventory name    -->
             <td>
-                <span data-bind="text: inventory_name"></span>
+                <span data-bind="text: inventory_name"></span> <span class="label label-warning" data-bind="text: note"></span>
                 <br>
                 <label class="label label-success" data-bind="text: product_label"></label>
-                <br>
                 <span style="white-space: normal;" class="label label-primary" data-bind="text: english_name"></span>
             </td>
             <td class="text-center">
@@ -112,9 +116,6 @@
                 <input size="3" placeholder="kg, L, ..." data-bind="textInput: UM, visible: !locked()">
                 <br>
                 <span data-bind="visible: unitpriced() && locked()" class="badge"><abbr title="Priced by unit" class="glyphicon glyphicon-usd"></abbr></span>
-            </td>
-            <td>
-                <span data-bind="text: note"></span>
             </td>
             
         </tr>

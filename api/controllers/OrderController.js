@@ -60,16 +60,16 @@ module.exports = {
         for (var i=0; i<params.MPN.length; i=i+1) {
             newOrders.push({
                 group: params.group,
-                seller: params.is_supply[i] ? params.group : '台茂',
-                buyer: !params.is_supply[i] ? params.group : '台茂',
+                seller: params.is_supply[i] === 'true' ? params.group : '台茂',
+                buyer: params.is_supply[i] === 'false' ? params.group : '台茂',
                 orderID: params.orderID,
                 MPN: params.MPN[i],
                 price: params.price[i],
                 qty: params.qty[i],
                 orderdate: params.orderdate,
                 ordernote: params.ordernote[i],
-                is_purchase: params.is_supply[i],
-                is_sale: !params.is_supply[i],
+                is_purchase: params.is_supply[i] === 'true',
+                is_sale: params.is_supply[i] === 'false',
                 is_open: 'make_shipment' in params ? false : true,
             });
             // Update current price for each product

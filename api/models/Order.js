@@ -32,6 +32,14 @@ module.exports = {
           type: 'boolean',
           defaultsTo: true
       },
+      is_purchase: {
+          type: 'boolean',
+          required: true
+      },
+      is_sale: {
+          type: 'boolean',
+          required: true
+      },
       group: {
           model: 'cogroup',
           required: true
