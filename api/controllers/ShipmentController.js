@@ -7,40 +7,15 @@
 
 module.exports = {
 	new: function (req, res) {
-        console.log(req.params.all());
-        Order.find({id: req.param('orderIDs')})
-        .populate('MPN')
-        .populate('group')
-        .exec( function (err, orders) {
-            if (err) res.json({
-                error: err.message
-            }, 400);
-            
-            if (orders.length === 0) {
-                res.redirect(req.param('back'));
-            } else {
-                orders.sort(function (a, b) {
-                    return a.MPN.json.rank - b.MPN.json.rank;
-                });
-                
-                Cogroup.findOne(orders[0].group.name)
-                .populate('branches')
-                .populate('contacts')
-                .exec( function (err, group) {
-                    Cogroup.findOne('台茂')
-                    .populate('branches')
-                    .populate('contacts')
-                    .exec( function (err, taimau) {
-                        res.view({
-                            orders: orders,
-                            group: group,
-                            seller: orders[0].MPN.is_supply ? group : taimau,
-                            buyer: orders[0].MPN.is_supply ? taimau : group,
-                            back: req.param('back')
-                        });
-                    });
-                });
-            }
+        var params = req.params.all();
+        
+        Cogroup.findOne({name: params.id})
+        .populate('branches')
+        .populate('contacts')
+        .exec( function (err, cogroup) {
+                res.view({
+                    cogroup: cogroup,
+            });
         });
     },
     
@@ -50,12 +25,14 @@ module.exports = {
         
         if (!(params.PO instanceof Array)) {
             params.PO = [params.PO];
+            params.MPN = [params.MPN];
             params.qty = [params.qty];
+            params.price = [params.price];
+            params.is_supply = [params.is_supply];
         }
         
         var orderIDs = params.PO,
-            qty = params.qty,
-            back = params.back;
+            qty = params.qty;
         
         var newShipment = {
             shipmentdate: params['shipmentdate'],
@@ -64,27 +41,50 @@ module.exports = {
             shipmentdest: params['shipmentdest']
         };
         
+        // Create default order records for non-PO shipments
+        defaultOrders = [];
+        for (var i=0; i<orderIDs.length; i++) {
+            var record = {
+                id: orderIDs[i] === 'default' ? undefined : orderIDs[i],
+                group: params.group,
+                seller: params.is_supply[i] === 'true' ? params.them : params.us,
+                buyer: params.is_supply[i] === 'false' ? params.them : params.us,
+                qty: params.qty[i],
+                MPN: params.MPN[i],
+                is_sale: params.is_supply[i] === 'true' ? false : true,
+                is_purchase: params.is_supply[i] === 'true' ? true : false,
+                applytax: true,
+                price: params.price[i],
+                orderdate: params.shipmentdate,
+                orderID: 'none',
+            }
+            defaultOrders.push(record);
+        }
+        
+        
         Shipment.create(newShipment)
         .exec( function (err, shipment) {
             if (err) res.json({
                 error: err.message
             }, 400);
-            
+
             console.log('SHIPMENT:', shipment);
-            
-            Order.find(orderIDs)
-            .populate('MPN')
-            .exec( function (err, orders) {
-                if (err) res.json({
-                    error: err.message
-                }, 400); 
-                
-                orders.forEach( function (order) {
-                    console.log("ORDERS:", orderIDs.indexOf(order.id.toString()), qty[orderIDs.indexOf(order.id.toString())]);
+        
+            defaultOrders.forEach( function (defOrder) {
+                console.log('DEF ORDER:', defOrder);
+                Order.findOrCreate({id: defOrder.id}, defOrder, function (err, order) {
+                    if (err) {
+                        res.json({
+                            error: err
+                        }, 400); 
+                        return;
+                    }
+                    console.log('ORDER CREATE or FOUND:', order);
+
                     var newItem = {
                         order_id: order.id,
                         shipment_id: shipment.id,
-                        qty: qty[orderIDs.indexOf(order.id.toString())]
+                        qty: defOrder.qty,
                     }
                     Shipmentitem.create(newItem)
                     .exec( function (err, shipmentitem) {
@@ -94,10 +94,9 @@ module.exports = {
                         console.log('SHIP ITEM:', shipmentitem);
                     });
                 });
-                
-                res.redirect(back);
             });
         });
+        setTimeout(function(){res.redirect('/order/showall/'+params.group)}, 200);
     }
 };
 

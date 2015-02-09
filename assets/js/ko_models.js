@@ -123,9 +123,9 @@ function KO_Product(data) {
     
     self.toggleMessage = ko.computed(function () {
         if (self.discontinued()) {
-            return '<font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>';
+            return '<font color="red"><span class="glyphicon glyphicon-ban-circle"></span></font>';
         } else {
-            return '<font color="green"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ok"></span></abbr></font>';
+            return '<font color="green"><span class="glyphicon glyphicon-ok"></span></font>';
         }
     });
     
@@ -134,8 +134,11 @@ function KO_Product(data) {
     self.selected = ko.observable(false);
 }
 
-function KO_PurchaseOrder(product, orderID) {
+function KO_PurchaseOrder(product, order) {
     var self = this;
+    self.id = order.id;
+    self.orderID = order.orderID;
+    self.ordernote = order.ordernote;
     self.MPN = product.MPN;
     self.is_supply = product.is_supply;
     self.label = product.product_label ? product.product_label : product.inventory_name;
@@ -171,6 +174,8 @@ function KO_PurchaseOrder(product, orderID) {
         
         return total;
     });
+    
+    self.selected = ko.observable(false);
 }
 
 
@@ -188,6 +193,24 @@ getProducts = function (params, callback) {
         callback(db_products);
     };
     xmlhttp.open('POST', '/product/get', true);
+    xmlhttp.setRequestHeader('Content-type', 'application/json');
+    xmlhttp.send(ko.toJSON(params));
+};
+
+    
+getOrders = function (params, callback) {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState !== 4) return;
+
+        var db_orders = JSON.parse(xmlhttp.response);
+        // Sort by rank value.
+        db_orders.sort(function (a, b) {
+            return a.MPN.json.rank - b.MPN.json.rank;
+        });
+        callback(db_orders);
+    };
+    xmlhttp.open('POST', '/order/getOpen', true);
     xmlhttp.setRequestHeader('Content-type', 'application/json');
     xmlhttp.send(ko.toJSON(params));
 };

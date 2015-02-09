@@ -225,6 +225,25 @@ module.exports = {
             req.flash('message', 'Record Updated!');
             res.redirect('/order/show/' + order[0].id);
         });
-    }
+    },
+    
+    
+    // Retrieve all order for a company.
+    getOpen: function (req, res, next) {
+        var co_name = req.param('id');
+        Order.find({group: co_name, is_open: true})
+        .populate('MPN')
+        .exec(function (err, orders) {
+            res.send(orders);
+        });
+    },
+    // Retrieve all order for a company.
+    getAll: function (req, res, next) {
+        var co_name = req.param('id');
+        Order.find({group: co_name})
+        .exec(function (err, orders) {
+            res.send(orders);
+        });
+    },
 };
 
