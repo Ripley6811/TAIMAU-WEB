@@ -78,7 +78,16 @@ module.exports = {
                 total += Number(this.shipments[i].qty);
             }
             return total;
-        },
+      },
+    
+      qty_remaining: function () {
+//          console.log(this.shipments.length);
+            var total = 0;
+            for (var i = 0; i < this.shipments.length; i = i +1) {
+                total += Number(this.shipments[i].qty);
+            }
+            return Number(this.qty) - total;
+      },
       /**
        * Return true if the requested quantity has all been shipped.
        * @returns {Boolean} True if order all shipped.

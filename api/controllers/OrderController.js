@@ -173,6 +173,7 @@ module.exports = {
             .sort('orderdate DESC')
             .populate('MPN')
             .populate('group')
+            .populate('shipments')
             .paginate({page: page, limit: 16})
             .exec(function (err, orders) {
                 if (err) res.json({

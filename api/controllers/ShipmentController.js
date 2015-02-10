@@ -56,7 +56,9 @@ module.exports = {
                 applytax: true,
                 price: params.price[i],
                 orderdate: params.shipmentdate,
-                orderID: 'none',
+                ordernote: '(auto-generated : 自動創造)',
+                orderID: '(NA)',
+                is_open: false,
             }
             defaultOrders.push(record);
         }
@@ -96,7 +98,10 @@ module.exports = {
                 });
             });
         });
-        setTimeout(function(){res.redirect('/order/showall/'+params.group)}, 200);
+        setTimeout(
+            function () { res.redirect('/order/showall/'+params.group) },
+            200
+        );
     }
 };
 

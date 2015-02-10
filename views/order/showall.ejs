@@ -108,7 +108,7 @@
             <% } else { %>
 <!--                <td class="text-right"><%= order.qty %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>-->
                 <td class="text-right"><%= order.qty_shipped() %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>
-                <td class="text-right"><%= order.qty - order.qty_shipped() %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>
+                <td class="text-right"><%= order.qty_remaining() %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>
             <% } %>
             <td class="text-center"><%= order.orderdate_string() %></td>
             <td><%= order.ordernote %></td>

@@ -105,6 +105,8 @@ function KO_Product(data) {
     self.discontinued = ko.observable(data.discontinued === undefined ? false : data.discontinued);
     self.json = ko.observable(data.json || {});
     
+    self.pricing = self.unitpriced() ? '/ ' + self.UM() : '/ ' + self.SKU();
+    
     self.locked = ko.observable(true); // Set to true for new entries only.
     self.saved = ko.observable(true); // Set to false if any editing is done.
     
@@ -117,6 +119,7 @@ function KO_Product(data) {
         self.note();
         self.ASE_PN();
         self.ASE_RT();
+        self.curr_price();
         // Activate the save button.
         self.saved(false);
     });
@@ -145,7 +148,7 @@ function KO_PurchaseOrder(product, order) {
     self.inventory_name = product.inventory_name;
     self.sku = product.SKU;
     self.guige = product.SKU;
-    self.qty = ko.observable();
+    self.qty = ko.observable(order.qty ? order.qty : '');
     self.price = ko.observable(product.curr_price);
     self.um = product.UM;
     self.jianshu = self.sku !== '槽車' ? self.sku : self.um;

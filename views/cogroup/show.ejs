@@ -175,16 +175,14 @@
             <th>順序</th>
             <th>品名 (內用 / 客戶用)</th>
             <th class="text-center">
-                <abbr title="# of kg, L, gal per container">容量</abbr>
-                <abbr title="kg, L, gal, etc.">單位</abbr>
-            </th>
-            <th class="text-center">
+                <abbr title="# of kg, L, gal per container">容量</abbr> - 
+                <abbr title="kg, L, gal, etc.">單位</abbr> / 
                 <abbr title="桶, 包, 瓶, 等...">容器</abbr>
             </th>
             <th>英文品名 / 包裝描述</th>
     <!--        <th><abbr title="Price by container or volume?">價格單位</abbr></th>-->
             <th>備註</th>
-            <th>可用</th>
+            <th>用不用</th>
             <th>修改</th>
         </tr>
     </thead>
@@ -208,22 +206,19 @@
                 <input size="2" placeholder="#" data-bind="textInput: units, visible: !locked()">
                 <span data-bind="text: UM, visible: locked()"></span>
                 <input size="3" placeholder="kg, L, ..." data-bind="textInput: UM, visible: !locked()">
-                <br>
-                <span data-bind="visible: unitpriced() && locked()" class="badge">1 <span data-bind="text: UM"></span> = <span class="glyphicon glyphicon-usd"></span> <span data-bind="text: curr_price"></span></span>
-                <div data-bind="visible: !locked()">
-                    <label><input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: false">用包裝價格</label>
-                    <label><input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: true">用單位價格</label>
-                </div>
-            </td>
-            <td class="text-center">
-                <span data-bind="text: SKU, visible: locked()"></span>
+                / <span data-bind="text: SKU, visible: locked()"></span>
                 <input size="4" placeholder="槽車,桶,包,..." data-bind="textInput: SKU, visible: !locked()">
                 <br>
-                <span data-bind="visible: !unitpriced() && locked()" class="badge">1 <span data-bind="text: SKU"></span> = <span class="glyphicon glyphicon-usd"></span> <span data-bind="text: curr_price"></span></span>
-
+                <span data-bind="visible: unitpriced()">1 <span data-bind="text: UM"></span> = <span class="glyphicon glyphicon-usd"></span></span>
+                <span data-bind="visible: !unitpriced()">1 <span data-bind="text: SKU"></span> = <span class="glyphicon glyphicon-usd"></span></span>
+                <input size="4" placeholder="目前價格" data-bind="textInput: curr_price">
                 <div data-bind="visible: !locked()">
-                    <label><input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: false">用包裝件數</label>
-                    <label><input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: true">用單位件數</label>
+                    <label><input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: true">用<strong data-bind="text: UM"></strong>價格</label>
+                    <label><input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: false">用<strong data-bind="text: SKU"></strong>價格</label>
+                </div>
+                <div data-bind="visible: !locked()">
+                    <label><input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: true">用<strong data-bind="text: UM"></strong>件數</label>
+                    <label><input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: false">用<strong data-bind="text: SKU"></strong>件數</label>
                 </div>
             </td>
             <td style="width: 20%">
@@ -265,7 +260,7 @@
 var cogroup = <%- JSON.stringify(cogroup) %>;
 var co_name = '<%= cogroup.name %>';
 var _csrf = '<%= _csrf %>';
-
+    
 function PageModel() {
     var self = this;
     
