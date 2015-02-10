@@ -31,9 +31,12 @@ module.exports = {
       shipmentdest: {
           type: 'string',
           defaultsTo: ''
-      }
+      },
+      group: {
+          model: 'cogroup',
+          required: true
+      },
       
-      ,
       shipmentdate_string: function () {
           if (this.shipmentdate === null) {
               return '';

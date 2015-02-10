@@ -69,7 +69,7 @@ module.exports = {
     orders: function (req, res) {
         var group = req.param('id'),
             page = req.param('page') || 1,
-            limit = req.param('limit') || 100;
+            limit = req.param('limit') || 50;
         
         Order
         .find({group: group})
@@ -85,9 +85,49 @@ module.exports = {
     * `Database/getController.shipments()`
     */
     shipments: function (req, res) {
-        return res.json({
-        todo: 'shipments() is not implemented yet!'
+        var group = req.param('id'),
+            page = req.param('page') || 1,
+            limit = req.param('limit') || 50;
+        
+        Shipment
+        .find({group: group})
+        .sort('shipmentdate DESC')
+        .populate('items')
+        .paginate({page: page, limit: limit})
+        .exec(function (err, records) {
+            if (err) { res.send(err); return; }
+            res.send(records);
         });
+        
+        
+        
+        
+        // TEMP PROCESSING OF SHIPMENTS
+        /***************************
+        Shipment.find({group: null}).limit(2000).exec(function (err, records) {
+            if (err) {
+                console.log(JSON.stringify(err, null, '   '));
+            }
+            console.log(records);
+            
+            records.forEach(function (rec) {
+                if (rec.group === null) {
+                    Shipmentitem.findOne({shipment_id: rec.id})
+                    .populate('order_id').exec(function (err, si) {
+                        if (err) {
+                            console.log(JSON.stringify(err, null, '   '));
+                        }
+                        console.log(rec.id, rec.group, rec.shipmentdate);
+                        if (si === undefined) return;
+                        console.log(si);
+                        console.log(si.order_id.id, si.order_id.group);
+                        rec.group = si.order_id.group;
+                        rec.save();
+                    });
+                }
+            });
+        });
+        ********************************/
     },
 
 

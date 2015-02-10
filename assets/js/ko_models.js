@@ -188,6 +188,17 @@ function KO_Shipment(data) {
     self.shipment_no = data.shipment_no;
     self.shipmentnote = data.shipmentnote;
     self.shipmentdest = data.shipmentdest;
+    self.id = data.id;
+    self.group = data.group;
+    
+    self.displayItems = ko.observable(false);
+    self.toggleDisplay = function () {
+        self.displayItems(!self.displayItems());
+    }
+    self.items = ko.observableArray();
+    for (var i=0; i<data.items.length; i++) {
+        self.items.push(new KO_ShipmentItem(data.items[i]));
+    }
 }
 
 function KO_ShipmentItem(data) {
@@ -222,7 +233,7 @@ getOrders = function (params, callback) {
 };
 
 getShipments = function (params, callback) {
-    getTemplate('/shipment/get', params, function (res_records) {
+    getTemplate('/database/get/shipments', params, function (res_records) {
         // Sort by rank value.
         res_records.sort(function (a, b) {
             return b.shipmentdate - a.shipmentdate;

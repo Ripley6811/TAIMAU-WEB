@@ -36,7 +36,29 @@
 <!--END: Company navigation header-->
 <hr>
 <!--START: List view of shipments-->
-    
+<div style="list-style-type:none" data-bind="foreach: shipments">
+        <div class="panel panel-success">
+            <div class="panel-heading" style="padding: 0px" data-bind="click: toggleDisplay">
+                <span class="h4" style="margin: 0px" data-bind="text: shipmentdate"></span>
+                <span class="h4" style="margin: 0px" data-bind="text: shipment_no"></span>
+            </div>
+            <div class="panel-body" style="padding: 0px" data-bind="visible: displayItems">
+                <table>
+                    <thead>
+                        <th>ORDER</th>
+                        <th>QTY</th>
+                    </thead>
+                    <tbody data-bind="foreach: items">
+                        <tr>
+                            <td><span data-bind="text: order_id"></span></td>
+                            <td><span data-bind="text: qty"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+</div>
 
     
 <!--END: List view of shipments-->
@@ -99,20 +121,37 @@ function PageModel() {
     self.shipmentsGet = function () {
         params = {
             _csrf: _csrf, 
-            id: [39, 40],
+            id: co_name,
+            limit: 10,
         };
         callback = function (shipments) {
-            alert(JSON.stringify(shipments, null, '   '));
+//            alert(JSON.stringify(shipments, null, '   '));
             self.shipments.removeAll();
             for (var i=0; i<shipments.length; i++) {
                 if (!shipments[i].discontinued) {
-                    self.shipments.push(new KO_ShipmentItem(shipments[i]));
+                    self.shipments.push(new KO_Shipment(shipments[i]));
                 }
             }
         };
-        getShipmentitems(params, callback);
+        getShipments(params, callback);
     };
     self.shipmentsGet();
+    
+    
+    
+    
+    var getShipmentsProcess = function () {
+        getTemplate(
+            '/database/get/shipments', 
+            {
+                _csrf: _csrf, 
+            }, 
+            function (res_records) {
+                
+            }
+        );
+    };
+    getShipmentsProcess()
 }
 
 ko.applyBindings(new PageModel());
