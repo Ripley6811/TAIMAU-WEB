@@ -29,7 +29,8 @@
                 </div>
                 <div class="btn-group-vertical">
                     <a href="/shipment/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-shopping-cart"></i> <strong>創造出貨單</strong></a>
-                    <a disabled href="/product/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-usd"></i> <strong>管理出貨單與發票</strong></a>
+                    <a disabled href="/invoice/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-usd"></i> <strong>創造發票</strong></a>
+                    <a disabled href="/product/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-piggy-bank"></i> <strong>管理出貨單與發票</strong></a>
                 </div>
             </div>
         </div>
@@ -387,7 +388,7 @@ function PageModel() {
             // Refresh Contacts so that the correct branch is set.
             self.getContacts();
         };
-        xmlhttp.open('POST', '/branch/branchList', true);
+        xmlhttp.open('POST', '/database/get/branches', true);
         xmlhttp.setRequestHeader('Content-type', 'application/json');
         xmlhttp.send(ko.toJSON({
             _csrf: _csrf, 
@@ -474,7 +475,7 @@ function PageModel() {
                 self.contacts.push(new KO_Contact(db_contacts[i]));
             }
         };
-        xmlhttp.open('POST', '/contact/contactList', true);
+        xmlhttp.open('POST', '/database/get/contacts', true);
         xmlhttp.setRequestHeader('Content-type', 'application/json');
         xmlhttp.send(ko.toJSON({
             _csrf: _csrf, 

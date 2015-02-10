@@ -15,7 +15,7 @@
                 </li>
             </ul>
             <div class="tab-content">
-                <div  data-bind="visible: po_tab">
+                <div  data-bind="visible: po_tab" style="padding: 0px; overflow-y:scroll; height:75vh;">
                     <table class="table table-condensed">
                         <thead class="text-uppercase">
                             <tr>
@@ -51,7 +51,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div data-bind="visible: prod_tab">
+                <div data-bind="visible: prod_tab" style="padding: 0px; overflow-y:scroll; height:75vh;">
                     <table class="table table-condensed">
                         <thead class="text-uppercase">
                             <tr>
@@ -129,7 +129,7 @@
                             <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-folder-open"></i> <strong>管理訂單與到期日</strong></a>
                         </div>
                         <div class="btn-group-vertical">
-                            <a disabled href="/shipment/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-shopping-cart"></i> <strong>創造出貨單</strong></a>
+                            <a disabled href="/shipment/new/<%= cogroup.name %>" class="active btn btn-custom"><i class="glyphicon glyphicon-shopping-cart"></i> <strong>創造出貨單</strong></a>
                             <a disabled href="/product/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-usd"></i> <strong>管理出貨單與發票</strong></a>
                         </div>
                     </div>
@@ -237,7 +237,7 @@
                         <input type="hidden" name="price" data-bind="value: price">
                         <input type="hidden" name="is_supply" data-bind="value: is_supply">
                         <input type="hidden" name="MPN" data-bind="value: MPN">
-                        <input style="font-size: 18px;" type="number" min=1 max=100000 size="2" class="form-control text-right" name="qty"  data-bind="textInput: qty" required>
+                        <input style="font-size: 18px;" type="number" min=1 size="2" class="form-control text-right" name="qty"  data-bind="textInput: qty, attr: {max: qtymax}" required>
                         <div class="input-group-addon" data-bind="text: jianshu"></div>
                     </div>
                     </td>
@@ -285,6 +285,7 @@ function ShipmentItemRow(item) {
     self.sku = item.sku || item.SKU;
     self.guige = item.sku || item.SKU;
     self.qty = ko.observable(item.qty ? item.qty : 'qty error');
+    self.qtymax = item.qty ? Number(item.qty) : 10000000;
     self.um = item.um || item.UM;
     self.jianshu = self.sku !== '槽車' ? self.sku : self.um;
     self.id_note = item.id ? item.orderID + ' ' + item.ordernote : item.note;

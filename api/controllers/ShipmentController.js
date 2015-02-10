@@ -102,6 +102,42 @@ module.exports = {
             function () { res.redirect('/order/showall/'+params.group) },
             200
         );
+    },
+    
+    showall: function (req, res) {
+        var params = req.params.all();
+        
+        Cogroup.findOne({name: params.id}, function (err, cogroup) {
+            if (err) {
+                res.json({
+                    error: err
+                }, 400); 
+                return;
+            }
+            
+            res.view({
+                cogroup: cogroup,
+            });
+        });
+    },
+    
+    get: function (req, res) {
+        var params = req.params.all();
+        
+        Shipment.findOne({name: params.id}, function (err, cogroup) {
+            if (err) {
+                res.json({
+                    error: err
+                }, 400); 
+                return;
+            }
+            
+            res.view({
+                cogroup: cogroup,
+            });
+        });
     }
+    
+    
 };
 

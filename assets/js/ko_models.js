@@ -181,39 +181,74 @@ function KO_PurchaseOrder(product, order) {
     self.selected = ko.observable(false);
 }
 
+function KO_Shipment(data) {
+    var self = this;
+    self.items = data.items;
+    self.shipmentdate = data.shipmentdate;
+    self.shipment_no = data.shipment_no;
+    self.shipmentnote = data.shipmentnote;
+    self.shipmentdest = data.shipmentdest;
+}
+
+function KO_ShipmentItem(data) {
+    var self = this;
+    self.order_id = data.order_id;
+    self.shipment_id = data.shipment_id;
+    self.qty = data.qty;
+    self.lot = data.lot;
+    self.duedate = data.duedate;
+    self.shipped = data.shipped;
+}
 
     
 getProducts = function (params, callback) {
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
-        if (xmlhttp.readyState !== 4) return;
-
-        var db_products = JSON.parse(xmlhttp.response);
+    getTemplate('/product/get', params, function (res_records) {
         // Sort by rank value.
-        db_products.sort(function (a, b) {
+        res_records.sort(function (a, b) {
             return a.json.rank - b.json.rank;
         });
-        callback(db_products);
-    };
-    xmlhttp.open('POST', '/product/get', true);
-    xmlhttp.setRequestHeader('Content-type', 'application/json');
-    xmlhttp.send(ko.toJSON(params));
+        callback(res_records);
+    });
 };
 
-    
 getOrders = function (params, callback) {
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
-        if (xmlhttp.readyState !== 4) return;
-
-        var db_orders = JSON.parse(xmlhttp.response);
+    getTemplate('/order/getOpen', params, function (res_records) {
         // Sort by rank value.
-        db_orders.sort(function (a, b) {
+        res_records.sort(function (a, b) {
             return a.MPN.json.rank - b.MPN.json.rank;
         });
-        callback(db_orders);
+        callback(res_records);
+    });
+};
+
+getShipments = function (params, callback) {
+    getTemplate('/shipment/get', params, function (res_records) {
+        // Sort by rank value.
+        res_records.sort(function (a, b) {
+            return b.shipmentdate - a.shipmentdate;
+        });
+        callback(res_records);
+    });
+};
+
+getShipmentitems = function (params, callback) {
+    getTemplate('/database/get/shipmentitems', params, function (res_records) {
+        // Sort by rank value.
+        res_records.sort(function (a, b) {
+            return b.shipment_id.shipmentdate - a.shipment_id.shipmentdate;
+        });
+        callback(res_records);
+    });
+};
+
+getTemplate = function (url, params, callback) {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState !== 4) return;
+        var db_records = JSON.parse(xmlhttp.response);
+        callback(db_records);
     };
-    xmlhttp.open('POST', '/order/getOpen', true);
+    xmlhttp.open('POST', url, true);
     xmlhttp.setRequestHeader('Content-type', 'application/json');
     xmlhttp.send(ko.toJSON(params));
 };

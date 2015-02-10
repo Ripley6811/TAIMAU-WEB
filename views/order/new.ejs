@@ -13,7 +13,7 @@
                     <strong>產品 / 服務</strong>
                 </div>
             </div>
-            <div class="panel-body" style="padding: 0px; overflow-y:scroll; height:75vh; ">
+            <div class="panel-body" style="padding: 0px; overflow-y:scroll; height:75vh;">
                 <table class="table table-condensed">
                     <thead class="text-uppercase">
                         <tr>
@@ -64,39 +64,34 @@
     
     <div class="col-md-8">
         
-        <div class="row">
+        <div class="row text-center">
             <div class="col-md-4 h1 text-center">
                 <div class="row">
-                <strong><%= cogroup.name %></strong><font color="lightgrey">(公司)</font>
+                    <strong data-bind="text: co_name"></strong>
+                    <font color="lightgrey">(公司)</font>
                 </div>
                 <div class="row">
                     <form action="/cogroup/toggle" method="post"><input type="hidden" name="_csrf" value="<%= _csrf %>" />
                         <input type="hidden" name="cogroup" value="<%= cogroup.name %>">
-                        <input type="hidden" name="back" value="/product/show/<%= cogroup.name %>">
+                        <input type="hidden" name="back" value="/cogroup/show/<%= cogroup.name %>">
                         <div class="btn-group">
-                        <button type="submit" name="toggle" value="supplier" class=
-                                        <% if (cogroup.is_supplier) { %>
-                                        "glyphicon glyphicon-ok btn btn-success"
-                                        <% } else { %>
-                                        "glyphicon glyphicon-remove btn btn-danger"
-                                        <% } %>
-                            > 供應商</button>
-                        <button type="submit" name="toggle" value="customer" class=
-                                        <% if (cogroup.is_customer) { %>
-                                        "glyphicon glyphicon-ok btn btn-success"
-                                        <% } else { %>
-                                        "glyphicon glyphicon-remove btn btn-danger"
-                                        <% } %>
-                            > 客戶</button>
+                            <button data-bind="click: toggleSupplier, attr: {'class': supplierStatus}"> 供應商</button>
+                            <button data-bind="click: toggleCustomer, attr: {'class': customerStatus}"> 客戶</button>
                         </div>
                     </form>
                 </div>
             </div>
-            <div class="col-md-8 text-center">
-                <div class="btn-group-vertical">
-                    <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-info-sign"></i> <strong>公司,聯絡人,產品信息</strong></a>
-                    <a href="/product/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-pencil"></i> <strong>管理使用中訂單,創造出貨單</strong></a>
-                    <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-folder-open"></i> <strong>全部訂單歷史</strong></a>
+            <div class="col-md-8">
+                <div>
+                    <div class="btn-group-vertical">
+                        <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-info-sign"></i> <strong>公司,聯絡人,產品訊息</strong></a>
+                        <a disabled href="/order/new/<%= cogroup.name %>" class="active btn btn-custom"><i class="glyphicon glyphicon-pencil"></i> <strong>創造一個訂單</strong></a>
+                        <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-folder-open"></i> <strong>管理訂單與到期日</strong></a>
+                    </div>
+                    <div class="btn-group-vertical">
+                        <a href="/shipment/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-shopping-cart"></i> <strong>創造出貨單</strong></a>
+                        <a disabled href="/product/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-usd"></i> <strong>管理出貨單與發票</strong></a>
+                    </div>
                 </div>
             </div>
         </div>

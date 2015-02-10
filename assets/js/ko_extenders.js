@@ -9,7 +9,6 @@ ko.extenders.numeric = function(target, precision) {
     var result = ko.pureComputed({
         read: target,  //always return the original observables value
         write: function(newValue) {
-            console.log(typeof newValue, newValue);
             var current = target(),
                 roundingMultiplier = Math.pow(10, precision),
                 newValueAsNum = isNaN(newValue) ? 0 : parseFloat(+newValue),
