@@ -537,6 +537,13 @@ function PageModel() {
     
     self.productsGet();
     
+    // Sort products by rank value (in json data).
+    self.productsSort = function () {
+        self.products.sort(function (a, b) {
+            return a.json().rank - b.json().rank;
+        });
+    }
+    
     self.productUpOne = function (prod) {
         var index = self.products().indexOf(prod);
         if (index > 0) {

@@ -250,9 +250,18 @@ module.exports = {
     },
     
     // Retrieve all products for a company.
-    get: function (req, res, next) {
-        var co_name = req.param('id');
+    get: function (req, res) {
+        var co_name = req.param('id'),
+            counter = 0;
         Product.find({group: co_name}, function (err, products) {
+            // Check and update rank values.
+            products.forEach(function (rec) {
+                if (rec.json === undefined || rec.json === null) rec.json = {};
+                if (rec.json.rank === undefined) {
+                    rec.json.rank = products.indexOf(rec);
+                }
+                rec.save(function () {});
+            });
             res.send(products);
         });
     },
