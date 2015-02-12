@@ -14,8 +14,8 @@
                     <input type="hidden" name="cogroup" value="<%= cogroup.name %>">
                     <input type="hidden" name="back" value="/cogroup/show/<%= cogroup.name %>">
                     <div class="btn-group">
-                        <button data-bind="click: toggleSupplier, attr: {'class': supplierStatus}"> 供應商</button>
-                        <button data-bind="click: toggleCustomer, attr: {'class': customerStatus}"> 客戶</button>
+                        <button data-bind="click: cogroup.toggleSupplier, attr: {'class': cogroup.supplierStatus}"> 供應商</button>
+                        <button data-bind="click: cogroup.toggleCustomer, attr: {'class': cogroup.customerStatus}"> 客戶</button>
                     </div>
                 </form>
             </div>
@@ -105,7 +105,7 @@
 </table>
     
         </div>
-        <div class="panel-footer">
+        <div class="panel-footer lightorange-blend">
             <button class="btn btn-medium btn-primary" data-bind="click: addBranch">Add branch</button>
         </div>
     </div>
@@ -152,7 +152,7 @@
     </tbody>
 </table>
         </div>
-        <div class="panel-footer">
+        <div class="panel-footer lightorange-blend">
             <button class="btn btn-medium btn-primary" data-bind="click: addContact">Add contact</button>
         </div>
     </div>
@@ -251,14 +251,14 @@
     </tbody>
 </table>
         </div>
-        <div class="panel-footer">
+        <div class="panel-footer lightorange-blend">
             <button class="btn btn-medium btn-primary" data-bind="enable: productsAllSaved(), click: addProduct">Add product</button>
         </div>
     </div>
 </div>
 
 <script>
-var cogroup = <%- JSON.stringify(cogroup) %>;
+var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
 var co_name = '<%= cogroup.name %>';
 var _csrf = '<%= _csrf %>';
     
@@ -267,47 +267,6 @@ function PageModel() {
     
     // Branch name options for select list.
     self.branchOptions = ko.observableArray();
-    
-    
-    
-    
-    /**
-     * COGROUP section controls
-     * 
-     * 
-     */
-    self.cogroup = new KO_Cogroup(cogroup);
-    
-    self.supplierStatus = ko.computed(function () {
-        return self.cogroup.is_supplier() === true ? "glyphicon glyphicon-ok btn btn-success" : "glyphicon glyphicon-remove btn btn-danger";
-    });
-    
-    self.customerStatus = ko.computed(function () {
-        return self.cogroup.is_customer() === true ? "glyphicon glyphicon-ok btn btn-success" : "glyphicon glyphicon-remove btn btn-danger";
-    });
-    
-    self.toggleCustomer = function () {
-        self.cogroup.is_customer(!self.cogroup.is_customer());
-        self.cogroupUpdate();
-    };
-    self.toggleSupplier = function () {
-        self.cogroup.is_supplier(!self.cogroup.is_supplier());
-        self.cogroupUpdate();
-    };
-                
-    self.cogroupUpdate = function () {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState !== 4) return;
-            
-        };
-        xmlhttp.open('POST', '/cogroup/update', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
-            _csrf: _csrf, 
-            cogroup_update: self.cogroup
-        }));
-    };
     
     
     

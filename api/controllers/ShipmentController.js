@@ -38,7 +38,8 @@ module.exports = {
             shipmentdate: params['shipmentdate'],
             shipment_no: params['shipment_no'],
             shipmentnote: params['shipmentnote'],
-            shipmentdest: params['shipmentdest']
+            shipmentdest: params['shipmentdest'],
+            group: params.group,
         };
         
         // Create default order records for non-PO shipments
@@ -66,9 +67,7 @@ module.exports = {
         
         Shipment.create(newShipment)
         .exec( function (err, shipment) {
-            if (err) res.json({
-                error: err.message
-            }, 400);
+            if (err) { res.json(err); return; }
 
             console.log('SHIPMENT:', shipment);
         

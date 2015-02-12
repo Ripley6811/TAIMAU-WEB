@@ -104,7 +104,7 @@ module.exports = {
         
         // TEMP PROCESSING OF SHIPMENTS
         /***************************
-        Shipment.find({group: null}).limit(2000).exec(function (err, records) {
+        Shipment.find({group: null}).limit(1200).exec(function (err, records) {
             if (err) {
                 console.log(JSON.stringify(err, null, '   '));
             }
@@ -117,15 +117,37 @@ module.exports = {
                         if (err) {
                             console.log(JSON.stringify(err, null, '   '));
                         }
-                        console.log(rec.id, rec.group, rec.shipmentdate);
+//                        console.log(rec.id, rec.group, rec.shipmentdate);
                         if (si === undefined) return;
-                        console.log(si);
+//                        console.log(si);
                         console.log(si.order_id.id, si.order_id.group);
                         rec.group = si.order_id.group;
                         rec.save();
+                        si.shipped = true;
+                        si.save();
                     });
                 }
             });
+            res.send({res:'done'});
+        });
+        ********************************/
+        
+        // TEMP PROCESSING OF SHIPMENT ITEMS
+        /***************************
+        Shipmentitem.find({shipped: false}).limit(4200).exec(function (err, records) {
+            if (err) {
+                console.log(JSON.stringify(err, null, '   '));
+                return;
+            }
+            console.log(records.length, records);
+            
+            records.forEach(function (si) {
+                console.log('Before:', si.shipped);
+                si.shipped = true;
+                si.save();
+                console.log('After :', si.shipped);
+            });
+            res.send({res:'done'});
         });
         ********************************/
     },
@@ -137,7 +159,7 @@ module.exports = {
     shipmentitems: function (req, res) {
         Shipmentitem
         .find({order_id: req.param('id')})
-        .populate('order_id')
+//        .populate('order_id')
         .populate('shipment_id')
         .exec(function (err, records) {
             if (err) { res.send(err); return; }

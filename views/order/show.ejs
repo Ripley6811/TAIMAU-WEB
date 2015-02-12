@@ -1,188 +1,298 @@
 <!--View of a PO and all related shipments-->
 
-<div class='container'>
-    <div class="row">
+<div class='container-fluid'>
+<!--vvv START: Company header and buttons vvv-->
+    <div class="row text-center">
         <div class="col-md-4 h1 text-center">
             <div class="row">
-            <strong><%= cogroup.name %></strong><font color="lightgrey">(公司)</font>
+                <strong data-bind="text: co_name"></strong>
+                <font color="lightgrey">(公司)</font>
             </div>
             <div class="row">
                 <form action="/cogroup/toggle" method="post"><input type="hidden" name="_csrf" value="<%= _csrf %>" />
                     <input type="hidden" name="cogroup" value="<%= cogroup.name %>">
-                    <input type="hidden" name="back" value="/order/show/<%= order.id %>">
+                    <input type="hidden" name="back" value="/cogroup/show/<%= cogroup.name %>">
                     <div class="btn-group">
-                    <button type="submit" name="toggle" value="supplier" class=
-                                    <% if (cogroup.is_supplier) { %>
-                                    "glyphicon glyphicon-ok btn btn-success"
-                                    <% } else { %>
-                                    "glyphicon glyphicon-remove btn btn-danger"
-                                    <% } %>
-                        > 供應商</button>
-                    <button type="submit" name="toggle" value="customer" class=
-                                    <% if (cogroup.is_customer) { %>
-                                    "glyphicon glyphicon-ok btn btn-success"
-                                    <% } else { %>
-                                    "glyphicon glyphicon-remove btn btn-danger"
-                                    <% } %>
-                        > 客戶</button>
+                        <button data-bind="click: cogroup.toggleSupplier, attr: {'class': cogroup.supplierStatus}"> 供應商</button>
+                        <button data-bind="click: cogroup.toggleCustomer, attr: {'class': cogroup.customerStatus}"> 客戶</button>
                     </div>
                 </form>
             </div>
         </div>
         <div class="col-md-8">
-            <div class="btn-group-vertical">
-                <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-info-sign"></i> <strong>公司,聯絡人,產品信息</strong></a>
-                <a href="/product/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-pencil"></i> <strong>管理使用中訂單,創造出貨單</strong></a>
-                <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-folder-open"></i> <strong>全部訂單歷史</strong></a>
+            <div>
+                <div class="btn-group-vertical">
+                    <a href="/cogroup/show/<%= cogroup.name %>" class=" btn btn-custom"><i class="glyphicon glyphicon-info-sign"></i> <strong>公司,聯絡人,產品訊息</strong></a>
+                    <a href="/order/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-pencil"></i> <strong>創造一個訂單</strong></a>
+                    <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-folder-open"></i> <strong>管理訂單與到期日</strong></a>
+                </div>
+                <div class="btn-group-vertical">
+                    <a href="/shipment/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-shopping-cart"></i> <strong>創造出貨單</strong></a>
+                    <a disabled href="/invoice/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-usd"></i> <strong>創造發票</strong></a>
+                    <a disabled href="/item/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-piggy-bank"></i> <strong>管理出貨單與發票</strong></a>
+                </div>
             </div>
         </div>
     </div>
-    
-    
-    
-    
+<!--^^^ END: Company header and buttons ^^^-->
 	<hr>
-    
-    
-    
-    
-    <form action="/order/update" class="form-horizontal">
-        <div class="row">
-            <div class="col-md-3 h2"><strong>訂單</strong></div>
-        </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group form-group-lg">
-                <label class="col-md-3 control-label">訂單編號:</label>
-                <div class="col-md-9 has-success">
-                    <input type="text" class="form-control" name="orderID" value="<%= order.orderID %>">
+<!--START: PO Form view-->
+    <form action="/order/update" class="form-inline">
+        <div class="panel panel-default">
+            <div class="panel-heading lightgreen-blend text-center">
+                <div class="form-group form-group-lg">
+                    <label class="control-label">訂單 </label>
+                    <input type="text" placeholder="訂單編號" class="form-control" name="orderID" value="<%= order.orderID %>">
                 </div>
+                    <div class="form-group form-group-lg">
+                        <label for="item_name" class="control-label">產品名稱 </label>
+                        <input id="item_name" type="text" disabled class="form-control" value="<%= order.MPN.item_label ? order.MPN.item_label : order.MPN.inventory_name %>">
+                    </div>
             </div>
-            <div class="form-group form-group-lg">
-                <label class="col-md-3 control-label">產品名稱:</label>
-                <div class="col-md-9 has-success">
-                    <input type="text" disabled class="form-control" value="<%= order.MPN.product_label ? order.MPN.product_label : order.MPN.inventory_name %>">
-                </div>
-            </div>
-            <div class="form-group form-group-lg">
-                <label class="col-md-3 control-label">件數價格:</label>
-                <div class="col-md-9">
-                    <div class="input-group input-group-lg 
-                            <% if (order.applytax === true) { %>
-                                has-success">
-                            <% } else { %>
-                                has-error">
-                            <% } %>
-                        <div class="input-group-addon">$</div>
-                        <input type="number" step="0.001" class="form-control input-lg input-24" name="price" value="<%= order.price %>"
-                               
-                            <% if (shipments.length > 0) { %> disabled <% } %>
-                               >
-                        <div class="input-group-addon">
-                            <input type="radio" name="applytax" value="true"  <% if (shipments.length > 0) { %> disabled <% } %> <% if (order.applytax === true) { %> checked <% } %>>應稅
-                            <input type="radio" name="applytax" value="false" <% if (shipments.length > 0) { %> disabled <% } %> <% if (order.applytax !== true) { %> checked <% } %>>無稅
+            <div class="panel-body lightorange-blend">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <div class="form-group">
+                            <label class="control-label">件數價格 </label>
+                                <div class="input-group 
+                                        <% if (order.applytax === true) { %>
+                                            has-success">
+                                        <% } else { %>
+                                            has-error">
+                                        <% } %>
+                                    <div class="input-group-addon">$</div>
+                                    <input type="number" step="0.001" class="form-control" name="price" value="<%= order.price %>"
+
+                                        <% if (shipments.length > 0) { %> disabled <% } %>
+                                           >
+                                    <div class="input-group-addon">
+                                        <input type="radio" name="applytax" value="true"  <% if (shipments.length > 0) { %> disabled <% } %> <% if (order.applytax === true) { %> checked <% } %>>應稅
+                                        <input type="radio" name="applytax" value="false" <% if (shipments.length > 0) { %> disabled <% } %> <% if (order.applytax !== true) { %> checked <% } %>>無稅
+                                    
+                                </div>
+                            </div>
                         </div>
+                    </div>
+
+                </div>
+                <br>
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <div class="row-fluid form-group has-success">
+                            <div><label class="control-label">訂單件數 - 出貨件數 = 剩下件數</label></div>
+                            <div class="input-group">
+                                <input class="form-control text-right" min="1" type="number" name="qty" value="<%= order.qty %>">
+                                <div class="input-group-addon input-warning"><span class="glyphicon glyphicon-minus"></span></div>
+                                <input type="text" size="14" disabled class="form-control text-center" value="<%= order.qty_shipped() %>">
+                                <div class="input-group-addon"><span class="glyphicon glyphicon-chevron-right"></span></div>
+                                <input type="text" disabled class="form-control text-left" value="<%= order.qty - order.qty_shipped() %>">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="row text-center">
+                    <div class="form-group">
+                        <label class="control-label">備註</label>
+                        <input type="text" size="100%" class="form-control" name="ordernote" value="<%= order.ordernote %>">
+                        
                     </div>
                 </div>
             </div>
         </div>
         
-        
-        <div class="col-md-6">
-            <div class="form-group form-group-lg">
-                <label class="col-md-3 control-label">訂單件數:</label>
-                <div class="col-md-9 has-success">
-                    <input class="form-control input-lg input-24" min="1" type="number" name="qty" value="<%= order.qty %>">
-                </div>
-            </div>
-            <div class="form-group form-group-lg">
-                <label class="col-md-3 control-label">出貨件數:</label>
-                <div class="col-md-9 has-success">
-                    <input type="text" disabled class="form-control" value="<%= order.qty_shipped() %>">
-                </div>
-            </div>
-            <div class="form-group form-group-lg">
-                <label class="col-md-3 control-label">剩下件數:</label>
-                <div class="col-md-9 has-success">
-                    <input type="text" disabled class="form-control" value="<%= order.qty - order.qty_shipped() %>">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row-fluid">
-        <div class="form-group form-group-lg">
-            <label class="col-md-1 control-label">備註:</label>
-            <div class="col-md-11 has-success">
-                <input class="form-control input-lg input-24" type="text" name="ordernote" value="<%= order.ordernote %>">
-            </div>
-        </div>
-    </div>
-    
         <% var flash = req.flash('message'); %>
         <% if(flash.length) { %>
         <p class="bg-primary text-center">
         <%- flash %>
             </p>
         <% } %>
-        
-    <div class="row">
-        <div class="col-md-12 h3 text-center">
-	       <input type="submit" class="btn btn-lg btn-success" value="提交更新">
-	       <input type="hidden" name="id" value="<%= order.id %>">
-        </div>
-    </div>
-    </form>
-    
-    
-    
-    
-	<hr>
-    
-    
-    
-    
-    
-    <form action="/order/show">
+
         <div class="row">
-            <div class="col-md-3 h2"><strong>出貨紀錄</strong></div>
-            <div class="col-md-6 text-center h3">
-                <input type="submit" class="btn btn-lg btn-success" name="make_duedate" value="加上到期日">
+            <div class="col-md-12 h3 text-center">
+               <input type="submit" class="btn btn-lg btn-success" value="提交更新">
+               <input type="hidden" name="id" value="<%= order.id %>">
             </div>
         </div>
-        
-        <input type="hidden" name="id" value="<%= id %>" />
-<table class="table table-condensed">
-    <thead class="text-uppercase"><tr>
-        <th>Due Date</th>
-        <th>Qty</th>
-        <th>出貨日期</th>
-        <th>出貨編號/ID</th>
-        <th>Lot #</th>
-        <th>Edit</th>
-    </tr></thead>
-    <tbody>
-    <% shipments.forEach(function(shipmentitem) { %>
-        <tr>
-            <td><%= shipmentitem.duedate_string() %></td>
-            <td><%= shipmentitem.qty %></td>
-            <% if (shipmentitem.shipment_id !== undefined) { %>
-                <td><%= shipmentitem.shipment_id.shipmentdate_string() %></td>
-                <td><%= shipmentitem.shipment_id.shipment_no %></td>
-            <% } else { %>
-                <td class="danger text-center" colspan="2">(no shipment record)</td>
-            <% } %>
-            <td><%= shipmentitem.lot %></td>
-            
-            <td>
-                <a href="/shipmentitem/edit/<%- shipmentitem.id %>" class="btn btn-xs btn-custom">編輯紀錄</a>
-            </td>
-        </tr>
-    <% }); %>
-        </tbody>
-</table>
-    
-    
     </form>
+<!--END: PO Form view-->
+    <hr>
+<!--SHIPMENT ITEMS LIST LIST-->
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <div class="panel-title">
+                <h2><strong>出貨單項目</strong></h2>
+            </div>
+        </div>
+        <div class="panel-body" style="padding: 0px">
+            <table class="table table-condensed">
+                <thead class="text-uppercase">
+                    <tr>
+                        <th>到期日</th>
+                        <th>數量</th>
+                        <th>出貨單編號</th>
+                        <th>出貨日期</th>
+                        <th>編輯</th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: items">
+                    <tr data-bind="style: {backgroundColor: saved() ? null : 'lightblue'}">
+
+
+            <!--        item inventory name    -->
+                        <td style="width: 12%">
+                            <input type="date" style="width: 100%" data-bind="value: duedate, disable: shippedHighlight(), style: {backgroundColor: shippedHighlight() ? 'darkgrey' : null}">
+                        </td>
+                        <td style="width: 25%">
+                            <div class="input-group" style="width: 100%">
+                                <input type="text" class="text-right" placeholder="數量" style="width: 100%" data-bind="textInput: qty"> 
+                                <div class="input-group-addon" data-bind="text: order.jianshu"></div>
+                            </div>
+                        </td>
+                        <td style="width: 25%" data-bind="style: {backgroundColor: shippedHighlight() ? null : 'pink'}">
+                            <div class="input-group" style="width: 100%">
+                                <div class="input-group-addon">#</div>
+                                <input type="text" placeholder="出貨編號" style="width: 100%" data-bind="textInput: shipment_no">
+                            </div>
+                        </td>
+                        <td style="width: 12%" data-bind="style: {backgroundColor: shippedHighlight() ? null : 'pink'}">
+                            <input type="date" style="width: 100%" data-bind="value: shipdate">
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" data-bind="click: $parent.saveitem, disable: saved"><span class="glyphicon glyphicon-save"></span></button>
+                                <button class="btn btn-danger" data-bind="click: $parent.removeitem, enable: saved"><span class="glyphicon glyphicon-trash"></span></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 </div>
+
+<script>
+var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>),
+    co_name = '<%= cogroup.name %>',
+    order = new KO_PurchaseOrder(<%- JSON.stringify(order.MPN) %>,
+                                 <%- JSON.stringify(order) %>),
+    po_ID = <%= id %>,
+    _csrf = '<%= _csrf %>';
+    
+function PageModel() {
+    var self = this;
+    
+    
+    /**
+     * SHIPMENTITEM section controls
+     * 
+     * 
+     */
+    self.items = ko.observableArray();
+    self.toggleShipped = function(item) {
+        item.shipped(!item.shipped());
+        
+        var index = self.items().indexOf(item);
+        self.itemsUpdate(self.items.slice(index, index+1));
+    }
+    self.addNewItemRow = function() {
+        var newItem = new KO_ShipmentItem();
+        newItem.order_id = po_ID;
+        newItem.saved(false);
+        self.items.unshift(newItem);
+    };
+    self.removeitem= function(item) {
+        var params = {
+            _csrf: _csrf, 
+            co_name: co_name, 
+            id: item.id,
+            order_id: po_ID,
+        };
+        post(
+            '/database/destroy/shipmentitem',
+            params,
+            function (response) {
+                if (response.status !== 400 && response.order_id === po_ID) {
+                    item.id = undefined;
+                    item.saved(false);
+                    self.items.remove(item);
+                } else {
+                    if (response.raw && response.raw.code === 'ER_ROW_IS_REFERENCED_2') {
+                        alert('An invoice was found for this record. \nThis record cannot be deleted.');
+                    } else alert(JSON.stringify(response, null, '  '));
+                }
+            }
+        );
+    };
+    
+    self.saveitem = function(item) {
+        item.saved(true);
+        var params = {
+            _csrf: _csrf, 
+            co_name: co_name, 
+            item: item
+        };
+        post(
+            '/database/save/shipmentitem',
+            params,
+            function (response) {
+                if (response.status !== 400 && 'shipmentitem' in response) {
+                    item.id = response.shipmentitem.id;
+                    item.shipment = response.shipment;
+                    item.shipment_no(response.shipment.shipment_no);
+                    item.shipped(response.shipmentitem.shipped);
+                    item.saved(true);
+                    if ('created' in response) self.addNewItemRow();
+                } else {
+                    item.saved(false);
+                    alert(JSON.stringify(response, null, '  '));
+                }
+            }
+        );
+    };
+    
+    self.itemsGet = function () {
+        var params = {
+                _csrf: _csrf, 
+                id: po_ID,
+        };
+        post(
+            '/database/get/shipmentitems',
+            params,
+            function (response) {
+                response.sort(function (a,b) {
+                    return new Date(b.shipment_id.shipmentdate) - new Date(a.shipment_id.shipmentdate);
+                });
+                self.items.removeAll();
+                for (var i=0; i<response.length; i++) {
+                    self.items.push(new KO_ShipmentItem(response[i]));
+                }
+                self.addNewItemRow();
+            }
+        );
+    };
+    
+    self.itemsGet();
+    
+    
+    
+    self.itemsGet22 = function () {
+        var params = {
+                _csrf: _csrf, 
+                id: po_ID,
+        };
+        post(
+            '/database/get/shipments',
+            params,
+            function (response) {
+                console.log('DONE');
+            }
+        );
+    };
+    
+    self.itemsGet22();
+}
+    
+ko.applyBindings(new PageModel());
+</script>

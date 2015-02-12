@@ -7,6 +7,38 @@ function KO_Cogroup(data) {
     self.is_active = ko.observable(data.is_active);
     self.is_supplier = ko.observable(data.is_supplier);
     self.is_customer = ko.observable(data.is_customer);
+    
+    self.supplierStatus = ko.computed(function () {
+        return self.is_supplier() === true ? "glyphicon glyphicon-ok btn btn-success" : "glyphicon glyphicon-remove btn btn-danger";
+    });
+    
+    self.customerStatus = ko.computed(function () {
+        return self.is_customer() === true ? "glyphicon glyphicon-ok btn btn-success" : "glyphicon glyphicon-remove btn btn-danger";
+    });
+    
+    self.toggleCustomer = function () {
+        self.is_customer(!self.is_customer());
+        self.saveUpdate();
+    };
+    self.toggleSupplier = function () {
+        self.is_supplier(!self.is_supplier());
+        self.saveUpdate();
+    };
+    
+                
+    self.saveUpdate = function () {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState !== 4) return;
+            
+        };
+        xmlhttp.open('POST', '/cogroup/update', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON({
+            _csrf: _csrf, 
+            cogroup_update: self
+        }));
+    };
 }
 
 function KO_Branch(data) {
@@ -202,13 +234,44 @@ function KO_Shipment(data) {
 }
 
 function KO_ShipmentItem(data) {
-    var self = this;
+    var self = this,
+        data = data || {};
+    
+    self.id = data.id;
     self.order_id = data.order_id;
-    self.shipment_id = data.shipment_id;
-    self.qty = data.qty;
-    self.lot = data.lot;
-    self.duedate = data.duedate;
-    self.shipped = data.shipped;
+    self.shipment = data.shipment_id;
+    self.shipment_no = ko.observable(self.shipment ? self.shipment.shipment_no : undefined);
+    
+    self.qty = ko.observable(data.qty || '');
+    self.lot = ko.observable(data.lot || '');
+    self.duedate = ko.observable(toInputDate(data.duedate));
+    self.shipped = ko.observable(data.shipped || false);
+    
+    self.shipdate = ko.observable(data.shipment_id !== undefined ? toInputDate(data.shipment_id.shipmentdate) : undefined);
+    
+    if (self.shipment_no() !== null && self.shipment_no() !== undefined) {
+        self.shipped(true);
+    }
+    if (!self.shipped()) self.shipdate(undefined);
+    self.saved = ko.observable(true);
+    
+    self.needToSave = ko.computed(function () {
+        // Listen for changes to the following.
+        self.qty();
+        self.lot();
+        self.duedate();
+        self.shipped();
+        self.shipdate();
+        self.shipment_no();
+        // Activate the save button.
+        self.saved(false);
+    });
+    
+    self.shippedHighlight = ko.computed(function () {
+        return self.shipped();
+    });
+    
+    self.saved(true);
 }
 
     
@@ -263,3 +326,30 @@ getTemplate = function (url, params, callback) {
     xmlhttp.setRequestHeader('Content-type', 'application/json');
     xmlhttp.send(ko.toJSON(params));
 };
+
+post = function (url, params, callback) {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState !== 4) return;
+        console.log('POST RESPONSE', xmlhttp.response);
+        callback(JSON.parse(xmlhttp.response));
+    };
+    xmlhttp.open('POST', url, true);
+    xmlhttp.setRequestHeader('Content-type', 'application/json');
+    xmlhttp.send(ko.toJSON(params));
+};
+
+toInputDate = function (datestr) {
+    if (typeof datestr == 'undefined') return undefined;
+    if (datestr === null) return undefined;
+    if (datestr === undefined) return undefined;
+    
+    var d = new Date(datestr);
+    if (d == "Invalid Date") return undefined;
+    newDateStr = [
+        d.getFullYear(),
+        [d.getMonth()<9?'0':'', d.getMonth()+1].join(''),
+        [d.getDate()<10?'0':'', d.getDate()].join('')
+    ].join('-');
+    return newDateStr;
+}

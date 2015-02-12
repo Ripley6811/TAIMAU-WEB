@@ -1,4 +1,75 @@
+/* http://charliepark.org/bootstrap_buttons/ "ECHO darkened" */
+.darkgreen-blend {
+  background-color: hsl(110, 56%, 16%) !important;
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#398f28", endColorstr="#193f11");
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#398f28), to(#193f11));
+  background-image: -moz-linear-gradient(top, #398f28, #193f11);
+  background-image: -ms-linear-gradient(top, #398f28, #193f11);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #398f28), color-stop(100%, #193f11));
+  background-image: -webkit-linear-gradient(top, #398f28, #193f11);
+  background-image: -o-linear-gradient(top, #398f28, #193f11);
+  background-image: linear-gradient(#398f28, #193f11);
+  border-color: #193f11 #193f11 hsl(110, 56%, 11%);
+  color: #fff !important;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.33);
+  -webkit-font-smoothing: antialiased;
+}
+/* http://charliepark.org/bootstrap_buttons/ "ECHO lightened" */
+.lightgreen-blend {
+  background-color: hsl(110, 41%, 75%) !important;
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#cee8c9", endColorstr="#add9a5");
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#cee8c9), to(#add9a5));
+  background-image: -moz-linear-gradient(top, #cee8c9, #add9a5);
+  background-image: -ms-linear-gradient(top, #cee8c9, #add9a5);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #cee8c9), color-stop(100%, #add9a5));
+  background-image: -webkit-linear-gradient(top, #cee8c9, #add9a5);
+  background-image: -o-linear-gradient(top, #cee8c9, #add9a5);
+  background-image: linear-gradient(#cee8c9, #add9a5);
+  border-color: #add9a5 #add9a5 hsl(110, 41%, 72.5%);
+  color: #333 !important;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.16);
+  -webkit-font-smoothing: antialiased;
+}
+/* http://charliepark.org/bootstrap_buttons/ "BRAVO darkened" */
+.darkorange-blend {
+  background-color: hsl(36, 100%, 28%) !important;
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#f49200", endColorstr="#8e5500");
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#f49200), to(#8e5500));
+  background-image: -moz-linear-gradient(top, #f49200, #8e5500);
+  background-image: -ms-linear-gradient(top, #f49200, #8e5500);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f49200), color-stop(100%, #8e5500));
+  background-image: -webkit-linear-gradient(top, #f49200, #8e5500);
+  background-image: -o-linear-gradient(top, #f49200, #8e5500);
+  background-image: linear-gradient(#f49200, #8e5500);
+  border-color: #8e5500 #8e5500 hsl(36, 100%, 23%);
+  color: #fff !important;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.33);
+  -webkit-font-smoothing: antialiased;
+}
+/* http://charliepark.org/bootstrap_buttons/ "BRAVO lightened" */
+.lightorange-blend {
+  background-color: hsl(36, 100%, 76%) !important;
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#fedead", endColorstr="#ffce84");
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#fedead), to(#ffce84));
+  background-image: -moz-linear-gradient(top, #fedead, #ffce84);
+  background-image: -ms-linear-gradient(top, #fedead, #ffce84);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fedead), color-stop(100%, #ffce84));
+  background-image: -webkit-linear-gradient(top, #fedead, #ffce84);
+  background-image: -o-linear-gradient(top, #fedead, #ffce84);
+  background-image: linear-gradient(#fedead, #ffce84);
+  border-color: #ffce84 #ffce84 hsl(36, 100%, 74%);
+  color: #333 !important;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.13);
+  -webkit-font-smoothing: antialiased;
+}
+
 body {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif,"新細明體", "PMingLiU";
+    font-size: 18px;
     padding-top: 60px;
     padding-bottom: 40px;
 }
@@ -16,6 +87,7 @@ body {
     color: cyan;
 }
 
+/*
 .container .gray {
     color: gray;
 }
@@ -23,6 +95,7 @@ body {
 .container .footer {
     width: 25%;
 }
+*/
 
 .form-signin {
     border: 2px solid;
@@ -321,18 +394,29 @@ hr {
     background-image:      -o-linear-gradient(left, rgba(0,0,0,.1), rgba(44, 111, 31, 0.8), rgba(0,0,0,.1)); 
 }
 
+/*
 .input-30 {
     font-size: 30px;
 }
 .input-24 {
     font-size: 24px;
 }
+*/
 
+/*
 .form-group-lg {
     font-size: 20px;
 }
+*/
 
+/*
 .form-horizontal .form-control {
     font-size: 22px;
     font-weight: bold;
+}
+*/
+
+.h1, .h2, .h3, h1, h2, h3 {
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
