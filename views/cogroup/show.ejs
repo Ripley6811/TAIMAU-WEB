@@ -60,41 +60,71 @@
 <table class="table table-condensed table-striped">
     <thead class="text-uppercase">
         <tr>
-            <th>縮寫</th>
-            <th>名稱 / 統一編號</th>
-            <th>電話 / 傳真</th>
-            <th>地址 (辦公室 / 運輸 / 發票)</th>
-            <th>備註</th>
+            <th>
+                <div class="row">
+                    <div class="col-md-6">
+                        縮寫 / 統一編號 / 名稱
+                    </div>
+                    <div class="col-md-6">
+                        電話 / 傳真
+                    </div>
+                </div>
+            </th>
+            <th>
+                <div class="row">
+                    <div class="col-md-6">
+                        地址 (辦公室 / 運輸 / 發票)
+                    </div>
+                    <div class="col-md-6">
+                        備註
+                    </div>
+                </div>
+            </th>
             <th>修改</th>
         </tr>
     </thead>
     <tbody data-bind="foreach: branches">
         <tr>
-            <td style="width: 8%">
-                <label style="width: 100%;" data-bind="text: name, visible: nameLock()"></label>
-                <input size="4" placeholder="簡寫" data-bind="value: name, visible: !nameLock()">
+            <td style="width: 50%">
+                <div class="row-fluid">
+                    <div class="col-md-6" style="padding: 0px 2px">
+                        <div class="row-fluid">
+                            <div class="col-xs-4" style="padding: 0px">
+                                <label style="width: 100%;" data-bind="text: name, visible: nameLock()"></label>
+                                <input size="5" placeholder="簡寫" data-bind="value: name, visible: !nameLock()">
+                            </div>
+                            <div class="col-xs-8" style="padding: 0px">
+                                <div class="input-group">
+                                    <div class="input-group-addon">TAX#</div>
+                                    <input size="6" maxlength="8" placeholder="tax id" data-bind="textInput: tax_id">
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <input placeholder="full name" style="width: 100%;" data-bind="textInput: fullname">
+                        <br>
+                        <input placeholder="english name" style="width: 100%;" data-bind="textInput: english_name">
+                    </div>
+                    <div class="col-md-6" style="padding: 0px 2px">
+                        <input placeholder="phone" style="width: 100%;" data-bind="textInput: phone">
+                        <br>
+                        <input placeholder="fax" style="width: 100%;" data-bind="textInput: fax">
+                    </div>
+                </div>
             </td>
-            <td style="width: 20%">
-                <input size="6" maxlength="8" placeholder="tax id" data-bind="value: tax_id">
-                <br>
-                <input placeholder="full name" style="width: 100%;" data-bind="textInput: fullname">
-                <br>
-                <input placeholder="english name" style="width: 100%;" data-bind="textInput: english_name">
-            </td>
-            <td style="width: 20%">
-                <input placeholder="phone" style="width: 100%;" data-bind="textInput: phone">
-                <br>
-                <input placeholder="fax" style="width: 100%;" data-bind="textInput: fax">
-            </td>
-            <td style="width: 30%">
-                <input placeholder="office address" style="width: 100%;" data-bind="textInput: address_office">
-                <br>
-                <input placeholder="shipping address" style="width: 100%;" data-bind="textInput: address_shipping">
-                <br>
-                <input placeholder="billing address" style="width: 100%;" data-bind="textInput: address_billing">
-            </td>
-            <td style="width: 22%">
-                <textarea rows="3" placeholder="note" style="width: 100%;" data-bind="textInput: note"></textarea>
+            <td style="width: 45%">
+                <div class="row-fluid">
+                    <div class="col-md-6" style="padding: 0px 2px">
+                        <input placeholder="office address" style="width: 100%;" data-bind="textInput: address_office">
+                        <br>
+                        <input placeholder="shipping address" style="width: 100%;" data-bind="textInput: address_shipping">
+                        <br>
+                        <input placeholder="billing address" style="width: 100%;" data-bind="textInput: address_billing">
+                    </div>
+                    <div class="col-md-6" style="padding: 0px 2px">
+                        <textarea rows="3" placeholder="note" style="width: 100%;" data-bind="textInput: note"></textarea>
+                    </div>
+                </div>
             </td>
             <td>
                 <div class="btn-group-vertical btn-group-sm">
