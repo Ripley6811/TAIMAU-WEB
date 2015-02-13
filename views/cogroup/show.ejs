@@ -1,8 +1,9 @@
 <!--Table views of a single company's branches, contacts and products-->
 
-<div class='container-fluid'>
+<div id="thisPage" class="container-fluid">
     
     
+<!--vvv START: Company header and buttons vvv-->
     <div class="row text-center">
         <div class="col-md-4 h1 text-center">
             <div class="row">
@@ -13,7 +14,7 @@
                 <form action="/cogroup/toggle" method="post"><input type="hidden" name="_csrf" value="<%= _csrf %>" />
                     <input type="hidden" name="cogroup" value="<%= cogroup.name %>">
                     <input type="hidden" name="back" value="/cogroup/show/<%= cogroup.name %>">
-                    <div class="btn-group">
+                    <div class="btn-group btn-group-lg">
                         <button data-bind="click: cogroup.toggleSupplier, attr: {'class': cogroup.supplierStatus}"> 供應商</button>
                         <button data-bind="click: cogroup.toggleCustomer, attr: {'class': cogroup.customerStatus}"> 客戶</button>
                     </div>
@@ -22,12 +23,12 @@
         </div>
         <div class="col-md-8">
             <div>
-                <div class="btn-group-vertical">
-                    <a disabled href="/cogroup/show/<%= cogroup.name %>" class="active btn btn-custom"><i class="glyphicon glyphicon-info-sign"></i> <strong>公司,聯絡人,產品訊息</strong></a>
+                <div class="btn-group btn-group-lg btn-group-justified hidden-xs">
+                    <a disabled href="/cogroup/show/<%= cogroup.name %>" class="active btn btn-custom"><i class="glyphicon glyphicon-info-sign"></i> <strong>公司與產品訊息</strong></a>
                     <a href="/order/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-pencil"></i> <strong>創造一個訂單</strong></a>
                     <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-folder-open"></i> <strong>管理訂單與到期日</strong></a>
                 </div>
-                <div class="btn-group-vertical">
+                <div class="btn-group btn-group-lg btn-group-justified hidden-xs">
                     <a href="/shipment/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-shopping-cart"></i> <strong>創造出貨單</strong></a>
                     <a disabled href="/invoice/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-usd"></i> <strong>創造發票</strong></a>
                     <a disabled href="/product/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-piggy-bank"></i> <strong>管理出貨單與發票</strong></a>
@@ -35,6 +36,7 @@
             </div>
         </div>
     </div>
+<!--^^^ END: Company header and buttons ^^^-->
         
 <!--SHOW DELETE BUTTON IF THERE ARE NO BRANCHES-->
    <% if (cogroup.branches.length == 0) { %>
@@ -55,7 +57,7 @@
             </div>
         </div>
         <div class="panel-body" style="padding: 0px">
-<table class="table table-condensed">
+<table class="table table-condensed table-striped">
     <thead class="text-uppercase">
         <tr>
             <th>縮寫</th>
@@ -105,8 +107,8 @@
 </table>
     
         </div>
-        <div class="panel-footer lightorange-blend">
-            <button class="btn btn-medium btn-primary" data-bind="click: addBranch">Add branch</button>
+        <div class="panel-footer lightorange-blend text-center">
+            <button class="btn btn-lg darkgreen-blend" data-bind="click: addBranch">Add branch</button>
         </div>
     </div>
     
@@ -120,7 +122,7 @@
             </div>
         </div>
         <div class="panel-body" style="padding: 0px">
-<table class="table table-condensed">
+<table class="table table-condensed table-striped">
     <thead class="text-uppercase">
         <tr>
             <th>分公司</th>
@@ -152,8 +154,8 @@
     </tbody>
 </table>
         </div>
-        <div class="panel-footer lightorange-blend">
-            <button class="btn btn-medium btn-primary" data-bind="click: addContact">Add contact</button>
+        <div class="panel-footer lightorange-blend text-center">
+            <button class="btn btn-lg darkgreen-blend" data-bind="click: addContact">Add contact</button>
         </div>
     </div>
     
@@ -170,7 +172,7 @@
             </div>
         </div>
         <div class="panel-body" style="padding: 0px">
-<table class="table table-condensed">
+<table class="table table-condensed table-striped">
     <thead class="text-uppercase">
         <tr>
             <th>順序</th>
@@ -251,8 +253,8 @@
     </tbody>
 </table>
         </div>
-        <div class="panel-footer lightorange-blend">
-            <button class="btn btn-medium btn-primary" data-bind="enable: productsAllSaved(), click: addProduct">Add product</button>
+        <div class="panel-footer lightorange-blend text-center">
+            <button class="btn btn-lg darkgreen-blend" data-bind="enable: productsAllSaved(), click: addProduct">Add product</button>
         </div>
     </div>
 </div>
@@ -260,7 +262,9 @@
 <script>
 var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
 var co_name = '<%= cogroup.name %>';
+addCompanyNavButtons(co_name);
 var _csrf = '<%= _csrf %>';
+                             
     
 function PageModel() {
     var self = this;
@@ -589,5 +593,5 @@ function PageModel() {
     };
 }
 
-ko.applyBindings(new PageModel());
+ko.applyBindings(new PageModel(), document.getElementById('thisPage'));
 </script>

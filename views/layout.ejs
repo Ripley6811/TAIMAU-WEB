@@ -35,13 +35,31 @@
     <script src="/js/knockout-3.2.0.js"></script>
     <script src="/js/ko_extenders.js"></script>
     <script src="/js/ko_models.js"></script>
+    <script src="/js/navmenu.js"></script>
     <!--SCRIPTS END-->
     
     <!--NAVBAR-->
-    <div>
+    <div id="navDropdown" class="hidden-md hidden-lg">
+        <button data-bind="click: toggleMenu()" type="button" style="position: fixed; z-index: 3000; left: 0px; top: 0px; padding: 4px;">
+            <img src="/images/taimau_symbol_h360_raised.png" height="43px">
+        </button>
+        <div data-bind="visible: showNavMenu" style="position: fixed; z-index: 3000; left: 54px; top: 0px; padding: 4px">
+            <div class="btn-group-vertical btn-group-lg" style="position: absolute">
+                <a class="btn darkgreen-blend" href="/cogroup/index">企業名錄</a>
+                <a class="btn darkgreen-blend" href="/cogroup/index/suppliers">供應商</a>
+                <a class="btn darkgreen-blend" href="/cogroup/index/customers">客戶</a>
+                <a class="btn darkgreen-blend" href="/cogroup/new">加新公司</a>
+            </div>
+            <div id="navButtons" class="btn-group-vertical btn-group-lg" style="position: absolute; left: 114px">
+            </div>
+        </div>
+    </div>
+    <script>ko.applyBindings(new NavModel(), document.getElementById("navDropdown"));</script>
+
+    <div class="hidden-xs hidden-sm">
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container-fluid">
-                <a class="navbar-brand" style="padding: 4px;" href="/">
+                <a class="navbar-brand" style="padding: 4px;" href="/cogroup/index">
                     <img src="/images/taimau_symbol_h360_raised.png" height="43px">
                 </a>
                 <div id="navbar" class="navbar-collapse collapse">
@@ -58,8 +76,6 @@
                         </li>
                         
                         <li><a href="/order/due">即將到期</a></li>
-                        
-                        
                     </ul>
                 </div>
                 <!--/.nav-collapse -->

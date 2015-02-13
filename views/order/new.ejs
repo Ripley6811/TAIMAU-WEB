@@ -1,69 +1,11 @@
 <!--Table view of all products for a single company-->
 
-<div class="container-fluid">
+<div id="thisPage" class="container-fluid">
     
     
 <!--START: Main row for two-panes-->
-<div class="row">
-    <div class="col-md-4" style="padding: 0px">
-<!--vvv START: Panel for products and services list vvv-->
-        <div class="panel panel-success">
-            <div class="panel-heading">
-                <h3 class="panel-title text-center">
-                    <strong>產品 / 服務</strong>
-                </h3>
-            </div>
-            <div class="panel-body" style="padding: 0px; overflow-y:scroll; height:75vh;">
-                <table class="table table-condensed">
-                    <thead class="text-uppercase">
-                        <tr>
-                            <th>選</th>
-                            <th>
-                                品名
-                                <span class="label label-primary">備註</span>
-                                <span class="badge">標籤</span>
-                                <span class="label label-success">英文</span>
-                            </th>
-                            <th>
-                                容量 - 容器
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody data-bind="foreach: products">
-                        <tr>            
-                <!--        Product Manifest selection    -->
-                            <td>
-                                <input style="width:26px; height:26px;" type="checkbox" name="product" data-bind="checked: selected">
-                            </td>
-
-                <!--        Product inventory name    -->
-                            <td>
-                                <span data-bind="text: inventory_name"></span> <span class="label label-primary" data-bind="text: note"></span>
-                                <br>
-                                <label class="badge" data-bind="text: product_label"></label>
-                                <span style="white-space: normal;" class="label label-success" data-bind="text: english_name"></span>
-                            </td>
-                            <td style="width: 25%">
-                                <span data-bind="text: units() + ' ' + UM()"></span> - <span data-bind="text: SKU"></span>
-                            </td>
-
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="panel-footer">
-                <div class="text-center">
-                    已停用的產品藏起來了. 看公司訊息.
-                </div>
-            </div>
-        </div>
-<!--^^^ END: Panel for products and services list ^^^-->
-    </div>
-    
-    
-    
-    
-    <div class="col-md-8">
+<div class="row">   
+    <div class="col-md-8 col-md-push-4">
 <!--vvv START: Company header and buttons vvv-->
     <div class="row text-center">
         <div class="col-md-4 h1 text-center">
@@ -75,7 +17,7 @@
                 <form action="/cogroup/toggle" method="post"><input type="hidden" name="_csrf" value="<%= _csrf %>" />
                     <input type="hidden" name="cogroup" value="<%= cogroup.name %>">
                     <input type="hidden" name="back" value="/cogroup/show/<%= cogroup.name %>">
-                    <div class="btn-group">
+                    <div class="btn-group btn-group-lg">
                         <button data-bind="click: cogroup.toggleSupplier, attr: {'class': cogroup.supplierStatus}"> 供應商</button>
                         <button data-bind="click: cogroup.toggleCustomer, attr: {'class': cogroup.customerStatus}"> 客戶</button>
                     </div>
@@ -84,12 +26,12 @@
         </div>
         <div class="col-md-8">
             <div>
-                <div class="btn-group-vertical">
-                    <a href="/cogroup/show/<%= cogroup.name %>" class=" btn btn-custom"><i class="glyphicon glyphicon-info-sign"></i> <strong>公司,聯絡人,產品訊息</strong></a>
+                <div class="btn-group btn-group-lg btn-group-justified hidden-xs">
+                    <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-info-sign"></i> <strong>公司與產品訊息</strong></a>
                     <a disabled href="/order/new/<%= cogroup.name %>" class="active btn btn-custom"><i class="glyphicon glyphicon-pencil"></i> <strong>創造一個訂單</strong></a>
                     <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-folder-open"></i> <strong>管理訂單與到期日</strong></a>
                 </div>
-                <div class="btn-group-vertical">
+                <div class="btn-group btn-group-lg btn-group-justified hidden-xs">
                     <a href="/shipment/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-shopping-cart"></i> <strong>創造出貨單</strong></a>
                     <a disabled href="/invoice/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-usd"></i> <strong>創造發票</strong></a>
                     <a disabled href="/product/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-piggy-bank"></i> <strong>管理出貨單與發票</strong></a>
@@ -126,7 +68,7 @@
         </div>
     </div>
     
-<table class="table table-condensed">
+<table class="table table-condensed table-striped">
     <thead class="text-uppercase">
         <tr>
         <th>標籤品名</th>
@@ -197,6 +139,60 @@
         </form>
 <!--END: PO entry form-->
     </div>
+    <div class="col-md-4 col-md-pull-8" style="padding: 0px">
+<!--vvv START: Panel for products and services list vvv-->
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title text-center">
+                    <strong>產品 / 服務</strong>
+                </h3>
+            </div>
+            <div class="panel-body" style="padding: 0px; overflow-y:scroll; height:75vh;">
+                <table class="table table-condensed table-striped">
+                    <thead class="text-uppercase">
+                        <tr>
+                            <th>選</th>
+                            <th>
+                                品名
+                                <span class="label label-primary">備註</span>
+                                <span class="badge">標籤</span>
+                                <span class="label label-success">英文</span>
+                            </th>
+                            <th>
+                                容量 - 容器
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: products">
+                        <tr>            
+                <!--        Product Manifest selection    -->
+                            <td style="width: 40px">
+                                <input style="width:36px; height:36px;" type="checkbox" name="product" data-bind="checked: selected">
+                            </td>
+
+                <!--        Product inventory name    -->
+                            <td>
+                                <span data-bind="text: inventory_name"></span> <span class="label label-primary" data-bind="text: note"></span>
+                                <br>
+                                <label class="badge" data-bind="text: product_label"></label>
+                                <span style="white-space: normal;" class="label label-success" data-bind="text: english_name"></span>
+                            </td>
+                            <td style="width: 25%">
+                                <span data-bind="text: units() + ' ' + UM()"></span> - <span data-bind="text: SKU"></span>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="panel-footer">
+                <div class="text-center">
+                    已停用的產品藏起來了. 看公司訊息.
+                </div>
+            </div>
+        </div>
+<!--^^^ END: Panel for products and services list ^^^-->
+    </div>
 </div>
     
         
@@ -214,6 +210,7 @@
 <script>
 var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
 var co_name = '<%= cogroup.name %>';
+addCompanyNavButtons(co_name);
 var _csrf = '<%= _csrf %>';
     
 function ItemsModel() {
@@ -267,6 +264,6 @@ function ItemsModel() {
     });
 }
 
-ko.applyBindings(new ItemsModel());
+ko.applyBindings(new ItemsModel(), document.getElementById("thisPage"));
 
 </script>

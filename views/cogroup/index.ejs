@@ -1,63 +1,59 @@
 <!--Table view of companies-->
+<div id="thisPage">
+    <table class="table table-condensed table-striped">
+        <thead class="text-uppercase">
+            <tr>
+                <th></th>
+                <th class="hidden-xs">公司名稱</th>
+                <th>分公司</th>
+                <th class="hidden-xs">統一編號</th>
+                <th>電話</th>
+                <th>傳真</th>
+            </tr>
+        </thead>
+    <!--    <tbody data-bind="foreach: cogroups">-->
+        <tbody>
+            <% cogroups.forEach(function(cogroup) { %>
+            <tr>
+                <td style="width: 280px">
+                    <div class="btn-group">
+                        <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn btn-custom">訊息</a>
+                        <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom">訂單</a>
+                    </div>
+                    <br class="hidden-sm hidden-md hidden-lg">
+                    <div class="btn-group">
+                        <a href="/order/new/<%= cogroup.name %>" class="btn btn-custom">新訂單</a>
+                        <a href="/shipment/new/<%= cogroup.name %>" class="btn btn-custom">新出貨單</a>
+                    </div>
+                </td>
+                <td class="hidden-xs"><%= cogroup.name %><font color="#acacac">公司</font></td>
+                <td>
+                    <% cogroup.branches.forEach(function(branch) { %>
+                        <% if (branch.fullname != '') { %>
+                        <abbr title="<%= branch.fullname %>"><%= branch.name %></abbr><br>
+                        <% } else { %>
+                        <%= branch.name %><br>
+                        <% } %>
+                    <% }); %>
+                </td>
+                <td class="hidden-xs">
+                    <% cogroup.branches.forEach(function(branch) { %>
+                        <%= branch.tax_id %><br>
+                    <% }); %>
+                </td>
+                <td>
+                    <% cogroup.branches.forEach(function(branch) { %>
+                        <%= branch.phone %><br>
+                    <% }); %>
+                </td>
+                <td>
+                    <% cogroup.branches.forEach(function(branch) { %>
+                        <%= branch.fax %><br>
+                    <% }); %>
+                </td>
 
-<table class="table table-condensed">
-    <thead class="text-uppercase"><tr>
-        <th></th>
-        <th>公司名稱</th>
-        <th>分公司</th>
-        <th>統一編號</th>
-        <th>電話</th>
-        <th>傳真</th>
-<!--        <th>辦公室地址</th>-->
-    </tr></thead>
-<!--    <tbody data-bind="foreach: cogroupes">-->
-    <tbody>
-        <% cogroups.forEach(function(cogroup) { %>
-        <tr>
-            <td>
-                <div class="btn-group">
-                    <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn btn-custom">訊息</a>
-                    <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom">訂單</a>
-                </div>
-                <div class="btn-group">
-                    <a href="/order/new/<%= cogroup.name %>" class="btn btn-custom">新訂單</a>
-                    <a href="/shipment/new/<%= cogroup.name %>" class="btn btn-custom">新出貨單</a>
-                </div>
-            </td>
-            <td><%= cogroup.name %><font color="#acacac">公司</font></td>
-            <td>
-                <% cogroup.branches.forEach(function(branch) { %>
-                    <% if (branch.fullname != '') { %>
-                    <abbr title="<%= branch.fullname %>"><%= branch.name %></abbr><br>
-                    <% } else { %>
-                    <%= branch.name %><br>
-                    <% } %>
-                <% }); %>
-            </td>
-            <td>
-                <% cogroup.branches.forEach(function(branch) { %>
-                    <%= branch.tax_id %><br>
-                <% }); %>
-            </td>
-            <td>
-                <% cogroup.branches.forEach(function(branch) { %>
-                    <%= branch.phone %><br>
-                <% }); %>
-            </td>
-            <td>
-                <% cogroup.branches.forEach(function(branch) { %>
-                    <%= branch.fax %><br>
-                <% }); %>
-            </td>
-            <td>
-<!--
-                <% cogroup.branches.forEach(function(branch) { %>
-                    <%= branch.address_office %><br>
-                <% }); %>
--->
-            </td>
-            
-        </tr>
-        <% }); %>
-    </tbody>
-</table>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>
