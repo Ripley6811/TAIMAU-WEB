@@ -208,7 +208,10 @@ tr:nth-child(odd) {
   -webkit-font-smoothing: antialiased;
 }
 .table-striped>tbody>tr:nth-child(odd)>td {
-   background-color: rgb(255, 248, 225);
+   background-color: rgb(255, 245, 211);
+}
+.table-striped>tbody>tr:nth-child(even)>td {
+   background-color: rgb(194, 226, 196);
 }
 
 
@@ -271,42 +274,19 @@ tbody tr:hover{
     background-color: rgb(255, 128, 0);
 }
 
-/*
 
-.input-group-addon {
-    font-weight: 700;
-    
-  background-color: hsl(86, 79%, 51%);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#caf296", endColorstr="#8fe41f");
-  background-image: -khtml-gradient(linear, left top, left bottom, from(#caf296), to(#8fe41f));
-  background-image: -moz-linear-gradient(top, #caf296, #8fe41f);
-  background-image: -ms-linear-gradient(top, #caf296, #8fe41f);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #caf296), color-stop(100%, #8fe41f));
-  background-image: -webkit-linear-gradient(top, #caf296, #8fe41f);
-  background-image: -o-linear-gradient(top, #caf296, #8fe41f);
-  background-image: linear-gradient(#caf296, #8fe41f);
-  border-color: #8fe41f #8fe41f hsl(86, 79%, 44.5%);
-  color: #333;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.42);
-  -webkit-font-smoothing: antialiased;
-}
-*/
-
-
-
-  .navbar-default {
+.navbar-default {
     background-color: rgb(187, 216, 187);
     border-color: black;
 }
 
-  .dropdown-menu > li > a:hover,
-   .dropdown-menu > li > a:focus {
-       font-weight: 700;
-    color: #262626;
-  background-color: rgb(255, 230, 140);  /*change color of links in drop down here*/
-   }
-
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+      font-weight: 700;
+      color: #262626;
+      background-color: rgb(255, 230, 140);
+      /*change color of links in drop down here*/
+}
 
 .navbar-default .navbar-nav > li > a {
        font-weight: 700;
@@ -431,12 +411,14 @@ hr {
 }
 */
 
-/*
-.form-horizontal .form-control {
-    font-size: 22px;
-    font-weight: bold;
+
+.form-control, .input-group-addon {
+    padding: 2px;
+    font-size: 16px;
+    height: 28px;
+/*    font-weight: bold;*/
 }
-*/
+
 
 .h1, .h2, .h3, h1, h2, h3 {
     margin-top: 8px;

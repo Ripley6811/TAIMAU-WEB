@@ -85,51 +85,55 @@
     </thead>
     <tbody data-bind="foreach: branches">
         <tr>
-            <td style="width: 50%">
+            <td style="width: 40%">
                 <div class="row-fluid">
                     <div class="col-md-6" style="padding: 0px 2px">
                         <div class="row-fluid">
                             <div class="col-xs-4" style="padding: 0px">
                                 <label style="width: 100%;" data-bind="text: name, visible: nameLock()"></label>
-                                <input size="5" placeholder="簡寫" data-bind="value: name, visible: !nameLock()">
+                                <input class="form-control" size="5" placeholder="簡寫" data-bind="value: name, visible: !nameLock()">
                             </div>
                             <div class="col-xs-8" style="padding: 0px">
                                 <div class="input-group">
-                                    <div class="input-group-addon">TAX#</div>
-                                    <input size="6" maxlength="8" placeholder="tax id" data-bind="textInput: tax_id">
+                                    <div class="input-group-addon">ID</div>
+                                    <input class="form-control" size="6" maxlength="8" placeholder="tax id" data-bind="textInput: tax_id">
                                 </div>
                             </div>
                         </div>
-                        <br>
-                        <input placeholder="full name" style="width: 100%;" data-bind="textInput: fullname">
-                        <br>
-                        <input placeholder="english name" style="width: 100%;" data-bind="textInput: english_name">
+                        <input class="form-control" placeholder="full name" style="width: 100%;" data-bind="textInput: fullname">
+                        
+                        <input class="form-control" placeholder="english name" style="width: 100%;" data-bind="textInput: english_name">
                     </div>
                     <div class="col-md-6" style="padding: 0px 2px">
-                        <input placeholder="phone" style="width: 100%;" data-bind="textInput: phone">
-                        <br>
-                        <input placeholder="fax" style="width: 100%;" data-bind="textInput: fax">
+                        <div class="input-group">
+                            <div class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></div>
+                            <input class="form-control" placeholder="phone" style="width: 100%;" data-bind="textInput: phone">
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-addon">FAX</div>
+                            <input class="form-control" placeholder="fax" style="width: 100%;" data-bind="textInput: fax">
+                        </div>
                     </div>
                 </div>
             </td>
-            <td style="width: 45%">
+            <td style="width: 60%">
                 <div class="row-fluid">
-                    <div class="col-md-6" style="padding: 0px 2px">
-                        <input placeholder="office address" style="width: 100%;" data-bind="textInput: address_office">
-                        <br>
-                        <input placeholder="shipping address" style="width: 100%;" data-bind="textInput: address_shipping">
-                        <br>
-                        <input placeholder="billing address" style="width: 100%;" data-bind="textInput: address_billing">
+                    <div class="col-md-7" style="padding: 0px 2px">
+                        <input class="form-control" placeholder="office address" style="width: 100%;" data-bind="textInput: address_office">
+                        
+                        <input class="form-control" placeholder="shipping address" style="width: 100%;" data-bind="textInput: address_shipping">
+                        
+                        <input class="form-control" placeholder="billing address" style="width: 100%;" data-bind="textInput: address_billing">
                     </div>
-                    <div class="col-md-6" style="padding: 0px 2px">
-                        <textarea rows="3" placeholder="note" style="width: 100%;" data-bind="textInput: note"></textarea>
+                    <div class="col-md-5" style="padding: 0px 2px">
+                        <textarea class="form-control" rows="3" placeholder="note" style="width: 100%;" data-bind="textInput: note"></textarea>
                     </div>
                 </div>
             </td>
             <td>
                 <div class="btn-group-vertical btn-group-sm">
-                <button class="btn btn-primary" data-bind="click: $parent.saveBranch, disable: saved">保留</button>
-                <button class="btn btn-danger" data-bind="click: $parent.removeBranch, enable: saved">刪除</button>
+                <button class="btn btn-primary" data-bind="click: $parent.saveBranch, disable: saved"><span class="glyphicon glyphicon-save"></span></button>
+                <button class="btn btn-danger" data-bind="click: $parent.removeBranch, enable: saved"><span class="glyphicon glyphicon-trash"></span></button>
                 </div>
             </td>
         </tr>
@@ -176,8 +180,8 @@
             <td style="width: 25%"><input placeholder="note" style="width: 100%;" data-bind="textInput: note"></td>
             <td>
                 <div class="btn-group-vertical">
-                <button class="btn btn-xs btn-primary" data-bind="click: $parent.saveContact, disable: saved">保留</button>
-                <button class="btn btn-xs btn-danger" data-bind="click: $parent.removeContact, enable: saved">刪除</button>
+                <button class="btn btn-xs btn-primary" data-bind="click: $parent.saveContact, disable: saved"><span class="glyphicon glyphicon-save"></span></button>
+                <button class="btn btn-xs btn-danger" data-bind="click: $parent.removeContact, enable: saved"><span class="glyphicon glyphicon-trash"></span></button>
                 </div>
             </td>
         </tr>
@@ -275,8 +279,8 @@
             
             <td>
                 <div class="btn-group-vertical btn-group-sm">
-                <button class="btn btn-primary" data-bind="click: $parent.saveProduct, disable: saved">保留</button>
-                <button class="btn btn-danger" data-bind="click: $parent.removeProduct, enable: saved">刪除</button>
+                <button class="btn btn-primary" data-bind="click: $parent.saveProduct, disable: saved"><span class="glyphicon glyphicon-save"></span></button>
+                <button class="btn btn-danger" data-bind="click: $parent.removeProduct, enable: saved"><span class="glyphicon glyphicon-trash"></span></button>
                 </div>
             </td>
         </tr>
