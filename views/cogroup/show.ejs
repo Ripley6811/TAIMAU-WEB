@@ -100,17 +100,22 @@
                                 </div>
                             </div>
                         </div>
-                        <input class="form-control" placeholder="full name" style="width: 100%;" data-bind="textInput: fullname">
-                        
-                        <input class="form-control" placeholder="english name" style="width: 100%;" data-bind="textInput: english_name">
+                        <div class="input-group">
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-registration-mark"></span></div>
+                            <input class="form-control" placeholder="full name" style="width: 100%;" data-bind="textInput: fullname">
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-globe"></span></div>
+                            <input class="form-control" placeholder="english name" style="width: 100%;" data-bind="textInput: english_name">
+                        </div>
                     </div>
                     <div class="col-md-6" style="padding: 0px 2px">
                         <div class="input-group">
-                            <div class="input-group-addon"> <span class="glyphicon glyphicon-earphone"></span></div>
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-earphone"></span></div>
                             <input class="form-control" placeholder="phone" style="width: 100%;" data-bind="textInput: phone">
                         </div>
                         <div class="input-group">
-                            <div class="input-group-addon">FAX</div>
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-print"></span></div>
                             <input class="form-control" placeholder="fax" style="width: 100%;" data-bind="textInput: fax">
                         </div>
                     </div>
@@ -119,11 +124,19 @@
             <td style="width: 60%">
                 <div class="row-fluid">
                     <div class="col-md-7" style="padding: 0px 2px">
-                        <input class="form-control" placeholder="office address" style="width: 100%;" data-bind="textInput: address_office">
+                        <div class="input-group">
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-home"></span></div>
+                            <input class="form-control" placeholder="office address" style="width: 100%;" data-bind="textInput: address_office">
+                        </div>
                         
-                        <input class="form-control" placeholder="shipping address" style="width: 100%;" data-bind="textInput: address_shipping">
-                        
-                        <input class="form-control" placeholder="billing address" style="width: 100%;" data-bind="textInput: address_billing">
+                        <div class="input-group">
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-shopping-cart"></span></div>
+                            <input class="form-control" placeholder="shipping address" style="width: 100%;" data-bind="textInput: address_shipping">
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></div>
+                            <input class="form-control" placeholder="billing address" style="width: 100%;" data-bind="textInput: address_billing">
+                        </div>
                     </div>
                     <div class="col-md-5" style="padding: 0px 2px">
                         <textarea class="form-control" rows="3" placeholder="note" style="width: 100%;" data-bind="textInput: note"></textarea>
@@ -210,62 +223,108 @@
     <thead class="text-uppercase">
         <tr>
             <th>順序</th>
-            <th>品名 (內用 / 客戶用)</th>
-            <th class="text-center">
-                <abbr title="# of kg, L, gal per container">容量</abbr> - 
-                <abbr title="kg, L, gal, etc.">單位</abbr> / 
-                <abbr title="桶, 包, 瓶, 等...">容器</abbr>
+            <th>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-sm-7">
+                                品名 (內用 / 客戶用)
+                            </div>
+                            <div class="col-sm-5">
+                                <abbr title="# of kg, L, gal per container">容量</abbr> - 
+                                <abbr title="kg, L, gal, etc.">單位</abbr> / 
+                                <abbr title="桶, 包, 瓶, 等...">容器</abbr>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                英文品名 / 包裝描述
+                            </div>
+                            <div class="col-sm-6">
+                                備註
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </th>
-            <th>英文品名 / 包裝描述</th>
-    <!--        <th><abbr title="Price by container or volume?">價格單位</abbr></th>-->
-            <th>備註</th>
             <th>用不用</th>
             <th>修改</th>
         </tr>
     </thead>
     <tbody data-bind="foreach: products">
         <tr data-bind="style: {'background-color': discontinued() ? 'pink' : null}">
-            <td style="width: 5%">
+            <td style="width: 36px">
                 <div class="btn-group-vertical btn-group-sm" data-bind="visible: locked()">
                     <button class="btn btn-custom" data-bind="click: $parent.productUpOne"><i class="glyphicon glyphicon-triangle-top"></i></button>
                     <button class="btn btn-custom" data-bind="click: $parent.productDownOne"><i class="glyphicon glyphicon-triangle-bottom"></i></button>
                 </div>
             </td>
-            
-            
 <!--        Product inventory name    -->
-            <td style="width: 18%">
-                <input placeholder="內用" style="width: 100%;" data-bind="textInput: inventory_name">
-                <input placeholder="標籤(選修的)" style="width: 100%;" data-bind="textInput: product_label">
-            </td>
-            <td class="text-center">
-                <span data-bind="text: units, visible: locked()"></span>
-                <input size="2" placeholder="#" data-bind="textInput: units, visible: !locked()">
-                <span data-bind="text: UM, visible: locked()"></span>
-                <input size="3" placeholder="kg, L, ..." data-bind="textInput: UM, visible: !locked()">
-                / <span data-bind="text: SKU, visible: locked()"></span>
-                <input size="4" placeholder="槽車,桶,包,..." data-bind="textInput: SKU, visible: !locked()">
-                <br>
-                <span data-bind="visible: unitpriced()">1 <span data-bind="text: UM"></span> = <span class="glyphicon glyphicon-usd"></span></span>
-                <span data-bind="visible: !unitpriced()">1 <span data-bind="text: SKU"></span> = <span class="glyphicon glyphicon-usd"></span></span>
-                <input size="4" placeholder="目前價格" data-bind="textInput: curr_price">
-                <div data-bind="visible: !locked()">
-                    <label><input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: true">用<strong data-bind="text: UM"></strong>價格</label>
-                    <label><input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: false">用<strong data-bind="text: SKU"></strong>價格</label>
+            <td style="width: 90%">
+                <div class="row-fluid">
+                    <div class="col-md-6" style="padding: 0px 2px">
+                        <div class="row-fluid">
+                            <div class="col-sm-7" style="padding: 0px 2px">
+                                <div class="input-group">
+                                    <div class="input-group-addon">內用</div>
+                                    <input class="form-control" placeholder="內用" style="width: 100%;" data-bind="textInput: inventory_name">
+                                </div>
+                                <div class="input-group">
+                                    <div class="input-group-addon">標籤</div>
+                                    <input class="form-control" placeholder="標籤(選修的)" style="width: 100%;" data-bind="textInput: product_label">
+                                </div>
+                            </div>
+                            <div class="col-sm-5" style="padding: 0px 2px">
+                                <span data-bind="text: units, visible: locked()"></span>
+                                <input class="form-control" size="2" placeholder="#" data-bind="textInput: units, visible: !locked()">
+                                <span data-bind="text: UM, visible: locked()"></span>
+                                <input class="form-control" size="3" placeholder="kg, L, ..." data-bind="textInput: UM, visible: !locked()">
+                                / <span data-bind="text: SKU, visible: locked()"></span>
+                                <input class="form-control" size="4" placeholder="槽車,桶,包,..." data-bind="textInput: SKU, visible: !locked()">
+                                <br>
+
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <span data-bind="visible: unitpriced()">1 <span data-bind="text: UM"></span> = <span class="glyphicon glyphicon-usd"></span></span>
+                                        <span data-bind="visible: !unitpriced()">1 <span data-bind="text: SKU"></span> = <span class="glyphicon glyphicon-usd"></span></span>
+                                    </div>
+                                    <input class="form-control" size="4" placeholder="目前價格" data-bind="textInput: curr_price">
+                                </div>
+                                <div data-bind="visible: !locked()">
+                                    <label><input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: true">用<strong data-bind="text: UM"></strong>價格</label>
+                                    <label><input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: false">用<strong data-bind="text: SKU"></strong>價格</label>
+                                </div>
+                                <div data-bind="visible: !locked()">
+                                    <label><input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: true">用<strong data-bind="text: UM"></strong>件數</label>
+                                    <label><input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: false">用<strong data-bind="text: SKU"></strong>件數</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6" style="padding: 0px 2px">
+                        <div class="row-fluid">
+                            <div class="col-sm-6" style="padding: 0px 2px">
+                                <div class="input-group">
+                                    <div class="input-group-addon">英文</div>
+                                    <input class="form-control" placeholder="英文品名" style="width: 100%;" data-bind="textInput: english_name">
+                                </div>
+                                <div class="input-group">
+                                    <div class="input-group-addon">包裝</div>
+                                    <input class="form-control" placeholder="包裝描述" style="width: 100%;" data-bind="textInput: SKUlong">
+                                </div>
+                            </div>
+                            <div class="col-sm-6" style="padding: 0px 2px">
+                                <input class="form-control" placeholder="note" style="width: 100%;" data-bind="textInput: note">
+                                <div class="input-group">
+                                    <input class="form-control" placeholder="PN (ASE)" style="width: 50%;" data-bind="textInput: ASE_PN">
+                                    <input class="form-control" placeholder="RT (ASE)" style="width: 50%;" data-bind="textInput: ASE_RT">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div data-bind="visible: !locked()">
-                    <label><input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: true">用<strong data-bind="text: UM"></strong>件數</label>
-                    <label><input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: false">用<strong data-bind="text: SKU"></strong>件數</label>
-                </div>
-            </td>
-            <td style="width: 20%">
-                <input placeholder="英文品名" style="width: 100%;" data-bind="textInput: english_name">
-                <input placeholder="包裝描述" style="width: 100%;" data-bind="textInput: SKUlong">
-            </td>
-            <td style="width: 25%">
-                <input placeholder="note" style="width: 100%;" data-bind="textInput: note">
-                <input placeholder="PN (ASE)" style="width: 49%;" data-bind="textInput: ASE_PN">
-                <input placeholder="RT (ASE)" style="width: 49%;" data-bind="textInput: ASE_RT">
             </td>
             
 <!--        Product Manifest Availability    -->

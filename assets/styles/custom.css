@@ -211,7 +211,7 @@ tr:nth-child(odd) {
    background-color: rgb(255, 245, 211);
 }
 .table-striped>tbody>tr:nth-child(even)>td {
-   background-color: rgb(194, 226, 196);
+   background-color: rgb(210, 232, 212);
 }
 
 
