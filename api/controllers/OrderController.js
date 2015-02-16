@@ -122,7 +122,7 @@ module.exports = {
                 });
             }
             // Return to PO view
-            res.redirect(params.back);
+            res.redirect('/order/showall/' + params.group);
         });
     },
     // Get all shipments for an order and order by duedate or id.

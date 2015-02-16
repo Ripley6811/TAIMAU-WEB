@@ -173,7 +173,7 @@ function KO_PurchaseOrder(product, order) {
     var self = this;
     self.id = order.id;
     self.orderID = order.orderID;
-    self.ordernote = order.ordernote;
+    self.ordernote = ko.observable(order.ordernote);
     self.MPN = product.MPN;
     self.is_supply = product.is_supply;
     self.label = product.product_label ? product.product_label : product.inventory_name;
