@@ -191,44 +191,18 @@ module.exports = {
             });
         });
     },
-    // Toggle open/close on orders
-    toggle_open: function (req, res) {
-        console.log('TOGGLE OPEN\n', req.params.all());
-        
-        Order.find(req.param('orderIDs'), function (err, orders) {
-            if (err) res.json({
-                where: 'Order.find',
-                error: err.message
-            }, 400);
-            
-            orders.forEach( function (order) {
-                order.is_open = !order.is_open;
-                order.save( function (err, newOrder) {
-                    if (err) res.json({
-                        where: 'order.save',
-                        error: err.message
-                    }, 400);
-                });
-            }); 
-            
-            res.redirect(req.param('back'));
-        });
-    },
     // Get all shipments for an order and order by duedate or id.
     update: function (req, res) {
+        var order = req.param('order');
         console.log(req.params.all());
-        Order.update({id: req.param('id')}, req.params.all())
-        .exec( function (err, order) {
-            if (err) res.json({
-                error: err.message
-            }, 400);
+        Order.update({id: order.id}, order)
+        .exec( function (err, orders) {
+            if (err) { res.send(err); return; }
             
-            req.flash('message', 'Record Updated!');
-            res.redirect('/order/show/' + order[0].id);
+//            req.flash('message', 'Record Updated!');
+            res.send(orders[0]);
         });
     },
-    
-    
     // Retrieve all order for a company.
     getOpen: function (req, res, next) {
         var co_name = req.param('id');

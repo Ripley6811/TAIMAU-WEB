@@ -41,104 +41,86 @@
 	<hr>
 
 
-<form action="/order/toggle_open" method="post">
-<input type="hidden" name="_csrf" value="<%= _csrf %>" />
-<input type="hidden" name="back" value="/order/showall/<%= cogroup.name %>?page=<%= page %>">
-<div class="row-fluid h2">
-    訂單紀錄
+<div class="panel panel-success">
+<div class="panel-heading">
+    <h3 class="panel-title">
+        <strong>訂單紀錄</strong>
+    </h3>
 </div>
-<br>
-<table class="table table-condensed table-striped">
+<div class="panel-body" style="padding: 0px">
+<table class="table table-condensed table-striped" style="margin: 0px">
     <thead class="text-uppercase">
         <tr>
             <th></th>
             <th>訂單編號</th>
-            <th>選</th>
-            <th>使用中</th>
+            <th class="text-center">使用中</th>
             <th>標籤品名</th>
-            <th>價格</th>
-    <!--        <th class="text-center">訂單數量</th>-->
+            <th class="text-center">價格</th>
+            <th class="text-center">訂單數量</th>
+<!--
             <th class="text-center">剩下數量</th>
             <th class="text-center">已出數量</th>
+-->
             <th class="text-center">訂單日期</th>
             <th>備註</th>
+            <th class="text-center">刪除</th>
         </tr>
     </thead>
     
-    <tbody>
-    <% orders.forEach(function(order) { %>
+    <tbody data-bind="foreach: orders">
         <tr>
-                <td>
-                    <a href="/order/show/<%- order.id %>" class="btn btn-xs btn-custom">View</a>
-                </td>
-            
-            <td><%= order.orderID %></td>
-            
-<!--        Product Order selection    -->
-            <td style="width: 26px">
-                <input style="margin: 0px; width: 26px; height: 26px" type="checkbox" name="orderIDs" value="<%= order.id %>">
+            <td>
+                <a data-bind="attr: {href: '/order/show/' + id}" class="btn btn-xs btn-custom"><span class="glyphicon glyphicon-eye-open"></span></a>
             </td>
             
-<!--        Product Order selection    -->
-            <td>
-                <% if (order.is_open === false) { %>
-                <font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
-                <% } else { %>
-                <font color="green"><abbr title="使用中:Currently open"><span class="glyphicon glyphicon-star"></span></abbr></font>
-                <% } %>
+            <td><span data-bind="text: orderID"></span></td>
+            
+<!--        Order open/close toggle    -->
+            <td style="width: 5%" class="text-center">
+                <button class="btn btn-custom btn-xs" data-bind="click: $parent.toggleActive, html: toggleMessage"></button>
             </td>
             
 <!--        Product label    -->
             <td>
-                <% if (order.MPN.product_label != "") { %>
-                <abbr title="內用名稱: <%= order.MPN.inventory_name %>"><%= order.MPN.product_label %></abbr>
-                <% } else { %>
-                <%= order.MPN.inventory_name %>
-                <% } %>
+                <span data-bind="text: label"></span>
             </td>
-            <td class="text-center">$ <%= order.price %></td>
+            <td class="text-center">
+                $ <span data-bind="text: price"></span>
+            </td>
             
 <!--        Quantities    -->
-                <% if (order.qty > 2e9) { %>
-<!--                <td class="text-right">&infin;</td>-->
-                <td class="text-right">&infin; <span class="glyphicon glyphicon-triangle-right"></span></td>
-                <td class="text-right"><%= order.qty_shipped() %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>
-            <% } else { %>
-<!--                <td class="text-right"><%= order.qty %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>-->
-                <td class="text-right"><%= order.qty_remaining() %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %> <span class="glyphicon glyphicon-triangle-right"></span></td>
-                <td class="text-right"><%= order.qty_shipped() %> <%= order.MPN.SKU !== '槽車' ? order.MPN.SKU : order.MPN.UM %></td>
-            <% } %>
-            <td class="text-center"><%= order.orderdate_string() %></td>
-            <td><%= order.ordernote %></td>
+            <td class="text-right">
+                <span data-bind="text: qty"></span>
+            </td>
+            <td class="text-center">
+                <span data-bind="text: orderdate"></span>
+            </td>
+            <td>
+                <span data-bind="text: ordernote"></span>
+            </td>
+            <td style="width: 5%" class="text-center">
+                <button class="btn btn-danger btn-xs" data-bind="click: $parent.removeOrder"><span class="glyphicon glyphicon-trash"></span></button>
+            </td>
             
         </tr>
-    <% }); %>
-        </tbody>
+    </tbody>
 </table>
-
+</div>
+    <div class="panel-footer lightorange-blend">
 <div class="row">
-    <div class="col-md-2 col-md-offset-2">
-        <input class="btn btn-lg btn-success" type="submit" name="toggle_open" value="再用/停用">
-    </div>
     <div class="col-md-6">
-        <a class="btn btn-custom" href="/order/showall/<%= cogroup.name %>?page=<%= page-1 %>"
-           <% if (page == 1) { %>
-             disabled
-            <% } %>><span class="glyphicon glyphicon-arrow-left"></span></a>
-        <% for (var i=1; i <= Math.min(8, maxPage); i=i+1) { %>
-            <a class="btn btn-custom" href="/order/showall/<%= cogroup.name %>?page=<%= i %>"<% if (page == i) { %>
-             disabled
-            <% } %>>
-                <%=i %>
-            </a>
-            <% } %>
-                <a class="btn btn-custom" href="/order/showall/<%= cogroup.name %>?page=<%= page+1 %>" 
-           <% if (page == maxPage) { %>
-             disabled
-            <% } %>><span class="glyphicon glyphicon-arrow-right"></span></a>
+        <div class="btn-group">
+            <a class="btn btn-custom" data-bind="click: function () { page(1) }, attr: {disabled: page() == 1 ? true : false}"><span class="glyphicon glyphicon-step-backward"></span></a>
+            <a class="btn btn-custom" data-bind="click: function () { page(page()-1) }, attr: {disabled: page() == 1 ? true : false}"><span class="glyphicon glyphicon-triangle-left"></span></a>
+        </div>
+        <div class="btn-group" data-bind="foreach: availablePages">
+            <a class="btn btn-custom" data-bind="click: function () { $parent.page(val) }, attr: {disabled: $parent.page() == val ? true : false}, text: val"></a>
+        </div>
+        
+        <a class="btn btn-custom" data-bind="click: function () { page(page()+1) }, attr: {disabled: page() == maxPage ? true : false}"><span class="glyphicon glyphicon-triangle-right"></span></a>
     </div>
 </div>
-    </form>
+    </div>
     </div>
 
 
@@ -151,6 +133,77 @@ var _csrf = '<%= _csrf %>';
     
 function PageModel() {
     var self = this;
+    
+    self.page = ko.observable(1);
+    self.maxPage = 20;
+    self.availablePages = ko.observableArray();
+    self.orders = ko.observableArray();
+    
+    self.toggleActive = function(order) {
+        order.is_open(!order.is_open());
+        self.ordersUpdate(order);
+    }
+    
+    self.ordersUpdate = function (order) {
+        var params = {
+            _csrf: _csrf, 
+            id: co_name,
+            order: order
+        };
+        var cb = function (response) {
+            if (response.is_open !== order.is_open()) {
+                order.is_open(!order.is_open());
+            }
+        };
+        post('/order/merge', params, cb);
+    };
+    
+    self.removeOrder = function (order) {
+        var params = {
+            _csrf: _csrf, 
+            co_name: co_name,
+            order: order
+        };
+        var cb = function (response) {
+            console.log('REMOVE', response);
+            if (response.status === 500) {
+                alert(response.raw.code);
+            } else {
+                self.orders.remove(order);
+                self.loadOrders(self.page()); // Refresh list so that it is full.
+            }
+        };
+        post('/database/destroy/order', params, cb);
+    };
+    
+    self.loadOrders = function (page, limit) {
+        var params = {
+            _csrf: _csrf,
+            group: co_name,
+            page: Number(page) || 1,
+            limit: Number(limit) || 16
+        };
+        var cb = function (response) {
+            self.orders.removeAll();
+            for (var i=0; i<response.length; i++) {
+                self.orders.push(new KO_PurchaseOrder(response[i].MPN, response[i]));
+            }
+        };
+        post('/database/get/orders', params, cb);
+    };
+//    self.loadOrders();
+    
+    
+    self.changePage = ko.computed(function () {
+        self.availablePages.removeAll();
+        var page = self.page();
+        for (var i=Math.max(page-4,1); ; i++) {
+            if (i <= self.maxPage && self.availablePages().length < 9) {
+                self.availablePages.push({val:i});
+            } else break;
+        }
+        self.loadOrders(page);
+    });
     
 }
 

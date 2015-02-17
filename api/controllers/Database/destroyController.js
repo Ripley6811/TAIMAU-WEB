@@ -43,8 +43,19 @@ module.exports = {
      * `Database\destroyController.order()`
      */
     order: function (req, res) {
-        return res.json({
-            todo: 'order() is not implemented yet!'
+        var co_name = req.param('co_name'),
+            order = req.param('order');
+        
+        Order.destroy({id: order.id, group: co_name})
+        .exec(function (err, records) {
+            if (err) { 
+                res.send(err); 
+            } else if (records.length > 1) {
+                res.send({'err': 'Too many records deleted',
+                          'records': records});
+            } else if (records.length == 1) {
+                res.send(records[0]);
+            } else res.send({err: err, records: records});
         });
     },
 

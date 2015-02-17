@@ -114,6 +114,9 @@ function KO_Contact(data) {
     self.saved(true);
 }
 
+var glyph_ban = '<font color="red"><span class="glyphicon glyphicon-ban-circle"></span></font>';
+var glyph_ok = '<font color="green"><span class="glyphicon glyphicon-ok"></span></font>';
+
 function KO_Product(data) {
     var self = this,
         data = data || {};
@@ -158,9 +161,9 @@ function KO_Product(data) {
     
     self.toggleMessage = ko.computed(function () {
         if (self.discontinued()) {
-            return '<font color="red"><span class="glyphicon glyphicon-ban-circle"></span></font>';
+            return glyph_ban;
         } else {
-            return '<font color="green"><span class="glyphicon glyphicon-ok"></span></font>';
+            return glyph_ok;
         }
     });
     
@@ -174,8 +177,10 @@ function KO_PurchaseOrder(product, order) {
     self.id = order.id;
     self.orderID = order.orderID;
     self.ordernote = ko.observable(order.ordernote);
+    self.orderdate = ko.observable(toInputDate(order.orderdate));
     self.MPN = product.MPN;
     self.is_supply = product.is_supply;
+    self.is_open = ko.observable(order.is_open);
     self.label = product.product_label ? product.product_label : product.inventory_name;
     self.inventory_name = product.inventory_name;
     self.sku = product.SKU;
@@ -208,6 +213,14 @@ function KO_PurchaseOrder(product, order) {
         }
         
         return total;
+    });
+    
+    self.toggleMessage = ko.computed(function () {
+        if (self.is_open()) {
+            return glyph_ok;
+        } else {
+            return glyph_ban;
+        }
     });
     
     self.selected = ko.observable(false);
@@ -331,7 +344,7 @@ post = function (url, params, callback) {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState !== 4) return;
-        console.log('POST RESPONSE', xmlhttp.response);
+//        console.log('POST RESPONSE', xmlhttp.response);
         callback(JSON.parse(xmlhttp.response));
     };
     xmlhttp.open('POST', url, true);

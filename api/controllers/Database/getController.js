@@ -67,12 +67,17 @@ module.exports = {
     * `Database/getController.orders()`
     */
     orders: function (req, res) {
-        var group = req.param('id'),
+        var group = req.param('group'),
             page = req.param('page') || 1,
-            limit = req.param('limit') || 50;
+            limit = req.param('limit') || 20;
         
         Order
         .find({group: group})
+        .sort('orderdate DESC')
+        .sort('id DESC')
+        .populate('MPN')
+        .populate('group')
+        .populate('shipments')
         .paginate({page: page, limit: limit})
         .exec(function (err, records) {
             if (err) { res.send(err); return; }
