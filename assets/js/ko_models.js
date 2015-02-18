@@ -178,6 +178,17 @@ function KO_PurchaseOrder(product, order) {
     self.orderID = order.orderID;
     self.ordernote = ko.observable(order.ordernote);
     self.orderdate = ko.observable(toInputDate(order.orderdate));
+    self.numberOfShipments = order.shipments ? order.shipments.length : undefined;
+    self.qty_shipped = (function () {
+        var total = 0;
+        if (self.numberOfShipments === undefined) return total;
+        for (var i=0; i<order.shipments.length; i++) {
+            if (order.shipments[i].shipped) {
+                total += order.shipments[i].qty;
+            }
+        }
+        return total;
+    })();
     self.MPN = product.MPN;
     self.is_supply = product.is_supply;
     self.is_open = ko.observable(order.is_open);

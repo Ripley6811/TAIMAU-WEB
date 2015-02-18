@@ -57,10 +57,8 @@
             <th>標籤品名</th>
             <th class="text-center">價格</th>
             <th class="text-center">訂單數量</th>
-<!--
-            <th class="text-center">剩下數量</th>
             <th class="text-center">已出數量</th>
--->
+            <th class="text-center">行程數</th>
             <th class="text-center">訂單日期</th>
             <th>備註</th>
             <th class="text-center">刪除</th>
@@ -92,6 +90,13 @@
             <td class="text-right">
                 <span data-bind="text: qty"></span>
             </td>
+            <td class="text-right">
+                <span data-bind="text: qty_shipped"></span>
+            </td>
+            <td class="text-left">
+                (<span data-bind="text: numberOfShipments"></span> <span class="glyphicon glyphicon-shopping-cart"></span>)
+            </td>
+            
             <td class="text-center">
                 <span data-bind="text: orderdate"></span>
             </td>
@@ -99,7 +104,7 @@
                 <span data-bind="text: ordernote"></span>
             </td>
             <td style="width: 5%" class="text-center">
-                <button class="btn btn-danger btn-xs" data-bind="click: $parent.removeOrder"><span class="glyphicon glyphicon-trash"></span></button>
+                <button class="btn btn-danger btn-xs" data-bind="click: $parent.removeOrder, disable: numberOfShipments > 0"><span class="glyphicon glyphicon-trash"></span></button>
             </td>
             
         </tr>
@@ -165,7 +170,7 @@ function PageModel() {
             order: order
         };
         var cb = function (response) {
-            console.log('REMOVE', response);
+//            console.log('REMOVE', response);
             if (response.status === 500) {
                 alert(response.raw.code);
             } else {
@@ -186,6 +191,7 @@ function PageModel() {
         var cb = function (response) {
             self.orders.removeAll();
             for (var i=0; i<response.length; i++) {
+//                console.log(response[i]);
                 self.orders.push(new KO_PurchaseOrder(response[i].MPN, response[i]));
             }
         };

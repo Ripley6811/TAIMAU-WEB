@@ -138,28 +138,31 @@
                 <tbody data-bind="foreach: items">
                     <tr data-bind="style: {backgroundColor: saved() ? null : 'lightblue'}">
 
-
             <!--        item inventory name    -->
                         <td style="width: 12%">
-                            <input type="date" style="width: 100%" data-bind="value: duedate, disable: shippedHighlight(), style: {backgroundColor: shippedHighlight() ? 'darkgrey' : null}">
+                            <input class="form-control" type="date" style="width: 100%" data-bind="value: duedate, disable: shippedHighlight(), style: {backgroundColor: shippedHighlight() ? 'darkgrey' : null}">
                         </td>
                         <td style="width: 25%">
                             <div class="input-group" style="width: 100%">
-                                <input type="text" class="text-right" placeholder="數量" style="width: 100%" data-bind="textInput: qty"> 
+                                <input type="text" 
+                                       class="form-control text-right" 
+                                       placeholder="數量" 
+                                       style="width: 100%" 
+                                       data-bind="textInput: qty"> 
                                 <div class="input-group-addon" data-bind="text: order.jianshu"></div>
                             </div>
                         </td>
                         <td style="width: 25%" data-bind="style: {backgroundColor: shippedHighlight() ? null : 'pink'}">
                             <div class="input-group" style="width: 100%">
                                 <div class="input-group-addon">#</div>
-                                <input type="text" placeholder="出貨編號" style="width: 100%" data-bind="textInput: shipment_no">
+                                <input class="form-control" type="text" placeholder="出貨編號" style="width: 100%" data-bind="textInput: shipment_no">
                             </div>
                         </td>
                         <td style="width: 12%" data-bind="style: {backgroundColor: shippedHighlight() ? null : 'pink'}">
-                            <input type="date" style="width: 100%" data-bind="value: shipdate">
+                            <input class="form-control" type="date" style="width: 100%" data-bind="value: shipdate">
                         </td>
                         <td>
-                            <div class="btn-group">
+                            <div class="btn-group btn-group-sm">
                                 <button class="btn btn-primary" data-bind="click: $parent.saveitem, disable: saved"><span class="glyphicon glyphicon-save"></span></button>
                                 <button class="btn btn-danger" data-bind="click: $parent.removeitem, enable: saved"><span class="glyphicon glyphicon-trash"></span></button>
                             </div>
