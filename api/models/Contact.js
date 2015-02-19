@@ -41,6 +41,10 @@ module.exports = {
             type: 'string',
             defaultsTo: ''
         },
+        cell: {
+            type: 'string',
+            defaultsTo: ''
+        },
         fax: {
             type: 'string',
             defaultsTo: ''

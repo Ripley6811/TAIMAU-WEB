@@ -92,6 +92,7 @@ function KO_Contact(data) {
     self.name = ko.observable(data.name || '');
     self.position = ko.observable(data.position || '');
     self.phone = ko.observable(data.phone || '');
+    self.cell = ko.observable(data.cell || '');
     self.fax = ko.observable(data.fax || '');
     self.email = ko.observable(data.email || '');
     self.note = ko.observable(data.note || '');
@@ -104,6 +105,7 @@ function KO_Contact(data) {
         self.name();
         self.position();
         self.phone();
+        self.cell();
         self.fax();
         self.email();
         self.note();

@@ -103,7 +103,7 @@
                             <input class="form-control" placeholder="shipping address" style="width: 100%;" data-bind="textInput: address_shipping">
                         </div>
                         <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></div>
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-usd"></span></div>
                             <input class="form-control" placeholder="billing address" style="width: 100%;" data-bind="textInput: address_billing">
                         </div>
                     </div>
@@ -142,28 +142,53 @@
     <thead class="text-uppercase">
         <tr>
             <th>分公司</th>
-            <th>職位</th>
-            <th>姓名</th>
-            <th>電話</th>
-            <th>傳真</th>
-            <th>Email</th>
-            <th>備註</th>
+            <th>職位 / 姓名</th>
+            <th>電話 / CELL / 傳真</th>
+            <th>Email / 備註</th>
             <th>修改</th>
         </tr>
     </thead>
     <tbody data-bind="foreach: contacts">
         <tr>
-            <td><select data-bind="options: $root.branchOptions, textInput: branch"></select></td>
-            <td><input size="5" placeholder="position" data-bind="textInput: position"></td>
-            <td><input size="4" placeholder="name" data-bind="textInput: name"></td>
-            <td style="width: 20%"><input placeholder="phone" style="width: 100%;" data-bind="textInput: phone"></td>
-            <td style="width: 20%"><input placeholder="fax" style="width: 100%;" data-bind="textInput: fax"></td>
-            <td style="width: 20%"><input placeholder="email" style="width: 100%;" data-bind="textInput: email"></td>
-            <td style="width: 25%"><input placeholder="note" style="width: 100%;" data-bind="textInput: note"></td>
             <td>
-                <div class="btn-group-vertical">
-                <button class="btn btn-xs btn-primary" data-bind="click: $parent.saveContact, disable: saved"><span class="glyphicon glyphicon-save"></span></button>
-                <button class="btn btn-xs btn-danger" data-bind="click: $parent.removeContact, enable: saved"><span class="glyphicon glyphicon-trash"></span></button>
+                <select data-bind="options: $root.branchOptions, textInput: branch"></select>
+            </td>
+            <td style="width: 20%">
+                <div class="input-group">
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-user"></span></div>
+                    <input class="form-control" size="4" placeholder="name" data-bind="textInput: name">
+                </div>
+                <div class="input-group">
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></div>
+                    <input class="form-control" size="5" placeholder="position" data-bind="textInput: position">
+                </div>
+            </td>
+            <td style="width: 30%">
+                <div class="input-group">
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-earphone"></span></div>
+                    <input class="form-control" placeholder="phone" style="width: 100%;" data-bind="textInput: phone">
+                </div>
+                <div class="input-group">
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-phone"></span></div>
+                    <input class="form-control" placeholder="cell" style="width: 100%;" data-bind="textInput: cell">
+                </div>
+                <div class="input-group">
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-print"></span></div>
+                    <input class="form-control" placeholder="fax" style="width: 100%;" data-bind="textInput: fax">
+                </div>
+                
+            </td>
+            <td>
+                <div class="input-group">
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></div>
+                    <input class="form-control" placeholder="email" style="width: 100%;" data-bind="textInput: email">
+                </div>
+                <textarea class="form-control" rows="2" placeholder="note" style="width: 100%;" data-bind="textInput: note"></textarea>
+            </td>
+            <td>
+                <div class="btn-group-vertical btn-group-sm">
+                <button class="btn btn-primary" data-bind="click: $parent.saveContact, disable: saved"><span class="glyphicon glyphicon-save"></span></button>
+                <button class="btn btn-danger" data-bind="click: $parent.removeContact, enable: saved"><span class="glyphicon glyphicon-trash"></span></button>
                 </div>
             </td>
         </tr>
