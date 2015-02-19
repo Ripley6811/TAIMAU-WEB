@@ -4,38 +4,7 @@
     
         <div class="col-md-8 col-md-push-4">
 <!--vvv START: Company header and buttons vvv-->
-    <div class="row text-center">
-        <div class="col-md-4 h2 text-center" style="margin: 0px; padding: 0px 0px">
-            <div class="row">
-                <strong data-bind="text: co_name"></strong>
-                <font color="lightgrey">(公司)</font>
-            </div>
-            <div class="row">
-                <form action="/cogroup/toggle" method="post"><input type="hidden" name="_csrf" value="<%= _csrf %>" />
-                    <input type="hidden" name="cogroup" value="<%= cogroup.name %>">
-                    <input type="hidden" name="back" value="/cogroup/show/<%= cogroup.name %>">
-                    <div class="btn-group">
-                        <button data-bind="click: cogroup.toggleSupplier, attr: {'class': cogroup.supplierStatus}"> 供應商</button>
-                        <button data-bind="click: cogroup.toggleCustomer, attr: {'class': cogroup.customerStatus}"> 客戶</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="col-md-8" style="margin: 0px; padding: 0px 5px">
-            <div>
-                <div class="btn-group btn-group-justified hidden-xs">
-                    <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-info-sign"></i> <strong>公司與產品訊息</strong></a>
-                    <a href="/order/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-pencil"></i> <strong>創造一個訂單</strong></a>
-                    <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-folder-open"></i> <strong>管理訂單與到期日</strong></a>
-                </div>
-                <div class="btn-group btn-group-justified hidden-xs">
-                    <a href="/shipment/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-shopping-cart"></i> <strong>創造出貨單</strong></a>
-                    <a href="/invoice/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-usd"></i> <strong>創造發票</strong></a>
-                    <a href="/shipment/showall/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-piggy-bank"></i> <strong>管理出貨單與發票</strong></a>
-                </div>
-            </div>
-        </div>
-    </div>
+<%- partial ('../company_header.ejs') %>
 <!--^^^ END: Company header and buttons ^^^-->
             
             <hr>
