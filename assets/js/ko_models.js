@@ -355,7 +355,6 @@ post = function (url, params, callback) {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState !== 4) return;
-//        console.log('POST RESPONSE', xmlhttp.response);
         callback(JSON.parse(xmlhttp.response));
     };
     xmlhttp.open('POST', url, true);

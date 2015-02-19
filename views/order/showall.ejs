@@ -61,7 +61,6 @@
             <th class="text-center">行程數</th>
             <th class="text-center">訂單日期</th>
             <th>備註</th>
-            <th class="text-center">刪除</th>
         </tr>
     </thead>
     
@@ -71,11 +70,17 @@
                 <a data-bind="attr: {href: '/order/show/' + id}" class="btn btn-xs btn-custom"><span class="glyphicon glyphicon-eye-open"></span></a>
             </td>
             
-            <td><span data-bind="text: orderID"></span></td>
+            <td>
+                <span class="badge" data-bind="text: id"></span> <span data-bind="text: orderID"></span>
+            </td>
             
 <!--        Order open/close toggle    -->
             <td style="width: 5%" class="text-center">
-                <button class="btn btn-custom btn-xs" data-bind="click: $parent.toggleActive, html: toggleMessage"></button>
+                <button class="btn btn-custom btn-xs" data-bind="click: $parent.toggleActive, visible: numberOfShipments > 0, html: toggleMessage"></button>
+                <div class="btn-group" data-bind="visible: numberOfShipments == 0">
+                    <button class="btn btn-custom btn-xs" data-bind="click: $parent.toggleActive, html: toggleMessage"></button>
+                    <button class="btn btn-danger btn-xs" data-bind="click: $parent.removeOrder"><span class="glyphicon glyphicon-trash"></span></button>
+                </div>
             </td>
             
 <!--        Product label    -->
@@ -103,9 +108,6 @@
             <td>
                 <span data-bind="text: ordernote"></span>
             </td>
-            <td style="width: 5%" class="text-center">
-                <button class="btn btn-danger btn-xs" data-bind="click: $parent.removeOrder, disable: numberOfShipments > 0"><span class="glyphicon glyphicon-trash"></span></button>
-            </td>
             
         </tr>
     </tbody>
@@ -113,7 +115,7 @@
 </div>
     <div class="panel-footer lightorange-blend">
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div class="btn-group">
             <a class="btn btn-custom" data-bind="click: function () { page(1) }, attr: {disabled: page() == 1 ? true : false}"><span class="glyphicon glyphicon-step-backward"></span></a>
             <a class="btn btn-custom" data-bind="click: function () { page(page()-1) }, attr: {disabled: page() == 1 ? true : false}"><span class="glyphicon glyphicon-triangle-left"></span></a>
@@ -122,7 +124,10 @@
             <a class="btn btn-custom" data-bind="click: function () { $parent.page(val) }, attr: {disabled: $parent.page() == val ? true : false}, text: val"></a>
         </div>
         
-        <a class="btn btn-custom" data-bind="click: function () { page(page()+1) }, attr: {disabled: page() == maxPage ? true : false}"><span class="glyphicon glyphicon-triangle-right"></span></a>
+        <div class="btn-group">
+            <a class="btn btn-custom" data-bind="click: function () { page(page()+1) }, attr: {disabled: page() == maxPage() ? true : false}"><span class="glyphicon glyphicon-triangle-right"></span></a>
+            <a class="btn btn-custom" data-bind="click: function () { page(maxPage()) }, attr: {disabled: page() == maxPage() ? true : false}"><span class="glyphicon glyphicon-step-forward"></span></a>
+        </div>
     </div>
 </div>
     </div>
@@ -140,7 +145,9 @@ function PageModel() {
     var self = this;
     
     self.page = ko.observable(1);
-    self.maxPage = 20;
+    self.limit = ko.observable(18);
+    self.maxPage = ko.observable(1);
+    
     self.availablePages = ko.observableArray();
     self.orders = ko.observableArray();
     
@@ -175,18 +182,18 @@ function PageModel() {
                 alert(response.raw.code);
             } else {
                 self.orders.remove(order);
-                self.loadOrders(self.page()); // Refresh list so that it is full.
+                self.loadOrders(); // Refresh list so that it is full.
             }
         };
         post('/database/destroy/order', params, cb);
     };
     
-    self.loadOrders = function (page, limit) {
+    self.loadOrders = function () {
         var params = {
             _csrf: _csrf,
             group: co_name,
-            page: Number(page) || 1,
-            limit: Number(limit) || 16
+            page: Number(self.page()),
+            limit: Number(self.limit())
         };
         var cb = function (response) {
             self.orders.removeAll();
@@ -196,19 +203,42 @@ function PageModel() {
             }
         };
         post('/database/get/orders', params, cb);
-    };
-//    self.loadOrders();
+    };    
     
+    /**
+     * Set `maxPage` onload and when `limit` is changed.
+     * 
+     * Requests a count of orders from database and sets maxPage value.
+     */
+    ko.computed(function () {
+        var limit = self.limit(); //<- Activate computed call
+        
+        var params = {
+            _csrf: _csrf,
+            co_name: co_name
+        };
+        var cb = function (response) {
+            console.log('COUNT:', response);
+            self.maxPage(Math.ceil(response.count / limit));
+        };
+        post('/database/count/orders', params, cb);
+    });
     
-    self.changePage = ko.computed(function () {
+    /**
+     * Set `availablePages` list of page numbers when `maxPage` or `page`
+     * are changed.
+     */
+    ko.computed(function () {
+        var page = self.page(), //<- Activate computed call
+            maxPage = self.maxPage();
+        
         self.availablePages.removeAll();
-        var page = self.page();
-        for (var i=Math.max(page-4,1); ; i++) {
-            if (i <= self.maxPage && self.availablePages().length < 9) {
+        for (var i=Math.max(page-3,1); ; i++) {
+            if (i <= maxPage && self.availablePages().length < 7) {
                 self.availablePages.push({val:i});
             } else break;
         }
-        self.loadOrders(page);
+        self.loadOrders();
     });
     
 }
