@@ -1,4 +1,9 @@
-<div id="products panel" class="panel panel-success">
+<!--
+Panel for displaying products in an editable table.
+
+Requires: "cogroup" object.
+-->
+<div id="products panel" class="panel panel-success" data-bind="with: productsVM">
     <div class="panel-heading">
         <div class="panel-title">
             <h2><strong>產品 / 服務</strong></h2>
@@ -147,11 +152,11 @@
 </div>
 
 <script>
-//var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
-var co_name = '<%= cogroup.name %>';
-var _csrf = '<%= _csrf %>';
+var viewModel = viewModel || {};
+var co_name = viewModel.co_name = '<%= cogroup.name %>';
+var _csrf = viewModel._csrf = '<%= _csrf %>';
 
-function ProductVM() {
+function ProductsVM() {
     var self = this;
     
     /**
@@ -297,6 +302,6 @@ function ProductVM() {
     };
 }
     
-ko.applyBindings(new ProductVM(), document.getElementById('products panel'));
+viewModel.productsVM = new ProductsVM();
 
 </script>

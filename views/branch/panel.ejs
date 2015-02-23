@@ -1,4 +1,9 @@
-<div id="branch panel" class="panel panel-success">
+<!--
+Panel for displaying branches in an editable table.
+
+Requires: "cogroup" object.
+-->
+<div id="branch panel" class="panel panel-success" data-bind="with: branchesVM">
     <div class="panel-heading">
         <div class="panel-title">
             <h2><strong>分公司</strong></h2>
@@ -117,16 +122,15 @@
 </div>
 
 <script>
-var co_name = '<%= cogroup.name %>';
-var _csrf = '<%= _csrf %>';
+var viewModel = viewModel || {};
+var co_name = viewModel.co_name = '<%= cogroup.name %>';
+var _csrf = viewModel._csrf = '<%= _csrf %>';
 
-function BranchVM() {
+function BranchesVM() {
+    var self = this;
+    // Make branchNames available to contactsVM for selection.
+    self.branchNames = viewModel.branchNames = ko.observableArray();
     
-    /**
-     * BRANCH section controls
-     * 
-     * 
-     */
     self.branches = ko.observableArray();
     self.addBranch = function() {
         var newBranch = new KO_Branch();
@@ -136,79 +140,58 @@ function BranchVM() {
         self.branches.push(newBranch);
     };
     self.removeBranch = function(branch) {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-                var response = JSON.parse(xmlhttp.response);
-                console.log(typeof response, response);
-                if (response.status !== 400 && response.group === co_name) {
-                    branch.name(null);
-                    branch.saved(false);
-                    self.branches.remove(branch);
-                } else {
-                    alert(JSON.stringify(response, null, '  '));
-                }
-            }
-        };
-        xmlhttp.open('POST', '/branch/destroy', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
+        var params = {
             _csrf: _csrf, 
             co_name: co_name, 
             name: branch.name
-        }));
+        };
+        post('/branch/destroy', params, function(response) {
+            if (response.status !== 400 && response.group === co_name) {
+                branch.name(null);
+                branch.saved(false);
+                self.branches.remove(branch);
+            } else {
+                alert(JSON.stringify(response, null, '  '));
+            }
+        });
     };
     
     self.saveBranch = function(branch) {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-                var response = JSON.parse(xmlhttp.response);
-                console.log(typeof response, response);
-                if (response.status !== 400 && response.group === co_name) {
-                    branch.name(response.name);
-                    branch.saved(true);
-                    branch.nameLock(true);
-                } else {
-                    alert(JSON.stringify(response, null, '  '));
-                }
-            }
-        };
-        xmlhttp.open('POST', '/branch/updateOrCreate', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
+        var params = {
             _csrf: _csrf, 
             co_name: co_name, 
             branch: branch
-        }));
+        };
+        // XXX: Update or create? or just create.
+        post('/database/save/branch', params, function(response) {
+            if (response.status !== 400 && response.group === co_name) {
+                branch.name(response.name);
+                branch.saved(true);
+                branch.nameLock(true);
+            } else {
+                alert(JSON.stringify(response, null, '  '));
+            }
+        });
     };
     
     self.getBranches = function () {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState !== 4) return;
-            
-            var db_branches = JSON.parse(xmlhttp.response);
-            
-            self.branches.removeAll();
-            for (var i=0; i<db_branches.length; i++) {
-                self.branches.push(new KO_Branch(db_branches[i]));
-            }
-            // Refresh Contacts so that the correct branch is set.
-//            self.getContacts();
-        };
-        xmlhttp.open('POST', '/database/get/branches', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
+        var params = {
             _csrf: _csrf, 
             id: co_name
-        }));
+        };
+        post('/database/get/branches', params, function(response) {
+            self.branches.removeAll();
+            self.branchNames.removeAll();
+            for (var i=0; i<response.length; i++) {
+                self.branches.push(new KO_Branch(response[i]));
+                self.branchNames.push(response[i].name);
+            }
+        });
     };
-    
     
     self.getBranches();
 }
 
-ko.applyBindings(new BranchVM(), document.getElementById('branch panel'));
+viewModel.branchesVM = new BranchesVM();
 
 </script>

@@ -23,8 +23,34 @@ module.exports = {
      * `Database/saveController.branch()`
      */
     branch: function (req, res) {
-        return res.json({
-            todo: 'branch() is not implemented yet!'
+        var co_name = req.param('co_name'),
+            branch = req.param('branch');
+        console.log(req.params.all());
+        // Blank name IDs are not allowed.
+        if (branch.name === '') {
+            res.send(false);
+            return false;
+        }
+
+        Branch.findOrCreate({name: branch.name, group: co_name}, branch)
+        .exec(function(err, rec) {
+            if (err) {
+                res.send(err);
+                return false;
+            }
+            
+            console.log('BRANCH FINDorCREATE:', typeof rec, rec);
+            
+            Branch.update({name: branch.name, group: co_name}, branch)
+            .exec(function (err, recs) {
+                if (err) {
+                    res.send(err);
+                    return false;
+                }
+
+//                console.log('BRANCH UPDATE:', typeof recs, recs);
+                res.send(recs[0]);
+            });
         });
     },
 

@@ -1,5 +1,9 @@
+<!--
+Panel for displaying contacts in an editable table.
 
-<div id="contacts panel" class="panel panel-success">
+Requires: "cogroup" object.
+-->
+<div id="contacts panel" class="panel panel-success" data-bind="with: contactsVM">
     <div class="panel-heading">
         <div class="panel-title">
             <h2><strong>聯絡人</strong></h2>
@@ -79,16 +83,15 @@
 
 
 <script>
-var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
-var co_name = '<%= cogroup.name %>';
-//addCompanyNavButtons(co_name);
-var _csrf = '<%= _csrf %>';
-    
+var viewModel = viewModel || {};
+var co_name = viewModel.co_name = '<%= cogroup.name %>';
+var _csrf = viewModel._csrf = '<%= _csrf %>';
 
-function ContactVM() {
+    
+function ContactsVM() {
     var self = this;
     
-    self.branchNames = ko.observableArray();
+    self.branchNames = viewModel.branchNames || ko.observableArray();
     
     // TODO: Figure out how to make sure the branch names stay updated.
     // For now, just have to refresh screen as needed.
@@ -96,16 +99,14 @@ function ContactVM() {
     self.getBranchNames = function () {
         var params = {_csrf: _csrf, id: co_name};
         post('/database/get/branches', params, function(response) {
-            var db_branches = response;
             // Recreate branch name options list.
             self.branchNames.removeAll();
-            for (var i=0; i<db_branches.length; i++) {
-                self.branchNames.push(db_branches[i].name);
+            for (var i=0; i<response.length; i++) {
+                self.branchNames.push(response[i].name);
             }
-            // Refresh Contacts so that the correct branch is set.
-            self.getContacts();
         });
     };
+    if (self.branchNames().length == 0) self.getBranchNames();
     
     /**
      * CONTACT section controls
@@ -140,7 +141,8 @@ function ContactVM() {
             co_name: co_name, 
             contact: contact
         };
-        post('/contact/updateOrCreate', params, function() {
+        post('/contact/updateOrCreate', params, function(response) {
+            console.log(response);
             if (response.status !== 400 && response.group === co_name) {
                 contact.id(response.id);
                 contact.saved(true);
@@ -164,11 +166,16 @@ function ContactVM() {
             }
         });
     };
-    self.getBranchNames();
+//    self.getBranchNames();
     
-//    self.getContacts();
+    self.getContacts();
+    // Update contacts if the branchNames array changes.
+    ko.computed(function () {
+        self.branchNames();
+        self.getContacts();
+    });
 }
 
-ko.applyBindings(new ContactVM(), document.getElementById('contacts panel'));
+viewModel.contactsVM = new ContactsVM();
     
 </script>
