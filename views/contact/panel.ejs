@@ -1,0 +1,174 @@
+
+<div id="contacts panel" class="panel panel-success">
+    <div class="panel-heading">
+        <div class="panel-title">
+            <h2><strong>聯絡人</strong></h2>
+        </div>
+    </div>
+    <div class="panel-body" style="padding: 0px">
+        <table class="table table-condensed table-striped">
+            <thead class="text-uppercase">
+                <tr>
+                    <th>分公司</th>
+                    <th>職位 / 姓名</th>
+                    <th>電話 / CELL / 傳真</th>
+                    <th>Email / 備註</th>
+                    <th>修改</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: contacts">
+                <tr>
+                    <td>
+                        <select data-bind="options: $root.branchNames, textInput: branch"></select>
+                    </td>
+                    <td style="width: 20%">
+                        <div class="input-group">
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-user"></span>
+                            </div>
+                            <input class="form-control" size="4" placeholder="name" data-bind="textInput: name">
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span>
+                            </div>
+                            <input class="form-control" size="5" placeholder="position" data-bind="textInput: position">
+                        </div>
+                    </td>
+                    <td style="width: 30%">
+                        <div class="input-group">
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-earphone"></span>
+                            </div>
+                            <input class="form-control" placeholder="phone" style="width: 100%;" data-bind="textInput: phone">
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-phone"></span>
+                            </div>
+                            <input class="form-control" placeholder="cell" style="width: 100%;" data-bind="textInput: cell">
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-print"></span>
+                            </div>
+                            <input class="form-control" placeholder="fax" style="width: 100%;" data-bind="textInput: fax">
+                        </div>
+
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span>
+                            </div>
+                            <input class="form-control" placeholder="email" style="width: 100%;" data-bind="textInput: email">
+                        </div>
+                        <textarea class="form-control" rows="2" placeholder="note" style="width: 100%;" data-bind="textInput: note"></textarea>
+                    </td>
+                    <td>
+                        <div class="btn-group-vertical btn-group-sm">
+                            <button class="btn btn-primary" data-bind="click: $parent.saveContact, disable: saved"><span class="glyphicon glyphicon-save"></span>
+                            </button>
+                            <button class="btn btn-danger" data-bind="click: $parent.removeContact, enable: saved"><span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="panel-footer lightorange-blend text-center">
+        <button class="btn btn-lg darkgreen-blend" data-bind="click: addContact">Add contact</button>
+    </div>
+</div>
+
+
+
+<script>
+var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
+var co_name = '<%= cogroup.name %>';
+//addCompanyNavButtons(co_name);
+var _csrf = '<%= _csrf %>';
+    
+
+function ContactVM() {
+    var self = this;
+    
+    self.branchNames = ko.observableArray();
+    
+    // TODO: Figure out how to make sure the branch names stay updated.
+    // For now, just have to refresh screen as needed.
+    // One option is to NOT use observableArray for each contact row.
+    self.getBranchNames = function () {
+        var params = {_csrf: _csrf, id: co_name};
+        post('/database/get/branches', params, function(response) {
+            var db_branches = response;
+            // Recreate branch name options list.
+            self.branchNames.removeAll();
+            for (var i=0; i<db_branches.length; i++) {
+                self.branchNames.push(db_branches[i].name);
+            }
+            // Refresh Contacts so that the correct branch is set.
+            self.getContacts();
+        });
+    };
+    
+    /**
+     * CONTACT section controls
+     */
+    self.contacts = ko.observableArray();
+    self.addContact = function() {
+        var newContact = new KO_Contact();
+        newContact.group(co_name);
+        self.contacts.push(newContact);
+    };
+    self.removeContact = function(contact) {
+        var params = {
+            _csrf: _csrf, 
+            co_name: co_name, 
+            id: contact.id
+        };
+        post('/contact/destroy', params, function(response) {
+            if (response.status !== 400 && response.group === co_name) {
+                contact.id(null);
+                contact.saved(false);
+                // Optionally remove contact from view.
+                self.contacts.remove(contact);
+            } else {
+                alert(JSON.stringify(response, null, '  '));
+            }
+        });
+    };
+    
+    self.saveContact = function(contact) {
+        var params = {
+            _csrf: _csrf, 
+            co_name: co_name, 
+            contact: contact
+        };
+        post('/contact/updateOrCreate', params, function() {
+            if (response.status !== 400 && response.group === co_name) {
+                contact.id(response.id);
+                contact.saved(true);
+            } else {
+                alert(JSON.stringify(response, null, '  '));
+            }
+        });
+    };
+    
+    self.getContacts = function () {
+        var params = {
+            _csrf: _csrf, 
+            id: co_name
+        };
+        post('/database/get/contacts', params, function(response) {
+            var db_contacts = response;
+            
+            self.contacts.removeAll();
+            for (var i=0; i<db_contacts.length; i++) {
+                self.contacts.push(new KO_Contact(db_contacts[i]));
+            }
+        });
+    };
+    self.getBranchNames();
+    
+//    self.getContacts();
+}
+
+ko.applyBindings(new ContactVM(), document.getElementById('contacts panel'));
+    
+</script>

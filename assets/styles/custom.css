@@ -148,6 +148,10 @@ table {
     font-size: 16px;
 }
 
+.table {
+    margin: 0px;
+}
+
 /*
 table {
   border-collapse:collapse;

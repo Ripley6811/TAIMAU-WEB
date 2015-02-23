@@ -18,667 +18,355 @@
     
 	<hr>
 <!--COMPANY BRANCHES LIST-->
+<%- partial ('../branch/panel.ejs') %>
     
-    <div class="panel panel-success">
-        <div class="panel-heading">
-            <div class="panel-title">
-                <h2><strong>分公司</strong></h2>
-            </div>
-        </div>
-        <div class="panel-body" style="padding: 0px">
-<table class="table table-condensed table-striped">
-    <thead class="text-uppercase">
-        <tr>
-            <th>
-                <div class="row">
-                    <div class="col-md-6">
-                        縮寫 / 統一編號 / 名稱
-                    </div>
-                    <div class="col-md-6">
-                        電話 / 傳真
-                    </div>
-                </div>
-            </th>
-            <th>
-                <div class="row">
-                    <div class="col-md-6">
-                        地址 (辦公室 / 運輸 / 發票)
-                    </div>
-                    <div class="col-md-6">
-                        備註
-                    </div>
-                </div>
-            </th>
-            <th>修改</th>
-        </tr>
-    </thead>
-    <tbody data-bind="foreach: branches">
-        <tr>
-            <td style="width: 40%">
-                <div class="row-fluid">
-                    <div class="col-md-6" style="padding: 0px 2px">
-                        <div class="row-fluid">
-                            <div class="col-xs-4" style="padding: 0px">
-                                <label style="width: 100%;" data-bind="text: name, visible: nameLock()"></label>
-                                <input class="form-control" size="5" placeholder="簡寫" data-bind="value: name, visible: !nameLock()">
-                            </div>
-                            <div class="col-xs-8" style="padding: 0px">
-                                <div class="input-group">
-                                    <div class="input-group-addon">ID</div>
-                                    <input class="form-control" size="6" maxlength="8" placeholder="tax id" data-bind="textInput: tax_id">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-registration-mark"></span></div>
-                            <input class="form-control" placeholder="full name" style="width: 100%;" data-bind="textInput: fullname">
-                        </div>
-                        <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-globe"></span></div>
-                            <input class="form-control" placeholder="english name" style="width: 100%;" data-bind="textInput: english_name">
-                        </div>
-                    </div>
-                    <div class="col-md-6" style="padding: 0px 2px">
-                        <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-earphone"></span></div>
-                            <input class="form-control" placeholder="phone" style="width: 100%;" data-bind="textInput: phone">
-                        </div>
-                        <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-print"></span></div>
-                            <input class="form-control" placeholder="fax" style="width: 100%;" data-bind="textInput: fax">
-                        </div>
-                    </div>
-                </div>
-            </td>
-            <td style="width: 60%">
-                <div class="row-fluid">
-                    <div class="col-md-7" style="padding: 0px 2px">
-                        <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-home"></span></div>
-                            <input class="form-control" placeholder="office address" style="width: 100%;" data-bind="textInput: address_office">
-                        </div>
-                        
-                        <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-shopping-cart"></span></div>
-                            <input class="form-control" placeholder="shipping address" style="width: 100%;" data-bind="textInput: address_shipping">
-                        </div>
-                        <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-usd"></span></div>
-                            <input class="form-control" placeholder="billing address" style="width: 100%;" data-bind="textInput: address_billing">
-                        </div>
-                    </div>
-                    <div class="col-md-5" style="padding: 0px 2px">
-                        <textarea class="form-control" rows="3" placeholder="note" style="width: 100%;" data-bind="textInput: note"></textarea>
-                    </div>
-                </div>
-            </td>
-            <td>
-                <div class="btn-group-vertical btn-group-sm">
-                <button class="btn btn-primary" data-bind="click: $parent.saveBranch, disable: saved"><span class="glyphicon glyphicon-save"></span></button>
-                <button class="btn btn-danger" data-bind="click: $parent.removeBranch, enable: saved"><span class="glyphicon glyphicon-trash"></span></button>
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table>
-    
-        </div>
-        <div class="panel-footer lightorange-blend text-center">
-            <button class="btn btn-lg darkgreen-blend" data-bind="click: addBranch">Add branch</button>
-        </div>
-    </div>
     
     
     <hr>
 <!--CONTACTS LIST-->
-    <div class="panel panel-success">
-        <div class="panel-heading">
-            <div class="panel-title">
-                <h2><strong>聯絡人</strong></h2>
-            </div>
-        </div>
-        <div class="panel-body" style="padding: 0px">
-<table class="table table-condensed table-striped">
-    <thead class="text-uppercase">
-        <tr>
-            <th>分公司</th>
-            <th>職位 / 姓名</th>
-            <th>電話 / CELL / 傳真</th>
-            <th>Email / 備註</th>
-            <th>修改</th>
-        </tr>
-    </thead>
-    <tbody data-bind="foreach: contacts">
-        <tr>
-            <td>
-                <select data-bind="options: $root.branchOptions, textInput: branch"></select>
-            </td>
-            <td style="width: 20%">
-                <div class="input-group">
-                    <div class="input-group-addon"><span class="glyphicon glyphicon-user"></span></div>
-                    <input class="form-control" size="4" placeholder="name" data-bind="textInput: name">
-                </div>
-                <div class="input-group">
-                    <div class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></div>
-                    <input class="form-control" size="5" placeholder="position" data-bind="textInput: position">
-                </div>
-            </td>
-            <td style="width: 30%">
-                <div class="input-group">
-                    <div class="input-group-addon"><span class="glyphicon glyphicon-earphone"></span></div>
-                    <input class="form-control" placeholder="phone" style="width: 100%;" data-bind="textInput: phone">
-                </div>
-                <div class="input-group">
-                    <div class="input-group-addon"><span class="glyphicon glyphicon-phone"></span></div>
-                    <input class="form-control" placeholder="cell" style="width: 100%;" data-bind="textInput: cell">
-                </div>
-                <div class="input-group">
-                    <div class="input-group-addon"><span class="glyphicon glyphicon-print"></span></div>
-                    <input class="form-control" placeholder="fax" style="width: 100%;" data-bind="textInput: fax">
-                </div>
-                
-            </td>
-            <td>
-                <div class="input-group">
-                    <div class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></div>
-                    <input class="form-control" placeholder="email" style="width: 100%;" data-bind="textInput: email">
-                </div>
-                <textarea class="form-control" rows="2" placeholder="note" style="width: 100%;" data-bind="textInput: note"></textarea>
-            </td>
-            <td>
-                <div class="btn-group-vertical btn-group-sm">
-                <button class="btn btn-primary" data-bind="click: $parent.saveContact, disable: saved"><span class="glyphicon glyphicon-save"></span></button>
-                <button class="btn btn-danger" data-bind="click: $parent.removeContact, enable: saved"><span class="glyphicon glyphicon-trash"></span></button>
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table>
-        </div>
-        <div class="panel-footer lightorange-blend text-center">
-            <button class="btn btn-lg darkgreen-blend" data-bind="click: addContact">Add contact</button>
-        </div>
-    </div>
-    
-
-    
+<%- partial ('../contact/panel.ejs') %>
     
     
     <hr>
 <!--PRODUCT AND SERVICES LIST-->
-    <div class="panel panel-success">
-        <div class="panel-heading">
-            <div class="panel-title">
-                <h2><strong>產品 / 服務</strong></h2>
-            </div>
-        </div>
-        <div class="panel-body" style="padding: 0px">
-<table class="table table-condensed table-striped">
-    <thead class="text-uppercase">
-        <tr>
-            <th>順序</th>
-            <th>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="row">
-                            <div class="col-sm-7">
-                                品名 (內用 / 客戶用)
-                            </div>
-                            <div class="col-sm-5">
-                                <abbr title="# of kg, L, gal per container">容量</abbr> - 
-                                <abbr title="kg, L, gal, etc.">單位</abbr> / 
-                                <abbr title="桶, 包, 瓶, 等...">容器</abbr>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                英文品名 / 包裝描述
-                            </div>
-                            <div class="col-sm-6">
-                                備註
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </th>
-            <th>用不用</th>
-            <th>修改</th>
-        </tr>
-    </thead>
-    <tbody data-bind="foreach: products">
-        <tr data-bind="style: {'background-color': discontinued() ? 'pink' : null}">
-            <td style="width: 36px">
-                <div class="btn-group-vertical btn-group-sm" data-bind="visible: locked()">
-                    <button class="btn btn-custom" data-bind="click: $parent.productUpOne"><i class="glyphicon glyphicon-triangle-top"></i></button>
-                    <button class="btn btn-custom" data-bind="click: $parent.productDownOne"><i class="glyphicon glyphicon-triangle-bottom"></i></button>
-                </div>
-            </td>
-<!--        Product inventory name    -->
-            <td style="width: 90%">
-                <div class="row-fluid">
-                    <div class="col-md-6" style="padding: 0px 2px">
-                        <div class="row-fluid">
-                            <div class="col-sm-7" style="padding: 0px 2px">
-                                <div class="input-group">
-                                    <div class="input-group-addon">內用</div>
-                                    <input class="form-control" placeholder="內用" style="width: 100%;" data-bind="textInput: inventory_name">
-                                </div>
-                                <div class="input-group">
-                                    <div class="input-group-addon">標籤</div>
-                                    <input class="form-control" placeholder="標籤(選修的)" style="width: 100%;" data-bind="textInput: product_label">
-                                </div>
-                            </div>
-                            <div class="col-sm-5" style="padding: 0px 2px">
-                                <span data-bind="text: units, visible: locked()"></span>
-                                <input class="form-control" size="2" placeholder="#" data-bind="textInput: units, visible: !locked()">
-                                <span data-bind="text: UM, visible: locked()"></span>
-                                <input class="form-control" size="3" placeholder="kg, L, ..." data-bind="textInput: UM, visible: !locked()">
-                                / <span data-bind="text: SKU, visible: locked()"></span>
-                                <input class="form-control" size="4" placeholder="槽車,桶,包,..." data-bind="textInput: SKU, visible: !locked()">
-                                <br>
-
-                                <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <span data-bind="visible: unitpriced()">1 <span data-bind="text: UM"></span> = <span class="glyphicon glyphicon-usd"></span></span>
-                                        <span data-bind="visible: !unitpriced()">1 <span data-bind="text: SKU"></span> = <span class="glyphicon glyphicon-usd"></span></span>
-                                    </div>
-                                    <input class="form-control" size="4" placeholder="目前價格" data-bind="textInput: curr_price">
-                                </div>
-                                <div data-bind="visible: !locked()">
-                                    <label><input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: true">用<strong data-bind="text: UM"></strong>價格</label>
-                                    <label><input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: false">用<strong data-bind="text: SKU"></strong>價格</label>
-                                </div>
-                                <div data-bind="visible: !locked()">
-                                    <label><input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: true">用<strong data-bind="text: UM"></strong>件數</label>
-                                    <label><input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: false">用<strong data-bind="text: SKU"></strong>件數</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6" style="padding: 0px 2px">
-                        <div class="row-fluid">
-                            <div class="col-sm-6" style="padding: 0px 2px">
-                                <div class="input-group">
-                                    <div class="input-group-addon">英文</div>
-                                    <input class="form-control" placeholder="英文品名" style="width: 100%;" data-bind="textInput: english_name">
-                                </div>
-                                <div class="input-group">
-                                    <div class="input-group-addon">包裝</div>
-                                    <input class="form-control" placeholder="包裝描述" style="width: 100%;" data-bind="textInput: SKUlong">
-                                </div>
-                            </div>
-                            <div class="col-sm-6" style="padding: 0px 2px">
-                                <input class="form-control" placeholder="note" style="width: 100%;" data-bind="textInput: note">
-                                <div class="input-group">
-                                    <input class="form-control" placeholder="PN (ASE)" style="width: 50%;" data-bind="textInput: ASE_PN">
-                                    <input class="form-control" placeholder="RT (ASE)" style="width: 50%;" data-bind="textInput: ASE_RT">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </td>
-            
-<!--        Product Manifest Availability    -->
-            <td style="width: 5%">
-                <button class="btn btn-custom btn-lg" data-bind="click: $parent.toggleActive, html: toggleMessage, visible: locked()"></button>
-                <div data-bind="visible: !locked()">
-                    <label><input type="radio" name="a" data-bind="checked: is_supply, checkedValue: true">進貨</label>
-                    <label><input type="radio" name="a" data-bind="checked: is_supply, checkedValue: false">出貨</label>
-                </div>
-            </td>
-            
-            <td>
-                <div class="btn-group-vertical btn-group-sm">
-                <button class="btn btn-primary" data-bind="click: $parent.saveProduct, disable: saved"><span class="glyphicon glyphicon-save"></span></button>
-                <button class="btn btn-danger" data-bind="click: $parent.removeProduct, enable: saved"><span class="glyphicon glyphicon-trash"></span></button>
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table>
-        </div>
-        <div class="panel-footer lightorange-blend text-center">
-            <button class="btn btn-lg darkgreen-blend" data-bind="enable: productsAllSaved(), click: addProduct">Add product</button>
-        </div>
-    </div>
+<%- partial ('../product/panel.ejs') %>
+    
+    
 </div>
 
 <script>
-var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
-var co_name = '<%= cogroup.name %>';
-addCompanyNavButtons(co_name);
-var _csrf = '<%= _csrf %>';
+//var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
+//var co_name = '<%= cogroup.name %>';
+//addCompanyNavButtons(co_name);
+//var _csrf = '<%= _csrf %>';
                              
     
 function PageModel() {
     var self = this;
-    
-    // Branch name options for select list.
-    self.branchOptions = ko.observableArray();
-    
-    
-    
-    /**
-     * BRANCH section controls
-     * 
-     * 
-     */
-    self.branches = ko.observableArray();
-    self.addBranch = function() {
-        var newBranch = new KO_Branch();
-        newBranch.group(co_name);
-        newBranch.nameLock(false);
-        newBranch.saved(false);
-        self.branches.push(newBranch);
-    };
-    self.removeBranch = function(branch) {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-                var response = JSON.parse(xmlhttp.response);
-                console.log(typeof response, response);
-                if (response.status !== 400 && response.group === co_name) {
-                    branch.name(null);
-                    branch.saved(false);
-                    self.branches.remove(branch);
-                } else {
-                    alert(JSON.stringify(response, null, '  '));
-                }
-            }
-        };
-        xmlhttp.open('POST', '/branch/destroy', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
-            _csrf: _csrf, 
-            co_name: co_name, 
-            name: branch.name
-        }));
-    };
-    
-    self.saveBranch = function(branch) {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-                var response = JSON.parse(xmlhttp.response);
-                console.log(typeof response, response);
-                if (response.status !== 400 && response.group === co_name) {
-                    branch.name(response.name);
-                    branch.saved(true);
-                    branch.nameLock(true);
-                } else {
-                    alert(JSON.stringify(response, null, '  '));
-                }
-            }
-        };
-        xmlhttp.open('POST', '/branch/updateOrCreate', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
-            _csrf: _csrf, 
-            co_name: co_name, 
-            branch: branch
-        }));
-    };
-    
-    self.getBranches = function () {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState !== 4) return;
-            
-            var db_branches = JSON.parse(xmlhttp.response);
-            
-            self.branches.removeAll();
-            self.branchOptions.removeAll();
-            for (var i=0; i<db_branches.length; i++) {
-                self.branches.push(new KO_Branch(db_branches[i]));
-                self.branchOptions.push(db_branches[i].name);
-            }
-            // Refresh Contacts so that the correct branch is set.
-            self.getContacts();
-        };
-        xmlhttp.open('POST', '/database/get/branches', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
-            _csrf: _csrf, 
-            id: co_name
-        }));
-    };
-    
-    
-    self.getBranches();
-    
-    
-    
-    
-    
-    /**
-     * CONTACT section controls
-     * 
-     * 
-     */
-    // Save button text
-    self.contacts = ko.observableArray();
-    self.addContact = function() {
-        var newContact = new KO_Contact();
-        newContact.group(co_name);
-        self.contacts.push(newContact);
-    };
-    self.removeContact = function(contact) {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-                var response = JSON.parse(xmlhttp.response);
-                console.log(typeof response, response);
-                if (response.status !== 400 && response.group === co_name) {
-                    contact.id(null);
-                    contact.saved(false);
-                    // Optionally remove contact from view.
-//                    self.contacts.remove(contact);
-                } else {
-                    alert(JSON.stringify(response, null, '  '));
-                }
-            }
-        };
-        xmlhttp.open('POST', '/contact/destroy', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
-            _csrf: _csrf, 
-            co_name: co_name, 
-            id: contact.id
-        }));
-    };
-    
-    self.saveContact = function(contact) {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-                var response = JSON.parse(xmlhttp.response);
-                console.log(typeof response, response);
-                if (response.status !== 400 && response.group === co_name) {
-                    contact.id(response.id);
-                    contact.saved(true);
-                } else {
-                    alert(JSON.stringify(response, null, '  '));
-                }
-            }
-        };
-        xmlhttp.open('POST', '/contact/updateOrCreate', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
-            _csrf: _csrf, 
-            co_name: co_name, 
-            contact: contact
-        }));
-    };
-    
-    self.getContacts = function () {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState !== 4) return;
-            
-            var db_contacts = JSON.parse(xmlhttp.response);
-            
-            self.contacts.removeAll();
-            for (var i=0; i<db_contacts.length; i++) {
-                self.contacts.push(new KO_Contact(db_contacts[i]));
-            }
-        };
-        xmlhttp.open('POST', '/database/get/contacts', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
-            _csrf: _csrf, 
-            id: co_name
-        }));
-    };
-    
-    self.getContacts();
+//    
+//    // Branch name options for select list.
+//    self.branchOptions = ko.observableArray();
+//    
+//    
+//    
+//    /**
+//     * BRANCH section controls
+//     * 
+//     * 
+//     */
+//    self.branches = ko.observableArray();
+//    self.addBranch = function() {
+//        var newBranch = new KO_Branch();
+//        newBranch.group(co_name);
+//        newBranch.nameLock(false);
+//        newBranch.saved(false);
+//        self.branches.push(newBranch);
+//    };
+//    self.removeBranch = function(branch) {
+//        var xmlhttp = new XMLHttpRequest();
+//        xmlhttp.onreadystatechange = function() {
+//            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+//                var response = JSON.parse(xmlhttp.response);
+//                console.log(typeof response, response);
+//                if (response.status !== 400 && response.group === co_name) {
+//                    branch.name(null);
+//                    branch.saved(false);
+//                    self.branches.remove(branch);
+//                } else {
+//                    alert(JSON.stringify(response, null, '  '));
+//                }
+//            }
+//        };
+//        xmlhttp.open('POST', '/branch/destroy', true);
+//        xmlhttp.setRequestHeader('Content-type', 'application/json');
+//        xmlhttp.send(ko.toJSON({
+//            _csrf: _csrf, 
+//            co_name: co_name, 
+//            name: branch.name
+//        }));
+//    };
+//    
+//    self.saveBranch = function(branch) {
+//        var xmlhttp = new XMLHttpRequest();
+//        xmlhttp.onreadystatechange = function() {
+//            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+//                var response = JSON.parse(xmlhttp.response);
+//                console.log(typeof response, response);
+//                if (response.status !== 400 && response.group === co_name) {
+//                    branch.name(response.name);
+//                    branch.saved(true);
+//                    branch.nameLock(true);
+//                } else {
+//                    alert(JSON.stringify(response, null, '  '));
+//                }
+//            }
+//        };
+//        xmlhttp.open('POST', '/branch/updateOrCreate', true);
+//        xmlhttp.setRequestHeader('Content-type', 'application/json');
+//        xmlhttp.send(ko.toJSON({
+//            _csrf: _csrf, 
+//            co_name: co_name, 
+//            branch: branch
+//        }));
+//    };
+//    
+//    self.getBranches = function () {
+//        var xmlhttp = new XMLHttpRequest();
+//        xmlhttp.onreadystatechange = function() {
+//            if (xmlhttp.readyState !== 4) return;
+//            
+//            var db_branches = JSON.parse(xmlhttp.response);
+//            
+//            self.branches.removeAll();
+//            self.branchOptions.removeAll();
+//            for (var i=0; i<db_branches.length; i++) {
+//                self.branches.push(new KO_Branch(db_branches[i]));
+//                self.branchOptions.push(db_branches[i].name);
+//            }
+//            // Refresh Contacts so that the correct branch is set.
+////            self.getContacts();
+//        };
+//        xmlhttp.open('POST', '/database/get/branches', true);
+//        xmlhttp.setRequestHeader('Content-type', 'application/json');
+//        xmlhttp.send(ko.toJSON({
+//            _csrf: _csrf, 
+//            id: co_name
+//        }));
+//    };
+//    
+//    
+//    self.getBranches();
+//    
     
     
     
-    /**
-     * PRODUCT section controls
-     * 
-     * 
-     */
-    self.products = ko.observableArray();
-    self.productsAllSaved = ko.computed(function () {
-        for (var i=0; i<self.products().length; i++) {
-            if (self.products()[i].saved() === false) return false;
-        }
-        return true;
-    });
-    self.toggleActive = function(product) {
-        product.discontinued(!product.discontinued());
-        
-        var index = self.products().indexOf(product);
-        self.productsUpdate(self.products.slice(index, index+1));
-    }
-    self.addProduct = function() {
-        var newProduct = new KO_Product();
-        newProduct.group(co_name);
-        newProduct.locked(false);
-        newProduct.saved(false);
-        newProduct.json().rank = self.products().length; // Set as last item.
-        self.products.push(newProduct);
-    };
-    self.removeProduct= function(product) {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-                var response = JSON.parse(xmlhttp.response);
-                console.log(typeof response, response);
-                if (response.status !== 400 && response.group === co_name) {
-                    product.MPN(null);
-                    product.saved(false);
-                    self.products.remove(product);
-                } else {
-                    alert(JSON.stringify(response, null, '  '));
-                }
-            }
-        };
-        xmlhttp.open('POST', '/product/destroy', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
-            _csrf: _csrf, 
-            co_name: co_name, 
-            MPN: product.MPN
-        }));
-    };
+//    
+//    /**
+//     * CONTACT section controls
+//     * 
+//     * 
+//     */
+//    // Save button text
+//    self.contacts = ko.observableArray();
+//    self.addContact = function() {
+//        var newContact = new KO_Contact();
+//        newContact.group(co_name);
+//        self.contacts.push(newContact);
+//    };
+//    self.removeContact = function(contact) {
+//        var xmlhttp = new XMLHttpRequest();
+//        xmlhttp.onreadystatechange = function() {
+//            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+//                var response = JSON.parse(xmlhttp.response);
+//                console.log(typeof response, response);
+//                if (response.status !== 400 && response.group === co_name) {
+//                    contact.id(null);
+//                    contact.saved(false);
+//                    // Optionally remove contact from view.
+////                    self.contacts.remove(contact);
+//                } else {
+//                    alert(JSON.stringify(response, null, '  '));
+//                }
+//            }
+//        };
+//        xmlhttp.open('POST', '/contact/destroy', true);
+//        xmlhttp.setRequestHeader('Content-type', 'application/json');
+//        xmlhttp.send(ko.toJSON({
+//            _csrf: _csrf, 
+//            co_name: co_name, 
+//            id: contact.id
+//        }));
+//    };
+//    
+//    self.saveContact = function(contact) {
+//        var xmlhttp = new XMLHttpRequest();
+//        xmlhttp.onreadystatechange = function() {
+//            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+//                var response = JSON.parse(xmlhttp.response);
+//                console.log(typeof response, response);
+//                if (response.status !== 400 && response.group === co_name) {
+//                    contact.id(response.id);
+//                    contact.saved(true);
+//                } else {
+//                    alert(JSON.stringify(response, null, '  '));
+//                }
+//            }
+//        };
+//        xmlhttp.open('POST', '/contact/updateOrCreate', true);
+//        xmlhttp.setRequestHeader('Content-type', 'application/json');
+//        xmlhttp.send(ko.toJSON({
+//            _csrf: _csrf, 
+//            co_name: co_name, 
+//            contact: contact
+//        }));
+//    };
+//    
+//    self.getContacts = function () {
+//        var xmlhttp = new XMLHttpRequest();
+//        xmlhttp.onreadystatechange = function() {
+//            if (xmlhttp.readyState !== 4) return;
+//            
+//            var db_contacts = JSON.parse(xmlhttp.response);
+//            
+//            self.contacts.removeAll();
+//            for (var i=0; i<db_contacts.length; i++) {
+//                self.contacts.push(new KO_Contact(db_contacts[i]));
+//            }
+//        };
+//        xmlhttp.open('POST', '/database/get/contacts', true);
+//        xmlhttp.setRequestHeader('Content-type', 'application/json');
+//        xmlhttp.send(ko.toJSON({
+//            _csrf: _csrf, 
+//            id: co_name
+//        }));
+//    };
+//    
+//    self.getContacts();
     
-    self.saveProduct = function(product) {
-        console.log('SAVEPRODUCT', co_name, ko.toJSON(product));
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-                var response = JSON.parse(xmlhttp.response);
-                console.log(typeof response, response);
-                if (response.status !== 400 && response.group === co_name) {
-                    product.MPN(response.MPN);
-                    product.saved(true);
-                    product.locked(true);
-                } else {
-                    alert(JSON.stringify(response, null, '  '));
-                }
-            }
-        };
-        xmlhttp.open('POST', '/product/updateOrCreate', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
-            _csrf: _csrf, 
-            co_name: co_name, 
-            product: product
-        }));
-    };
-    
-    self.productsGet = function () {
-        params = {
-            _csrf: _csrf, 
-            id: co_name,
-        };
-        callback = function (products) {
-            self.products.removeAll();
-            for (var i=0; i<products.length; i++) {
-                self.products.push(new KO_Product(products[i]));
-            }
-        };
-        getProducts(params, callback);
-    };
-    
-    self.productsGet();
-    
-    // Sort products by rank value (in json data).
-    self.productsSort = function () {
-        self.products.sort(function (a, b) {
-            return a.json().rank - b.json().rank;
-        });
-    }
-    
-    self.productUpOne = function (prod) {
-        var index = self.products().indexOf(prod);
-        if (index > 0) {
-            var temp = self.products()[index].json().rank;
-            self.products()[index].json().rank = self.products()[index-1].json().rank;
-            self.products()[index-1].json().rank = temp;
-        }
-        self.productsSort();
-        self.productsUpdate(self.products.slice(index-1, index+1));
-    };
-    self.productDownOne = function (prod) {
-        var index = self.products().indexOf(prod);
-        if (index < self.products().length-1) {
-            var temp = self.products()[index].json().rank;
-            self.products()[index].json().rank = self.products()[index+1].json().rank;
-            self.products()[index+1].json().rank = temp;
-        }
-        self.productsSort();
-        self.productsUpdate(self.products.slice(index, index+2));
-    };
-    
-    self.productsUpdate = function (prods) {
-        // Verify product rank numbers and update all products if incorrect.
-        for (var i=0; i<self.products().length; i++) {
-            if (self.products()[i].json().rank !== i) {
-                prods = self.products;
-                self.products()[i].json().rank = i;
-            }
-        }
-        
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState !== 4) return;
-            
-        };
-        xmlhttp.open('POST', '/product/merge', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
-            _csrf: _csrf, 
-            id: co_name,
-            products: prods
-        }));
-    };
+//    
+//    
+//    /**
+//     * PRODUCT section controls
+//     * 
+//     * 
+//     */
+//    self.products = ko.observableArray();
+//    self.productsAllSaved = ko.computed(function () {
+//        for (var i=0; i<self.products().length; i++) {
+//            if (self.products()[i].saved() === false) return false;
+//        }
+//        return true;
+//    });
+//    self.toggleActive = function(product) {
+//        product.discontinued(!product.discontinued());
+//        
+//        var index = self.products().indexOf(product);
+//        self.productsUpdate(self.products.slice(index, index+1));
+//    }
+//    self.addProduct = function() {
+//        var newProduct = new KO_Product();
+//        newProduct.group(co_name);
+//        newProduct.locked(false);
+//        newProduct.saved(false);
+//        newProduct.json().rank = self.products().length; // Set as last item.
+//        self.products.push(newProduct);
+//    };
+//    self.removeProduct= function(product) {
+//        var xmlhttp = new XMLHttpRequest();
+//        xmlhttp.onreadystatechange = function() {
+//            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+//                var response = JSON.parse(xmlhttp.response);
+//                console.log(typeof response, response);
+//                if (response.status !== 400 && response.group === co_name) {
+//                    product.MPN(null);
+//                    product.saved(false);
+//                    self.products.remove(product);
+//                } else {
+//                    alert(JSON.stringify(response, null, '  '));
+//                }
+//            }
+//        };
+//        xmlhttp.open('POST', '/product/destroy', true);
+//        xmlhttp.setRequestHeader('Content-type', 'application/json');
+//        xmlhttp.send(ko.toJSON({
+//            _csrf: _csrf, 
+//            co_name: co_name, 
+//            MPN: product.MPN
+//        }));
+//    };
+//    
+//    self.saveProduct = function(product) {
+//        console.log('SAVEPRODUCT', co_name, ko.toJSON(product));
+//        var xmlhttp = new XMLHttpRequest();
+//        xmlhttp.onreadystatechange = function() {
+//            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+//                var response = JSON.parse(xmlhttp.response);
+//                console.log(typeof response, response);
+//                if (response.status !== 400 && response.group === co_name) {
+//                    product.MPN(response.MPN);
+//                    product.saved(true);
+//                    product.locked(true);
+//                } else {
+//                    alert(JSON.stringify(response, null, '  '));
+//                }
+//            }
+//        };
+//        xmlhttp.open('POST', '/product/updateOrCreate', true);
+//        xmlhttp.setRequestHeader('Content-type', 'application/json');
+//        xmlhttp.send(ko.toJSON({
+//            _csrf: _csrf, 
+//            co_name: co_name, 
+//            product: product
+//        }));
+//    };
+//    
+//    self.productsGet = function () {
+//        params = {
+//            _csrf: _csrf, 
+//            id: co_name,
+//        };
+//        callback = function (products) {
+//            self.products.removeAll();
+//            for (var i=0; i<products.length; i++) {
+//                self.products.push(new KO_Product(products[i]));
+//            }
+//        };
+//        getProducts(params, callback);
+//    };
+//    
+//    self.productsGet();
+//    
+//    // Sort products by rank value (in json data).
+//    self.productsSort = function () {
+//        self.products.sort(function (a, b) {
+//            return a.json().rank - b.json().rank;
+//        });
+//    }
+//    
+//    self.productUpOne = function (prod) {
+//        var index = self.products().indexOf(prod);
+//        if (index > 0) {
+//            var temp = self.products()[index].json().rank;
+//            self.products()[index].json().rank = self.products()[index-1].json().rank;
+//            self.products()[index-1].json().rank = temp;
+//        }
+//        self.productsSort();
+//        self.productsUpdate(self.products.slice(index-1, index+1));
+//    };
+//    self.productDownOne = function (prod) {
+//        var index = self.products().indexOf(prod);
+//        if (index < self.products().length-1) {
+//            var temp = self.products()[index].json().rank;
+//            self.products()[index].json().rank = self.products()[index+1].json().rank;
+//            self.products()[index+1].json().rank = temp;
+//        }
+//        self.productsSort();
+//        self.productsUpdate(self.products.slice(index, index+2));
+//    };
+//    
+//    self.productsUpdate = function (prods) {
+//        // Verify product rank numbers and update all products if incorrect.
+//        for (var i=0; i<self.products().length; i++) {
+//            if (self.products()[i].json().rank !== i) {
+//                prods = self.products;
+//                self.products()[i].json().rank = i;
+//            }
+//        }
+//        
+//        var xmlhttp = new XMLHttpRequest();
+//        xmlhttp.onreadystatechange = function() {
+//            if (xmlhttp.readyState !== 4) return;
+//            
+//        };
+//        xmlhttp.open('POST', '/product/merge', true);
+//        xmlhttp.setRequestHeader('Content-type', 'application/json');
+//        xmlhttp.send(ko.toJSON({
+//            _csrf: _csrf, 
+//            id: co_name,
+//            products: prods
+//        }));
+//    };
 }
 
-ko.applyBindings(new PageModel(), document.getElementById('thisPage'));
+//ko.applyBindings(new PageModel(), document.getElementById('thisPage'));
 </script>

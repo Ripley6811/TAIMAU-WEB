@@ -1,0 +1,214 @@
+<div id="branch panel" class="panel panel-success">
+    <div class="panel-heading">
+        <div class="panel-title">
+            <h2><strong>分公司</strong></h2>
+        </div>
+    </div>
+    <div class="panel-body" style="padding: 0px">
+        <table class="table table-condensed table-striped">
+            <thead class="text-uppercase">
+                <tr>
+                    <th>
+                        <div class="row">
+                            <div class="col-md-6">
+                                縮寫 / 統一編號 / 名稱
+                            </div>
+                            <div class="col-md-6">
+                                電話 / 傳真
+                            </div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="row">
+                            <div class="col-md-6">
+                                地址 (辦公室 / 運輸 / 發票)
+                            </div>
+                            <div class="col-md-6">
+                                備註
+                            </div>
+                        </div>
+                    </th>
+                    <th>修改</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: branches">
+                <tr>
+                    <td style="width: 40%">
+                        <div class="row-fluid">
+                            <div class="col-md-6" style="padding: 0px 2px">
+                                <div class="row-fluid">
+                                    <div class="col-xs-4" style="padding: 0px">
+                                        <label style="width: 100%;" data-bind="text: name, visible: nameLock()"></label>
+                                        <input class="form-control" size="5" placeholder="簡寫" data-bind="value: name, visible: !nameLock()">
+                                    </div>
+                                    <div class="col-xs-8" style="padding: 0px">
+                                        <div class="input-group">
+                                            <div class="input-group-addon">ID</div>
+                                            <input class="form-control" size="6" maxlength="8" placeholder="tax id" data-bind="textInput: tax_id">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-registration-mark"></span>
+                                    </div>
+                                    <input class="form-control" placeholder="full name" style="width: 100%;" data-bind="textInput: fullname">
+                                </div>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-globe"></span>
+                                    </div>
+                                    <input class="form-control" placeholder="english name" style="width: 100%;" data-bind="textInput: english_name">
+                                </div>
+                            </div>
+                            <div class="col-md-6" style="padding: 0px 2px">
+                                <div class="input-group">
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-earphone"></span>
+                                    </div>
+                                    <input class="form-control" placeholder="phone" style="width: 100%;" data-bind="textInput: phone">
+                                </div>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-print"></span>
+                                    </div>
+                                    <input class="form-control" placeholder="fax" style="width: 100%;" data-bind="textInput: fax">
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="width: 60%">
+                        <div class="row-fluid">
+                            <div class="col-md-7" style="padding: 0px 2px">
+                                <div class="input-group">
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-home"></span>
+                                    </div>
+                                    <input class="form-control" placeholder="office address" style="width: 100%;" data-bind="textInput: address_office">
+                                </div>
+
+                                <div class="input-group">
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-shopping-cart"></span>
+                                    </div>
+                                    <input class="form-control" placeholder="shipping address" style="width: 100%;" data-bind="textInput: address_shipping">
+                                </div>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-usd"></span>
+                                    </div>
+                                    <input class="form-control" placeholder="billing address" style="width: 100%;" data-bind="textInput: address_billing">
+                                </div>
+                            </div>
+                            <div class="col-md-5" style="padding: 0px 2px">
+                                <textarea class="form-control" rows="3" placeholder="note" style="width: 100%;" data-bind="textInput: note"></textarea>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn-group-vertical btn-group-sm">
+                            <button class="btn btn-primary" data-bind="click: $parent.saveBranch, disable: saved"><span class="glyphicon glyphicon-save"></span>
+                            </button>
+                            <button class="btn btn-danger" data-bind="click: $parent.removeBranch, enable: saved"><span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+    <div class="panel-footer lightorange-blend text-center">
+        <button class="btn btn-lg darkgreen-blend" data-bind="click: addBranch">Add branch</button>
+    </div>
+</div>
+
+<script>
+var co_name = '<%= cogroup.name %>';
+var _csrf = '<%= _csrf %>';
+
+function BranchVM() {
+    
+    /**
+     * BRANCH section controls
+     * 
+     * 
+     */
+    self.branches = ko.observableArray();
+    self.addBranch = function() {
+        var newBranch = new KO_Branch();
+        newBranch.group(co_name);
+        newBranch.nameLock(false);
+        newBranch.saved(false);
+        self.branches.push(newBranch);
+    };
+    self.removeBranch = function(branch) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                var response = JSON.parse(xmlhttp.response);
+                console.log(typeof response, response);
+                if (response.status !== 400 && response.group === co_name) {
+                    branch.name(null);
+                    branch.saved(false);
+                    self.branches.remove(branch);
+                } else {
+                    alert(JSON.stringify(response, null, '  '));
+                }
+            }
+        };
+        xmlhttp.open('POST', '/branch/destroy', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON({
+            _csrf: _csrf, 
+            co_name: co_name, 
+            name: branch.name
+        }));
+    };
+    
+    self.saveBranch = function(branch) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                var response = JSON.parse(xmlhttp.response);
+                console.log(typeof response, response);
+                if (response.status !== 400 && response.group === co_name) {
+                    branch.name(response.name);
+                    branch.saved(true);
+                    branch.nameLock(true);
+                } else {
+                    alert(JSON.stringify(response, null, '  '));
+                }
+            }
+        };
+        xmlhttp.open('POST', '/branch/updateOrCreate', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON({
+            _csrf: _csrf, 
+            co_name: co_name, 
+            branch: branch
+        }));
+    };
+    
+    self.getBranches = function () {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState !== 4) return;
+            
+            var db_branches = JSON.parse(xmlhttp.response);
+            
+            self.branches.removeAll();
+            for (var i=0; i<db_branches.length; i++) {
+                self.branches.push(new KO_Branch(db_branches[i]));
+            }
+            // Refresh Contacts so that the correct branch is set.
+//            self.getContacts();
+        };
+        xmlhttp.open('POST', '/database/get/branches', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON({
+            _csrf: _csrf, 
+            id: co_name
+        }));
+    };
+    
+    
+    self.getBranches();
+}
+
+ko.applyBindings(new BranchVM(), document.getElementById('branch panel'));
+
+</script>

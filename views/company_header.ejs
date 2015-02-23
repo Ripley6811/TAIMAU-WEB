@@ -1,17 +1,17 @@
 <!-- Company header and navigation buttons for pages referring to a specific company. -->
-<div class="row text-center">
+<div id="company header" class="row text-center">
     <div class="col-md-4 h2 text-center" style="margin: 0px; padding: 0px 0px">
         <div class="row">
-            <strong data-bind="text: co_name"></strong>
+            <strong><%= cogroup.name %></strong>
             <font color="lightgrey">(公司)</font>
         </div>
         <div class="row">
             <form action="/cogroup/toggle" method="post"><input type="hidden" name="_csrf" value="<%= _csrf %>" />
-                <input type="hidden" name="cogroup" data-bind="value: co_name">
-                <input type="hidden" name="back" data-bind="value: '/cogroup/show/' + co_name">
+                <input type="hidden" name="cogroup" value="<%= cogroup.name %>">
+                <input type="hidden" name="back" value="/cogroup/show/<%= cogroup.name %>">
                 <div class="btn-group">
-                    <button data-bind="click: cogroup.toggleSupplier, attr: {'class': cogroup.supplierStatus}"> 供應商</button>
-                    <button data-bind="click: cogroup.toggleCustomer, attr: {'class': cogroup.customerStatus}"> 客戶</button>
+                    <button data-bind="click: toggleSupplier, attr: {'class': supplierStatus}"> 供應商</button>
+                    <button data-bind="click: toggleCustomer, attr: {'class': customerStatus}"> 客戶</button>
                 </div>
             </form>
         </div>
@@ -31,3 +31,7 @@
         </div>
     </div>
 </div>
+
+<script>
+ko.applyBindings(new KO_Cogroup(<%- JSON.stringify(cogroup) %>), document.getElementById('company header'));
+</script>
