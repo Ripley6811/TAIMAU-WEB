@@ -1,6 +1,6 @@
 <!--Table view of all products for a single company-->
 
-<div id="thisPage" class="container-fluid">
+<div id="this body" class="container-fluid">
     
     
 <!--START: Main row for two-panes-->
@@ -11,7 +11,7 @@
 <!--^^^ END: Company header and buttons ^^^-->
 	<hr>
 <!--START: PO entry form-->
-    <form action="/order/create">
+    <form action="/order/create" data-bind="with: itemsVM">
         <input type="hidden" name="_csrf" value="<%= _csrf %>" />
         <input type="hidden" name="group" value="<%= cogroup.name %>" />
     
@@ -162,7 +162,7 @@
                 </h3>
             </div>
             <div class="panel-body" style="padding: 0px; overflow-y:scroll; height:75vh;">
-                <table class="table table-condensed table-striped">
+                <table class="table table-condensed table-striped" data-bind="with: itemsVM">
                     <thead class="text-uppercase">
                         <tr>
                             <th>選</th>
@@ -222,10 +222,13 @@
     
     
 <script>
+var viewModel = viewModel || {};
+var co_name = viewModel.co_name = '<%= cogroup.name %>';
+var _csrf = viewModel._csrf = '<%= _csrf %>';
+    
+    
 var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
-var co_name = '<%= cogroup.name %>';
 addCompanyNavButtons(co_name);
-var _csrf = '<%= _csrf %>';
     
 function ItemsModel() {
     var self = this;
@@ -278,6 +281,11 @@ function ItemsModel() {
     });
 }
 
-ko.applyBindings(new ItemsModel(), document.getElementById("thisPage"));
+//ko.applyBindings(new ItemsModel(), document.getElementById("thisPage"));
 
+    
+    
+viewModel.itemsVM = new ItemsModel();
+console.dir(viewModel);
+ko.applyBindings(viewModel, document.getElementById('this body'));
 </script>

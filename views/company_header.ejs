@@ -37,7 +37,6 @@ Requires: "cogroup" object.
 </div>
 
 <script>
-//ko.applyBindings(new KO_Cogroup(<%- JSON.stringify(cogroup) %>), document.getElementById('company header'));
 var viewModel = viewModel || {};
 viewModel.cogroupVM = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
 </script>

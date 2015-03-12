@@ -43,7 +43,7 @@ Requires: "cogroup" object.
                             <div class="col-md-6" style="padding: 0px 2px">
                                 <div class="row-fluid">
                                     <div class="col-xs-4" style="padding: 0px">
-                                        <label style="width: 100%;" data-bind="text: name, visible: nameLock()"></label>
+                                        <label style="width: 100%;" data-bind="text: name, visible: nameLock(), click: $parent.showModal"></label>
                                         <input class="form-control" size="5" placeholder="簡寫" data-bind="value: name, visible: !nameLock()">
                                     </div>
                                     <div class="col-xs-8" style="padding: 0px">
@@ -120,16 +120,42 @@ Requires: "cogroup" object.
         <button class="btn btn-lg darkgreen-blend" data-bind="click: addBranch">Add branch</button>
     </div>
 </div>
-
+<div data-bind="with: branchesVM">
+    <div id="branch modal" class="modal" data-bind="style: {display: modalVisible() ? 'block' : 'none'}">
+        <div class="panel panel-success" data-bind="with: currentBranch, event: {keypress: printDetails}">
+            <div class="panel-body" style="padding: 30px">
+                <div data-bind="text: name"></div>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
 var viewModel = viewModel || {};
 var co_name = viewModel.co_name = '<%= cogroup.name %>';
 var _csrf = viewModel._csrf = '<%= _csrf %>';
 
+
+
 function BranchesVM() {
     var self = this;
     // Make branchNames available to contactsVM for selection.
     self.branchNames = viewModel.branchNames = ko.observableArray();
+    
+    self.currentBranch = ko.observable();
+    self.modalVisible = ko.observable(false);
+    document.onkeydown = function(evt) {
+        if (evt.keyCode == 27 && self.modalVisible()) {
+            self.modalVisible(false);
+        }
+    };
+    self.showModal = function(clickedItem) {
+        console.log(clickedItem.name());
+        self.currentBranch(clickedItem);
+        self.modalVisible(true);
+    };
+    self.printDetails = function(item) {
+        console.log(item);
+    };
     
     self.branches = ko.observableArray();
     self.addBranch = function() {

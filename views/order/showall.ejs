@@ -1,5 +1,5 @@
 <!--Table view of all POs ordered by order date-->
-<div id="thisPage" class="container-fluid">
+<div id="this body" class="container-fluid">
 <!--vvv START: Company header and buttons vvv-->
 <%- partial ('../company_header.ejs') %>
 <!--^^^ END: Company header and buttons ^^^-->
@@ -10,7 +10,7 @@
 	<hr>
 
 
-<div class="panel panel-success">
+<div class="panel panel-success" data-bind="with: pageVM">
 <div class="panel-heading">
     <h3 class="panel-title">
         <strong>訂單紀錄</strong>
@@ -104,10 +104,12 @@
 
 
 <script>
-var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
-var co_name = '<%= cogroup.name %>';
+var viewModel = viewModel || {};
+var co_name = viewModel.co_name = '<%= cogroup.name %>';
+var _csrf = viewModel._csrf = '<%= _csrf %>';
+    
+//var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
 addCompanyNavButtons(co_name);
-var _csrf = '<%= _csrf %>';
     
     
 function PageModel() {
@@ -212,5 +214,8 @@ function PageModel() {
     
 }
 
-ko.applyBindings(new PageModel(), document.getElementById("thisPage"));
+    
+viewModel.pageVM = new PageModel();
+console.dir(viewModel);
+ko.applyBindings(viewModel, document.getElementById('this body'));
 </script>

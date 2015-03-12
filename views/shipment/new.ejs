@@ -1,5 +1,5 @@
 
-<div id="thisPage" class="container-fluid">
+<div id="this body" class="container-fluid">
     <div class="row">    
     
         <div class="col-md-8 col-md-push-4">
@@ -98,7 +98,7 @@
                     <th class="text-center">出貨資訊</th>
                 </tr>
             </thead>
-            <tbody data-bind="foreach: rows">
+            <tbody data-bind="foreach: itemsVM.rows">
                 <tr>
                     <td class="text-left" data-bind="text: label"></td>
                     <td class="text-center" data-bind="text: guige"></td>
@@ -142,7 +142,7 @@
         
         
         
-        <div class="col-md-4 col-md-pull-8">
+        <div class="col-md-4 col-md-pull-8" data-bind="with: itemsVM">
             <ul class="nav nav-tabs nav-justified">
                 <li data-bind="css: {active: po_tab}">
                     <a href="#" data-bind="click: toggleTab">
@@ -240,10 +240,13 @@
 </div>
 
 <script>
+var viewModel = viewModel || {};
+var co_name = viewModel.co_name = '<%= cogroup.name %>';
+var _csrf = viewModel._csrf = '<%= _csrf %>';
+    
+    
 var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
-var co_name = '<%= cogroup.name %>';
 addCompanyNavButtons(co_name);
-var _csrf = '<%= _csrf %>';
     
 function ShipmentItemRow(item) {
     var self = this;
@@ -351,6 +354,7 @@ function ItemsModel() {
     
 }
 
-ko.applyBindings(new ItemsModel(), document.getElementById("thisPage"));
-
+viewModel.itemsVM = new ItemsModel();
+console.dir(viewModel);
+ko.applyBindings(viewModel, document.getElementById('this body'));
 </script>
