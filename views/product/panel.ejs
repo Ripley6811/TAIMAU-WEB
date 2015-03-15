@@ -6,14 +6,21 @@ Requires: "cogroup" object.
 <div id="products panel" class="panel panel-success" data-bind="with: productsVM">
     <div class="panel-heading">
         <div class="panel-title">
-            <h2><strong>產品 / 服務</strong></h2>
+            <div class="row">
+                <div class="col-xs-6">
+                    <h2><strong>產品 / 服務</strong></h2>
+                </div>
+                <div class="col-xs-6 text-right">
+                    <button class="btn btn-custom btn-lg" data-bind="click: toggleVerbose, css: {active: verbose_product_info}">Show All Fields</button>
+                </div>
+            </div>
         </div>
     </div>
     <div class="panel-body" style="padding: 0px">
         <table class="table table-condensed table-striped">
             <thead class="text-uppercase">
                 <tr>
-                    <th>順序</th>
+                    <th class="hidden-xs">順序</th>
                     <th>
                         <div class="row">
                             <div class="col-md-6">
@@ -40,14 +47,14 @@ Requires: "cogroup" object.
                             </div>
                         </div>
                     </th>
-                    <th>用不用</th>
-                    <th>修改</th>
+                    <th>活性</th>
+                    <th class="hidden-xs">修改</th>
                 </tr>
             </thead>
             <tbody data-bind="foreach: products">
                 <tr data-bind="style: {'background-color': discontinued() ? 'pink' : null}">
-                    <td style="width: 36px">
-                        <div class="btn-group-vertical btn-group-sm" data-bind="visible: locked()">
+                    <td class="hidden-xs" style="width: 80px">
+                        <div class="btn-group btn-group-sm" data-bind="visible: locked()">
                             <button class="btn btn-custom" data-bind="click: $parent.productUpOne"><i class="glyphicon glyphicon-triangle-top"></i>
                             </button>
                             <button class="btn btn-custom" data-bind="click: $parent.productDownOne"><i class="glyphicon glyphicon-triangle-bottom"></i>
@@ -55,7 +62,7 @@ Requires: "cogroup" object.
                         </div>
                     </td>
                     <!--        Product inventory name    -->
-                    <td style="width: 90%">
+                    <td style="width: 80%">
                         <div class="row-fluid">
                             <div class="col-md-6" style="padding: 0px 2px">
                                 <div class="row-fluid">
@@ -64,7 +71,7 @@ Requires: "cogroup" object.
                                             <div class="input-group-addon">內用</div>
                                             <input class="form-control" placeholder="內用" style="width: 100%;" data-bind="textInput: inventory_name">
                                         </div>
-                                        <div class="input-group">
+                                        <div class="input-group" data-bind="visible: $parent.verbose_product_info">
                                             <div class="input-group-addon">標籤</div>
                                             <input class="form-control" placeholder="標籤(選修的)" style="width: 100%;" data-bind="textInput: product_label">
                                         </div>
@@ -77,7 +84,7 @@ Requires: "cogroup" object.
                                         <input class="form-control" size="4" placeholder="槽車,桶,包,..." data-bind="textInput: SKU, visible: !locked()">
                                         <br>
 
-                                        <div class="input-group">
+                                        <div class="input-group" data-bind="visible: $parent.verbose_product_info">
                                             <div class="input-group-addon">
                                                 <span data-bind="visible: unitpriced()">1 <span data-bind="text: UM"></span> = <span class="glyphicon glyphicon-usd"></span></span>
                                                 <span data-bind="visible: !unitpriced()">1 <span data-bind="text: SKU"></span> = <span class="glyphicon glyphicon-usd"></span></span>
@@ -102,7 +109,7 @@ Requires: "cogroup" object.
                             <div class="col-md-6" style="padding: 0px 2px">
                                 <div class="row-fluid">
                                     <div class="col-sm-6" style="padding: 0px 2px">
-                                        <div class="input-group">
+                                        <div class="input-group" data-bind="visible: $parent.verbose_product_info">
                                             <div class="input-group-addon">英文</div>
                                             <input class="form-control" placeholder="英文品名" style="width: 100%;" data-bind="textInput: english_name">
                                         </div>
@@ -113,7 +120,7 @@ Requires: "cogroup" object.
                                     </div>
                                     <div class="col-sm-6" style="padding: 0px 2px">
                                         <input class="form-control" placeholder="note" style="width: 100%;" data-bind="textInput: note">
-                                        <div class="input-group">
+                                        <div class="input-group" data-bind="visible: $parent.verbose_product_info">
                                             <input class="form-control" placeholder="PN (ASE)" style="width: 50%;" data-bind="textInput: ASE_PN">
                                             <input class="form-control" placeholder="RT (ASE)" style="width: 50%;" data-bind="textInput: ASE_RT">
                                         </div>
@@ -124,8 +131,8 @@ Requires: "cogroup" object.
                     </td>
 
                     <!--        Product Manifest Availability    -->
-                    <td style="width: 5%">
-                        <button class="btn btn-custom btn-lg" data-bind="click: $parent.toggleActive, html: toggleMessage, visible: locked()"></button>
+                    <td style="width: 4%">
+                        <button class="btn btn-custom btn-sm" data-bind="click: $parent.toggleActive, html: toggleMessage, visible: locked()"></button>
                         <div data-bind="visible: !locked()">
                             <label>
                                 <input type="radio" name="a" data-bind="checked: is_supply, checkedValue: true">進貨</label>
@@ -134,8 +141,8 @@ Requires: "cogroup" object.
                         </div>
                     </td>
 
-                    <td>
-                        <div class="btn-group-vertical btn-group-sm">
+                    <td class="hidden-xs">
+                        <div class="btn-group btn-group-sm">
                             <button class="btn btn-primary" data-bind="click: $parent.saveProduct, disable: saved"><span class="glyphicon glyphicon-save"></span>
                             </button>
                             <button class="btn btn-danger" data-bind="click: $parent.removeProduct, enable: saved"><span class="glyphicon glyphicon-trash"></span>
@@ -159,11 +166,12 @@ var _csrf = viewModel._csrf = '<%= _csrf %>';
 function ProductsVM() {
     var self = this;
     
-    /**
-     * PRODUCT section controls
-     * 
-     * 
-     */
+    // Control summary/full display of product information.
+    self.verbose_product_info = ko.observable(false);
+    self.toggleVerbose = function() {
+        self.verbose_product_info(!self.verbose_product_info());
+    };
+    
     self.products = ko.observableArray();
     self.productsAllSaved = ko.computed(function () {
         for (var i=0; i<self.products().length; i++) {
@@ -303,5 +311,6 @@ function ProductsVM() {
 }
     
 viewModel.productsVM = new ProductsVM();
+//viewModel.productsVM.verbose_product_info("false");
 
 </script>
