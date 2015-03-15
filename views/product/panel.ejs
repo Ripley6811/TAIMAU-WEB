@@ -20,7 +20,7 @@ Requires: "cogroup" object.
         <table class="table table-condensed table-striped">
             <thead class="text-uppercase">
                 <tr>
-                    <th class="hidden-xs">順序</th>
+                    <th class="hidden-xs" data-bind="visible: verbose_product_info">順序</th>
                     <th>
                         <div class="row">
                             <div class="col-md-6">
@@ -53,8 +53,8 @@ Requires: "cogroup" object.
             </thead>
             <tbody data-bind="foreach: products">
                 <tr data-bind="style: {'background-color': discontinued() ? 'pink' : null}">
-                    <td class="hidden-xs" style="width: 80px">
-                        <div class="btn-group btn-group-sm" data-bind="visible: locked()">
+                    <td class="hidden-xs" style="width: 36px" data-bind="visible: $parent.verbose_product_info">
+                        <div class="btn-group-vertical btn-group-sm" data-bind="visible: locked()">
                             <button class="btn btn-custom" data-bind="click: $parent.productUpOne"><i class="glyphicon glyphicon-triangle-top"></i>
                             </button>
                             <button class="btn btn-custom" data-bind="click: $parent.productDownOne"><i class="glyphicon glyphicon-triangle-bottom"></i>
@@ -62,7 +62,7 @@ Requires: "cogroup" object.
                         </div>
                     </td>
                     <!--        Product inventory name    -->
-                    <td style="width: 80%">
+                    <td style="width: 84%">
                         <div class="row-fluid">
                             <div class="col-md-6" style="padding: 0px 2px">
                                 <div class="row-fluid">
