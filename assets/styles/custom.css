@@ -440,3 +440,11 @@ hr {
 .modal > .panel {
     margin: 6%;
 }
+
+#tab.active > a {
+    background-color: #8aff8a;
+}
+
+#tab > a {
+    background-color: #c9c9c9;
+}
