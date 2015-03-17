@@ -12,18 +12,18 @@
 	<hr>
         
 <!--vvv START: Panel for products and services list vvv-->
-        <div class="panel panel-success" data-bind="with: itemsVM">
+        <div class="panel panel-success" style="margin: 0px" data-bind="with: itemsVM">
             <div class="panel-heading">
                 <div class="row">
                     <div class="col-xs-5 panel-title text-center">
                             <h2><strong>產品 / 服務</strong></h2>
                     </div>
                     <div class="col-xs-7">
-                        <button type="button" class="btn btn-lg btn-success" data-bind="click: showModal">創造訂單 (Enter)</button>
+                        <button type="button" class="btn btn-lg btn-success" data-bind="click: showModal">創造訂單 <span class="badge">Enter</span></button>
                     </div>
                 </div>
             </div>
-            <div class="panel-body" style="padding: 0px; overflow-y:scroll; height:68vh;">
+            <div class="panel-body" style="padding: 0px; overflow-y:scroll; height:62vh;">
                 <table class="table table-condensed table-striped">
                     <thead class="text-uppercase">
                         <tr>
@@ -194,7 +194,7 @@
                 <div class="row">
                     <div class="col-sm-6 text-center">
                         <input type="hidden" name="back" value="/product/show/<%= cogroup.name %>">
-                        <button type="button" class="btn btn-lg btn-danger" data-bind="click: exitModal">回到列表 (Esc)</button>
+                        <button type="button" class="btn btn-lg btn-danger" data-bind="click: exitModal">回到列表 <span class="badge">Esc</span></button>
                         <button type="button" class="btn btn-lg btn-custom" data-bind="click: toggleCalc">顯示算法</button>
                     </div>
 

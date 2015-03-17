@@ -1,26 +1,46 @@
 <!--List view of all shipments-->
-<div class='container-fluid'>
+<div id="this body" class='container-fluid'>
 <!--vvv START: Company header and buttons vvv-->
 <%- partial ('../company_header.ejs') %>
 <!--^^^ END: Company header and buttons ^^^-->
 <hr>
 <!--START: List view of shipments-->
-<div style="list-style-type:none" data-bind="foreach: shipments">
-        <div class="panel panel-success">
-            <div class="panel-heading" style="padding: 0px" data-bind="click: toggleDisplay">
-                <span class="h4" style="margin: 0px" data-bind="text: shipmentdate"></span>
-                <span class="h4" style="margin: 0px" data-bind="text: shipment_no"></span>
+<div data-bind="with: pageVM">
+<div>
+        <div class="panel panel-success" style="margin: 0px">
+            <div class="panel-heading" style="padding: 0px">
+                <div class="row">
+                    <div class="col-md-4">
+                        <span class="h4" style="margin: 0px">Shipments</span>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">紀錄數量</div>
+                            <input class="form-control" type="number" data-bind="textInput: recordLimit">
+                        </div>
+                        
+                    </div>
+                </div>
+                
             </div>
-            <div class="panel-body" style="padding: 0px" data-bind="visible: displayItems">
-                <table>
+            <div class="panel-body" style="padding: 0px">
+                <table class="table table-striped">
                     <thead>
-                        <th>ORDER</th>
+                        <th>Order ID</th>
+                        <th>Shipment ID</th>
                         <th>QTY</th>
+                        <th>容器</th>
+                        <th>Date</th>
                     </thead>
-                    <tbody data-bind="foreach: items">
+                    <tbody data-bind="foreach: shipmentsItems">
                         <tr>
                             <td><span data-bind="text: order_id"></span></td>
+                            <td><span data-bind="text: shipment"></span>-<span data-bind="text: shipment_no"></span></td>
                             <td><span data-bind="text: qty"></span></td>
+                            <td><span data-bind="text: shipment"></span></td>
+                            <td><span data-bind="text: duedate"></span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -28,7 +48,7 @@
         </div>
 
 </div>
-
+</div>
     
 <!--END: List view of shipments-->
 </div><!--END: container-fluid-->
@@ -43,63 +63,29 @@ var _csrf = '<%= _csrf %>';
 function PageModel() {
     var self = this;
     
-    /**
-     * COGROUP section controls
-     * 
-     * 
-     */
-    self.cogroup = new KO_Cogroup(cogroup);
-    
-    self.supplierStatus = ko.computed(function () {
-        return self.cogroup.is_supplier() === true ? "glyphicon glyphicon-ok btn btn-success" : "glyphicon glyphicon-remove btn btn-danger";
-    });
-    
-    self.customerStatus = ko.computed(function () {
-        return self.cogroup.is_customer() === true ? "glyphicon glyphicon-ok btn btn-success" : "glyphicon glyphicon-remove btn btn-danger";
-    });
-    
-    self.toggleCustomer = function () {
-        self.cogroup.is_customer(!self.cogroup.is_customer());
-        self.cogroupUpdate();
-    };
-    self.toggleSupplier = function () {
-        self.cogroup.is_supplier(!self.cogroup.is_supplier());
-        self.cogroupUpdate();
-    };
-                
-    self.cogroupUpdate = function () {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState !== 4) return;
-            
-        };
-        xmlhttp.open('POST', '/cogroup/update', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
-            _csrf: _csrf, 
-            cogroup_update: self.cogroup
-        }));
-    };
-    
+    self.recordLimit = ko.observable(40);
     
     /**
      * SHIPMENT methods
-     * 
-     * 
      */
     self.shipments = ko.observableArray();
+    self.shipmentsItems = ko.observableArray();
     self.shipmentsGet = function () {
         params = {
             _csrf: _csrf, 
             id: co_name,
-            limit: 10,
+            limit: self.recordLimit(),
         };
         callback = function (shipments) {
 //            alert(JSON.stringify(shipments, null, '   '));
             self.shipments.removeAll();
+            self.shipmentsItems.removeAll();
             for (var i=0; i<shipments.length; i++) {
                 if (!shipments[i].discontinued) {
                     self.shipments.push(new KO_Shipment(shipments[i]));
+                    for (var j=0; j<shipments[i].items.length; j++) {
+                        self.shipmentsItems.push(new KO_ShipmentItem(shipments[i].items[j]));
+                    }
                 }
             }
         };
@@ -107,11 +93,16 @@ function PageModel() {
     };
     self.shipmentsGet();
     
+    ko.computed(function () {
+        var val = Number(self.recordLimit());
+        if (isNaN(val)) return;
+        else self.shipmentsGet();
+    });
     
     
     
     var getShipmentsProcess = function () {
-        getTemplate(
+        post(
             '/database/get/shipments', 
             {
                 _csrf: _csrf, 
@@ -124,5 +115,6 @@ function PageModel() {
     getShipmentsProcess()
 }
 
-ko.applyBindings(new PageModel());
+viewModel.pageVM = new PageModel();
+ko.applyBindings(viewModel, document.getElementById('this body'));
 </script>

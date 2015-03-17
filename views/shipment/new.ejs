@@ -11,7 +11,7 @@
             
             <div class="row">
                 <div class="col-sm-4 col-sm-push-4 text-center">
-                    <button class="btn btn-lg btn-success" data-bind="click: showModal">創造出貨單 (Enter)</button>
+                    <button class="btn btn-lg btn-success" data-bind="click: showModal">創造出貨單 <span class="badge">Enter</span></button>
                 </div>
                 <div class="col-sm-4 col-sm-pull-4">
                     <ul class="nav nav-tabs">
@@ -255,7 +255,7 @@
 
                     <div class="row">
                         <div class="col-md-12 text-center">
-                            <button type="button" class="btn btn-lg btn-danger" data-bind="click: exitModal">回到列表 (Esc)</button>
+                            <button type="button" class="btn btn-lg btn-danger" data-bind="click: exitModal">回到列表 <span class="badge">Esc</span></button>
                             <input type="submit" class="btn btn-lg btn-medium btn-success" name="make_po_shipment" value="創造新出貨單">
                             <input type="hidden" name="_csrf" value="<%= _csrf %>" />
                             <input type="hidden" name="group" value="<%= cogroup.name %>" />
@@ -351,7 +351,7 @@
 
                     <div class="row">
                         <div class="col-md-12 text-center">
-                            <button type="button" class="btn btn-lg btn-danger" data-bind="click: exitMEModal">回到列表 (Esc)</button>
+                            <button type="button" class="btn btn-lg btn-danger" data-bind="click: exitMEModal">回到列表 <span class="badge">Esc</span></button>
                             <input type="submit" class="btn btn-lg btn-medium btn-success" name="make_po_shipment" value="創造新出貨單">
                             <input type="hidden" name="_csrf" value="<%= _csrf %>" />
                             <input type="hidden" name="group" value="<%= cogroup.name %>" />
@@ -362,6 +362,7 @@
         </div>
     </div>
 </div>
+<!--END: Multi-Shipment form-->
     
 </div>
 
@@ -373,35 +374,6 @@ var _csrf = viewModel._csrf = '<%= _csrf %>';
     
 var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
 addCompanyNavButtons(co_name);
-    
-function ShipmentItemRow(item) {
-    var self = this;
-    self.id = item.id || 'default'; // From PO if 'item' is PO
-    self.MPN = item.MPN;
-    self.is_supply = item.is_supply;
-    self.price = item.price || item.curr_price;
-    self.label = item.label || item.inventory_name;
-    self.sku = item.sku || item.SKU;
-    self.guige = item.sku || item.SKU;
-    self.qty = ko.observable(item.qty ? item.qty : 'qty error');
-    self.qtymax = item.qty ? Number(item.qty) : 10000000;
-    self.um = item.um || item.UM;
-    self.jianshu = self.sku !== '槽車' ? self.sku : self.um;
-    self.id_note = item.id ? item.orderID + ' ' + item.ordernote : item.note;
-    self.units = parseFloat(item.units);
-    if (self.guige !== '槽車') {
-        self.guige = [self.units, self.um, '/', self.guige].join(' ');
-    }
-    
-    self.totalUnits = ko.computed(function () {
-        var val = parseInt(self.qty()) * self.units;
-        if (!isNaN(val)) {
-            return val.toString() + ' ' + self.um;
-        } else {
-            return '0 ' + self.um;
-        }
-    });
-}
     
 var key = {
     ESC: 27,

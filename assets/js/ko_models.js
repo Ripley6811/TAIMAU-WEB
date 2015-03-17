@@ -63,8 +63,8 @@ function KO_Branch(data) {
     self.nameLock = ko.observable(true); // Set to true for new entries only.
     self.saved = ko.observable(true); // Set to false if any editing is done.
     
-    self.needToSave = ko.computed(function () {
-        // Listen for changes to the following.
+    // Listen for changes to the following.
+    ko.computed(function () {
         self.fullname();
         self.english_name();
         self.tax_id();
@@ -99,8 +99,8 @@ function KO_Contact(data) {
     
     self.saved = ko.observable(true); // Set to false if any editing is done.
     
-    self.needToSave = ko.computed(function () {
-        // Listen for changes to the following.
+    // Listen for changes to the following.
+    ko.computed(function () {
         self.branch();
         self.name();
         self.position();
@@ -147,8 +147,8 @@ function KO_Product(data) {
     self.locked = ko.observable(true); // Set to true for new entries only.
     self.saved = ko.observable(true); // Set to false if any editing is done.
     
-    self.needToSave = ko.computed(function () {
-        // Listen for changes to the following.
+    // Listen for changes to the following.
+    ko.computed(function () {
         self.inventory_name();
         self.product_label();
         self.english_name();
@@ -261,7 +261,10 @@ function KO_Shipment(data) {
 
 function KO_ShipmentItem(data) {
     var self = this,
-        data = data || {};
+        data = data || {},
+        order = null,
+        product = null,
+        manifest = null;
     
     self.id = data.id;
     self.order_id = data.order_id;
@@ -298,71 +301,40 @@ function KO_ShipmentItem(data) {
     });
     
     self.saved(true);
+    
 }
 
     
-getProducts = function (params, callback) {
-    getTemplate('/product/get', params, function (res_records) {
-        // Sort by rank value.
-        res_records.sort(function (a, b) {
-            return a.json.rank - b.json.rank;
-        });
-        callback(res_records);
+function ShipmentItemRow(item) {
+    var self = this;
+    self.id = item.id || 'default'; // From PO if 'item' is PO
+    self.MPN = item.MPN;
+    self.is_supply = item.is_supply;
+    self.price = item.price || item.curr_price;
+    self.label = item.label || item.inventory_name;
+    self.sku = item.sku || item.SKU;
+    self.guige = item.sku || item.SKU;
+    self.qty = ko.observable(item.qty ? item.qty : 'qty error');
+    self.qtymax = item.qty ? Number(item.qty) : 10000000;
+    self.um = item.um || item.UM;
+    self.jianshu = self.sku !== '槽車' ? self.sku : self.um;
+    self.id_note = item.id ? item.orderID + ' ' + item.ordernote : item.note;
+    self.units = parseFloat(item.units);
+    if (self.guige !== '槽車') {
+        self.guige = [self.units, self.um, '/', self.guige].join(' ');
+    }
+    
+    self.totalUnits = ko.computed(function () {
+        var val = parseInt(self.qty()) * self.units;
+        if (!isNaN(val)) {
+            return val.toString() + ' ' + self.um;
+        } else {
+            return '0 ' + self.um;
+        }
     });
-};
+}
 
-getOrders = function (params, callback) {
-    getTemplate('/order/getOpen', params, function (res_records) {
-        // Sort by rank value.
-        res_records.sort(function (a, b) {
-            return a.MPN.json.rank - b.MPN.json.rank;
-        });
-        callback(res_records);
-    });
-};
 
-getShipments = function (params, callback) {
-    getTemplate('/database/get/shipments', params, function (res_records) {
-        // Sort by rank value.
-        res_records.sort(function (a, b) {
-            return b.shipmentdate - a.shipmentdate;
-        });
-        callback(res_records);
-    });
-};
-
-getShipmentitems = function (params, callback) {
-    getTemplate('/database/get/shipmentitems', params, function (res_records) {
-        // Sort by rank value.
-        res_records.sort(function (a, b) {
-            return b.shipment_id.shipmentdate - a.shipment_id.shipmentdate;
-        });
-        callback(res_records);
-    });
-};
-
-getTemplate = function (url, params, callback) {
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function () {
-        if (xmlhttp.readyState !== 4) return;
-        var db_records = JSON.parse(xmlhttp.response);
-        callback(db_records);
-    };
-    xmlhttp.open('POST', url, true);
-    xmlhttp.setRequestHeader('Content-type', 'application/json');
-    xmlhttp.send(ko.toJSON(params));
-};
-
-post = function (url, params, callback) {
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function () {
-        if (xmlhttp.readyState !== 4) return;
-        callback(JSON.parse(xmlhttp.response));
-    };
-    xmlhttp.open('POST', url, true);
-    xmlhttp.setRequestHeader('Content-type', 'application/json');
-    xmlhttp.send(ko.toJSON(params));
-};
 
 toInputDate = function (datestr) {
     if (typeof datestr == 'undefined') return undefined;
