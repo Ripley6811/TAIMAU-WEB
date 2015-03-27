@@ -69,8 +69,15 @@ module.exports = {
      * `Database/saveController.product()`
      */
     product: function (req, res) {
-        return res.json({
-            todo: 'product() is not implemented yet!'
+        var newRecord = req.param('product');
+        
+        // Blank name IDs are not allowed.
+        newRecord.MPN = String(Math.round(Math.random()*100000000)+100);
+        
+        Product.create(newRecord, function(err, rec) {
+            if (err) { res.send(err); return; }
+            
+            res.send(rec);
         });
     },
 

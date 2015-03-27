@@ -431,7 +431,7 @@ hr {
 
 
 .modal {
-    position: absolute;
+    position: fixed;
     background-color: rgba(0, 0, 0, 0.5);
     overflow-y: auto;
     

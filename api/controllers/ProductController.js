@@ -192,7 +192,6 @@ module.exports = {
      * @param   {Object}   product Object with product information.
      */
     updateOrCreate: function (req, res, next) {
-        // console.log('BRANCH_UPDATE');
         var co_name = req.param('co_name'),
             product = req.param('product');
         

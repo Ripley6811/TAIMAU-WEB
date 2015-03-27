@@ -1,0 +1,235 @@
+<!--Modal for editing/creating a single product-->
+<div data-bind="with: productModalVM">
+<form data-bind="submit: doSubmit">
+    <div id="product modal" class="modal" data-bind="style: {display: productModalVisible() ? 'block' : 'none'}">
+        <div class="panel panel-success">
+            
+            <div class="panel-heading">
+            
+                <div class="row-fluid h2 text-center">
+                    <strong>產品</strong>或<strong>服務</strong> - <strong data-bind="text: product.group"></strong>
+                </div>
+            </div><!--panel-heading-->
+            
+            <div class="panel-body" data-bind="with: product">
+                <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+                
+                
+                <div>
+                    <label>
+                        <input type="radio" name="a" data-bind="checked: is_supply, checkedValue: true, enable: $parent.isNewEntry">進貨(買) </label>
+                    <label>
+                        <input type="radio" name="a" data-bind="checked: is_supply, checkedValue: false, enable: $parent.isNewEntry">出貨(賣) </label>
+                </div>
+                <div class="input-group has-warning"><div class="input-group-addon">內用名稱</div><input class="form-control" placeholder="名稱" style="width: 100%;" data-bind="textInput: inventory_name" required></div>
+                <div class="input-group has-success"><div class="input-group-addon">標籤名稱</div><input class="form-control" placeholder="標籤 (選修的)" style="width: 100%;" data-bind="textInput: product_label"></div>
+                <div class="input-group has-success"><div class="input-group-addon">英文名稱</div><input class="form-control" placeholder="英文 (選修的)" style="width: 100%;" data-bind="textInput: english_name"></div>
+                <div class="input-group has-success"><div class="input-group-addon">包裝描述</div><input class="form-control" placeholder="描述 (選修的)" style="width: 100%;" data-bind="textInput: SKUlong"></div>
+                <div class="input-group has-success"><div class="input-group-addon">備註</div><input class="form-control" placeholder="備註 (選修的)" style="width: 100%;" data-bind="textInput: note"></div>
+                <div class="input-group has-success"><div class="input-group-addon">PN(外用)</div><input class="form-control" placeholder="PN (選修的)" style="width: 100%;" data-bind="textInput: ASE_PN"></div>
+                <div class="input-group has-success"><div class="input-group-addon">RT(外用)</div><input class="form-control" placeholder="RT (選修的)" style="width: 100%;" data-bind="textInput: ASE_RT"></div>
+                <div class="input-group has-warning"><div class="input-group-addon">容量</div><input class="form-control" placeholder="一個容器的數量" style="width: 100%;" data-bind="textInput: units, enable: $parent.isNewEntry" required><div class="input-group-addon">數字</div></div>
+                <div class="input-group has-warning"><div class="input-group-addon">單位</div><input class="form-control" placeholder="容量的單位" style="width: 100%;" data-bind="textInput: UM, enable: $parent.isNewEntry" required><div class="input-group-addon">kg, L, gal, 次, 塊, 件...</div></div>
+                <div class="input-group has-warning"><div class="input-group-addon">容器</div><input class="form-control" placeholder="容器簡寫" style="width: 100%;" data-bind="textInput: SKU, enable: $parent.isNewEntry" required><div class="input-group-addon">瓶, 包, 桶, 盒, 槽車...</div></div>
+                <div>
+                    <label>
+                        <input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: true, enable: $parent.isNewEntry">用<strong data-bind="text: UM"></strong>價格</label>
+                    <label>
+                        <input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: false, enable: $parent.isNewEntry">用<strong data-bind="text: SKU"></strong>價格</label>
+                </div>
+                <div class="input-group has-success">
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-usd"></span>
+                    </div>
+                    <input class="form-control" size="4" placeholder="目前價格" data-bind="textInput: curr_price">
+                </div>
+                <div>
+                    <label>
+                        <input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: true, enable: $parent.isNewEntry">用<strong data-bind="text: UM"></strong>件數</label>
+                    <label>
+                        <input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: false, enable: $parent.isNewEntry">用<strong data-bind="text: SKU"></strong>件數</label>
+                </div>
+                
+                <hr>
+                
+                <!--Visually verify entries-->
+                <h3><strong>提交之前檢查下面的訊息:</strong></h3>
+                <ul>
+                    <li data-bind="visible: !unitpriced() || !unitcounted()">
+                        <span data-bind="text: units"></span>
+                        <span data-bind="text: UM"></span> / <span data-bind="text: SKU"></span>
+                    </li>
+                    <li>
+                        1 
+                        <span data-bind="text: UM, visible: unitpriced()"></span><span data-bind="text: SKU, visible: !unitpriced()"></span>的價格是<strong>$<span data-bind="text: curr_price"></span></strong>
+                        ( 1 
+                        <span data-bind="text: UM, visible: unitpriced()"></span>
+                        <span data-bind="text: SKU, visible: !unitpriced()"></span>
+                        = $<span data-bind="text: curr_price"></span>
+                        )
+                    </li>
+                    <li>
+                        <strong data-bind="visible: is_supply()">買</strong><strong data-bind="visible: !is_supply()">賣</strong>的時候用<strong data-bind="text: UM, visible: unitcounted()"></strong><strong data-bind="text: SKU, visible: !unitcounted()"></strong>來算數量.
+                    </li>
+                </ul>
+
+            </div><!--panel-body-->
+            
+            <div class="panel-footer lightorange-blend">
+                <div class="row">
+                    <div class="col-sm-6 text-center">
+                        <button type="button" class="btn btn-lg btn-danger" data-bind="click: exitProductModal">離開 <span class="badge">Esc</span></button>
+                    </div>
+
+                    <div class="col-sm-6 text-center">
+                        <input type="submit" class="btn btn-lg btn-success" name="make_po" value="提交">
+                    </div>
+                </div>
+            </div><!--panel-footer-->
+            
+        </div><!--panel-->
+    </div><!--modal-->
+</form>
+</div>
+
+<script>
+var viewModel = viewModel || {};
+var _csrf = viewModel._csrf = '<%= _csrf %>';
+    
+    
+function ProductModalVM() {
+    var self = this;
+    
+    self.productModalVisible = ko.observable(false);
+    self.showProductModal = function(clickedItem) {
+        self.productModalVisible(true);
+    };
+    self.exitProductModal = function(clickedItem) {
+        self.productModalVisible(false);
+    };
+    
+    document.onkeydown = function(evt) {
+        if (evt.keyCode == 27 && self.productModalVisible() == true) {
+            self.exitProductModal();
+        }
+        if (evt.keyCode == 13 && self.productModalVisible() == false) {
+            self.showProductModal();
+        }
+    };
+    
+    self.product = new KO_Product();
+    self.isNewEntry = ko.observable(true); // True for new entry, false for edit mode.
+    self.onModalClose = null; // Callback to execute when modal closes.
+    
+    /**
+     * Add a new product to database.
+     * @param {String} companyID Company group database ID
+     */
+    self.new = function(companyID, callback) {
+        // Clear all fields and make ready for new product.
+        clearProduct();
+        //TODO: add side list for 'templating' from previous product.
+        self.product.group(companyID);
+        self.onModalClose = callback;
+        self.isNewEntry(true);
+        self.productModalVisible(true);
+    };
+    
+    var clearProduct = function() {
+        self.product.MPN(null);
+        self.product.group(null);
+        self.product.product_label('');
+        self.product.inventory_name('');
+        self.product.english_name('');
+        self.product.units(25);
+        self.product.UM('');
+        self.product.SKU('');
+        self.product.SKUlong('');
+        self.product.note('');
+        self.product.ASE_PN('');
+        self.product.ASE_RT('');
+        self.product.curr_price(10.0);
+        self.product.unitpriced(true);
+        self.product.unitcounted(true);
+        self.product.is_supply(false);
+        self.product.discontinued(false);
+        self.product.json({});
+    };
+    
+    /**
+     * Edit an existing product in database.
+     * @param {String} productID Product ID
+     */
+    self.edit = function(productID, callback) {
+        // Load product from database and fill in fields.
+        // enable the fields that should not be changed.
+        self.onModalClose = callback;
+        self.isNewEntry(false);
+        
+        var params = {
+            _csrf: _csrf,
+            id: productID
+        };
+        console.log(productID, params);
+        post('/database/get/product', params, function(res) {
+            console.log(res);
+            
+            self.product.MPN(res.MPN);
+            self.product.group(res.group);
+            self.product.product_label(res.product_label);
+            self.product.inventory_name(res.inventory_name);
+            self.product.english_name(res.english_name);
+            self.product.units(res.units);
+            self.product.UM(res.UM);
+            self.product.SKU(res.SKU);
+            self.product.SKUlong(res.SKUlong);
+            self.product.note(res.note);
+            self.product.ASE_PN(res.ASE_PN);
+            self.product.ASE_RT(res.ASE_RT);
+            self.product.curr_price(res.curr_price);
+            self.product.unitpriced(res.unitpriced);
+            self.product.unitcounted(res.unitcounted ? res.unitcounted : false);
+            self.product.is_supply(res.is_supply);
+            self.product.discontinued(res.discontinued);
+            self.product.json(res.json);
+            
+            
+            self.productModalVisible(true);
+        });
+        
+    };
+    
+    /**
+     * Control submission as new product record or update to existing record.
+     */
+    self.doSubmit = function() {
+        console.log('SUBMIT!');
+        if (self.isNewEntry()) {
+            // Submit new record
+            var params = {_csrf: _csrf, product: self.product};
+            post('/database/save/product', params, function(res) {
+                if ('error' in res) {
+                    alert('ERROR saving to database. Check fields or reload page.');
+                } else {
+                    alert('Product saved to database\nID: '+res.MPN);
+
+                    self.productModalVisible(false);
+                    self.onModalClose();
+                }
+            });
+        } else {
+            // Submit record update
+            var params = {_csrf: _csrf, product: self.product};
+            post('/database/update/product', params, function(res) {
+                alert(JSON.stringify(res));
+                
+                self.productModalVisible(false);
+                self.onModalClose();
+            });
+        }
+    };
+}
+
+    
+viewModel.productModalVM = new ProductModalVM();
+</script>

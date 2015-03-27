@@ -64,6 +64,19 @@ module.exports = {
 
 
     /**
+    * `Database/getController.product()`
+    */
+    product: function (req, res) {
+        Product
+        .findOne({MPN: req.param('id')})
+        .exec(function (err, record) {
+            if (err) { res.send(err); return; }
+            res.send(record);
+        });
+    },
+
+
+    /**
     * `Database/getController.orders()`
     */
     orders: function (req, res) {

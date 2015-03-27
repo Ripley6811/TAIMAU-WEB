@@ -49,7 +49,19 @@ module.exports = {
         // Create PO's for each item
         var newOrders = [],
             productUpdates = [],
-            prodMPNs = [];
+            prodMPNs = [],
+            taxIt = [];
+        
+        for (var i=0; i<params.applytax.length; i++) {
+            if (params.applytax[i] == 'apply?') {
+                if (params.applytax[i+1] == 'yes') {
+                    taxIt.push(true);
+                } else {
+                    taxIt.push(false);
+                }
+            }
+            console.log(taxIt);
+        }
         if (!(params.MPN instanceof Array)) {
             params.MPN = [params.MPN];
             params.price = [params.price];
@@ -65,6 +77,7 @@ module.exports = {
                 orderID: params.orderID,
                 MPN: params.MPN[i],
                 price: params.price[i],
+                applytax: taxIt[i],
                 qty: params.qty[i],
                 orderdate: params.orderdate,
                 ordernote: params.ordernote[i],
@@ -191,16 +204,17 @@ module.exports = {
             });
         });
     },
-    // Get all shipments for an order and order by duedate or id.
+    // Update Order details from Order/Showall page
     update: function (req, res) {
-        var order = req.param('order');
+//        var order = req.param('order');
         console.log(req.params.all());
-        Order.update({id: order.id}, order)
+        Order.update({id: req.param('id')}, req.params.all())
         .exec( function (err, orders) {
             if (err) { res.send(err); return; }
             
 //            req.flash('message', 'Record Updated!');
-            res.send(orders[0]);
+//            res.send(orders[0]);
+            res.redirect('/order/show/'+orders[0].id);
         });
     },
     // Retrieve all order for a company.

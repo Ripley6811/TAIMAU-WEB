@@ -54,6 +54,13 @@ getTemplate = function (url, params, callback) {
     xmlhttp.send(ko.toJSON(params));
 };
 
+/**
+ * Simplified "post" method that includes converting Knockout objects to JSON
+ * before sending and parses response to JSON before executing callback.
+ * @param {String}   url      Server routing address.
+ * @param {Object}   params   Object containing "_csrf" and other objects.
+ * @param {Function} callback Callback function.
+ */
 post = function (url, params, callback) {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {

@@ -56,8 +56,8 @@
             <td>
                 <span data-bind="text: label"></span>
             </td>
-            <td class="text-center">
-                $ <span data-bind="text: price"></span>
+            <td class="text-left">
+                $ <span data-bind="text: price"></span><span class="badge" data-bind="visible: !applytax()"><span class="glyphicon glyphicon-ban-circle"></span> 稅</span>
             </td>
             
 <!--        Quantities    -->
