@@ -232,7 +232,7 @@ function PageModel() {
     self.itemsGet = function () {
         var params = {
                 _csrf: _csrf, 
-                id: po_ID,
+                po_id: po_ID,
         };
         post(
             '/database/get/shipmentitems',

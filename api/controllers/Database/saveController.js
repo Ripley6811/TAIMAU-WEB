@@ -93,6 +93,67 @@ module.exports = {
 
 
     /**
+     * `Database/saveController.shipment()`
+     */
+    multipleshipments: function (req, res) {
+        var items = req.param('items');
+        console.log(items);
+        
+        //Ensure quantity is an integer and not string.
+        //Ensure date is a Date object and sortable.
+        for (var i=0; i<items.length; i++) {
+            items[i].qty = parseInt(items[i].qty);
+            items[i].orderdate = new Date(items[i].orderdate);
+            items[i].shipmentdate = new Date(items[i].shipmentdate);
+        }
+        
+        var POsort = function(array) {
+            array.sort(function(a, b){return a.qty-b.qty});
+            array.sort(function(a, b){return a.orderdate-b.orderdate});
+        };
+        var SHIPsort = function(array) {
+            array.sort(function(a, b){return a.shipmentnote.localeCompare(b.shipmentnote)});
+            array.sort(function(a, b){return a.shipment_no.localeCompare(b.shipment_no)});
+            array.sort(function(a, b){return a.shipmentdate-b.shipmentdate});
+        };
+
+        Order.create(items, function(err, orders) {
+            if (err) { res.send(err); return; }
+
+            // NOTE: Returned records are not in the same order as 'items'!
+            // Sort Orders and original Items in same way to match up IDs.
+            POsort(orders);     
+            POsort(items);
+            // Add `order` ID to the item record.
+            for (var i=0; i<items.length; i++) {
+                items[i].order_id = orders[i].id;
+//                console.log(items[i].qty == orders[i].qty, items[i].qty, orders[i].qty);
+//                console.log(items[i].orderdate.toDateString() == orders[i].orderdate.toDateString(), items[i].orderdate.toDateString(), orders[i].orderdate.toDateString());
+            }
+            Shipment.create(items, function(err, shipments) {
+                if (err) { res.send(err); return; }
+
+                // Sort Shipments and original Items in same way to match up IDs.
+                SHIPsort(shipments);
+                SHIPsort(items);
+                // Add `shipment` ID to the item record.
+                for (var i=0; i<items.length; i++) {
+                    items[i].shipment_id = shipments[i].id;
+//                    console.log(items[i].shipmentnote == shipments[i].shipmentnote, items[i].shipmentnote, shipments[i].shipmentnote);
+//                    console.log(items[i].shipment_no == shipments[i].shipment_no, items[i].shipment_no, shipments[i].shipment_no);
+//                    console.log(items[i].shipmentdate.toDateString() == shipments[i].shipmentdate.toDateString(), items[i].shipmentdate.toDateString(), shipments[i].shipmentdate.toDateString());
+                }
+                Shipmentitem.create(items, function(err, shipmentitems) {
+                    if (err) { res.send(err); return; }
+
+                    res.send({shipmentitems: shipmentitems, orders: orders, shipments: shipments});
+                });
+            });
+        });
+    },
+
+
+    /**
      * `Database/saveController.shipmentitem()`
      */
     shipmentitem: function (req, res) {

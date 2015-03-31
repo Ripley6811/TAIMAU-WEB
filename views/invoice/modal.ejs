@@ -1,0 +1,133 @@
+<!--Modal for viewing a single invoice-->
+<div data-bind="with: invoiceModalVM">
+    <div id="form modal" class="modal" data-bind="style: {display: isVisible() ? 'block' : 'none'}">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h2 class="text-center">發票</h2>
+            </div>
+            <form action="/shipment/create" method="post" class="form-horizontal">
+                <div class="panel-body">
+
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">台茂</label>
+                                <div class="col-md-9 has-success">
+                                    <select class="form-control" name="us" required>
+                                        <option value="台茂">台茂</option>
+                                        <option value="永茂">永茂</option>
+                                        <option value="富茂">富茂</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">客戶</label>
+                                <div class="col-md-9 has-success">
+                                    <select class="form-control" name="them" required>
+                                    <% cogroup.branches.forEach(function(branch) { %>
+                                    <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
+                                    <% }); %>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <table class="table table-condensed table-striped">
+                        <thead class="text-uppercase">
+                            <tr>
+                                <th class="text-center">日期</th>
+                                <th class="text-center">出貨單編號</th>
+                                <th class="text-center">件數</th>
+                                <th class="text-center">數量</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: invoiceItems">
+                            <input type="hidden" name="price" data-bind="value: price">
+                            <input type="hidden" name="is_supply" data-bind="value: is_supply">
+                            <input type="hidden" name="MPN" data-bind="value: MPN">
+                            <tr>
+                                <td class="text-left has-success">
+                                    <span data-bind="text: date"></span>
+                                </td>
+                                <td class="text-center">
+                                    <span data-bind="text: shipment_no">
+                                </td>
+                                <td class="text-right">
+                                    <span data-bind="text: qty"></span>
+                                    <span data-bind="text: countUnit"></span>
+                                </td>
+                                <td class="text-right"><span data-bind="text: totalUnits"></span></td>
+                            </tr>
+                            </tbody>
+                    </table>
+
+                </div>
+                <div class="panel-footer lightorange-blend">
+
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <button type="button" class="btn btn-lg btn-danger" data-bind="click: exitModal">回到列表 <span class="badge">Esc</span></button>
+                            <input type="submit" class="btn btn-lg btn-medium btn-success" name="make_po_shipment" value="創造新出貨單">
+                            <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+                            <input type="hidden" name="group" value="<%= cogroup.name %>" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+var viewModel = viewModel || {};
+var _csrf = viewModel._csrf = '<%= _csrf %>';
+    
+    
+function InvoiceModalVM() {
+    var self = this;
+    
+    /**
+     * Visibility of this modal div.
+     */
+    self.isVisible = ko.observable(false);
+    
+    /**
+     * Process a list of shipments for creating an invoice and show this modal.
+     * @param {Array} items Array of shipment items.
+     */
+    self.showModal = function(items) {
+        // Use order ID to preset the branch selections for the invoice.
+        for (var i=0; i<items.length; i++) {
+            self.invoiceItems.push(new KO_ShipmentListRow(items[i]));
+        }
+        self.isVisible(true);
+    };
+    self.exitModal = function() {
+        self.isVisible(false);
+    };
+    
+    self.invoiceItems = ko.observableArray();
+    
+    self.invoice = new KO_Invoice();
+    self.isNewEntry = ko.observable(true); // True for new entry, false for edit mode.
+    self.onModalClose = null; // Callback to execute when modal closes.
+        
+    /**
+     * Load an existing invoice for display.
+     * @param {String} invoiceID Database ID of invoice.
+     */
+    self.loadInvoice = function(invoiceID) {
+        
+    };
+}
+    
+viewModel.invoiceModalVM = new InvoiceModalVM();
+</script>

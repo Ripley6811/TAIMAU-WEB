@@ -270,101 +270,10 @@
 </div>
 <!--END: Shipment form-->
     
+<!--START: Multi entry modal for one product-->
+<%- partial ('../shipment/multi.ejs') %>
+<!--END: Multi entry modal for one product-->
     
-<!--START: Multi-Shipment form-->
-<div data-bind="with: itemsVM">
-    <div id="form modal" class="modal" data-bind="style: {display: multiEntryVisible() ? 'block' : 'none'}">
-        <div class="panel panel-success">
-            <div class="panel-heading" data-bind="with: lastSelection">
-                <h2 class="text-center">出貨 - <span data-bind="text: label"></span></h2>
-            </div>
-            <form action="/shipment/create" method="post" class="form-horizontal">
-                <div class="panel-body">
-
-                    <div class="row">
-                        <div class="col-md-7">
-                            <div class="form-group">
-                                <label class="col-md-3 control-label">台茂</label>
-                                <div class="col-md-9 has-success">
-                                    <select class="form-control" name="us" required>
-                                        <option value="台茂">台茂</option>
-                                        <option value="永茂">永茂</option>
-                                        <option value="富茂">富茂</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-7">
-                            <div class="form-group">
-                                <label class="col-md-3 control-label">客戶</label>
-                                <div class="col-md-9 has-success">
-                                    <select class="form-control" name="them" required>
-                                    <% cogroup.branches.forEach(function(branch) { %>
-                                    <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
-                                    <% }); %>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-                    <table class="table table-condensed table-striped">
-                        <thead class="text-uppercase">
-                            <tr>
-                                <th class="text-center">日期</th>
-                                <th class="text-center">出貨單編號</th>
-                                <th class="text-center">件數</th>
-                                <th class="text-center">數量</th>
-                                <th class="text-center">出貨資訊</th>
-                            </tr>
-                        </thead>
-                        <tbody data-bind="with: lastSelection">
-                            <input type="hidden" name="price" data-bind="value: price">
-                            <input type="hidden" name="is_supply" data-bind="value: is_supply">
-                            <input type="hidden" name="MPN" data-bind="value: MPN">
-                            <tr>
-                                <td class="text-left has-success">
-                                    <input type="date" class="form-control" name="shipmentdate" required>
-                                </td>
-                                <td class="text-center has-success">
-                                    <input type="text" class="form-control" maxlength="8" placeholder="" name="shipment_no">
-                                </td>
-                                <td style="width: 20%">
-                                    <div class="input-group has-success">
-                                        <input type="number" min=1 class="form-control text-right" name="qty" data-bind="textInput: qty" required>
-                                        <div class="input-group-addon" data-bind="text: jianshu"></div>
-                                    </div>
-                                </td>
-                                <td style="width: 20%" class="text-center" data-bind="text: totalUnits"></td>
-                                <td class="has-success">
-                                    <input type="text" class="form-control" name="shipmentnote">
-                                </td>
-                            </tr>
-                            </tbody>
-                    </table>
-
-                </div>
-                <div class="panel-footer lightorange-blend">
-
-                    <div class="row">
-                        <div class="col-md-12 text-center">
-                            <button type="button" class="btn btn-lg btn-danger" data-bind="click: exitMEModal">回到列表 <span class="badge">Esc</span></button>
-                            <input type="submit" class="btn btn-lg btn-medium btn-success" name="make_po_shipment" value="創造新出貨單">
-                            <input type="hidden" name="_csrf" value="<%= _csrf %>" />
-                            <input type="hidden" name="group" value="<%= cogroup.name %>" />
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-<!--END: Multi-Shipment form-->
     
 </div>
 
@@ -388,6 +297,16 @@ function ItemsModel() {
     
     self.modalVisible = ko.observable(false);
     self.showModal = function(clickedItem) {
+        if (self.rows().length == 0) {
+            alert('Select at least one item from list.\n選擇至少一個項目.');
+            return;
+        }
+        
+        if (self.rows().length > 5) {
+            alert('Select no more than five items.\n限制五個選擇.');
+            return;
+        }
+        
         self.modalVisible(true);
     };
     self.exitModal = function(clickedItem) {
@@ -396,23 +315,19 @@ function ItemsModel() {
     
     
     self.lastSelection = ko.observable(null);
-    self.multiEntryVisible = ko.observable(false);
+    
     self.showMEModal = function(clickedItem) {
-        self.multiEntryVisible(true);
-        self.lastSelection(new ShipmentItemRow(ko.toJS(clickedItem)));
-    };
-    self.exitMEModal = function(clickedItem) {
-        self.multiEntryVisible(false);
+        viewModel.multiModalVM.open(clickedItem.MPN);
     };
     
     document.onkeydown = function(evt) {
         // Exit any modal if displayed.
         if (evt.keyCode == key.ESC) {
             self.exitModal();
-            self.exitMEModal();
+            viewModel.multiModalVM.multiEntryVisible(false);
         }
         // Enter the normal shipment form.
-        if (evt.keyCode == key.ENTER && self.modalVisible() == false && self.multiEntryVisible() == false) {
+        if (evt.keyCode == key.ENTER && self.modalVisible() == false && viewModel.multiModalVM.multiEntryVisible() == false) {
             self.showModal();
         }
     };

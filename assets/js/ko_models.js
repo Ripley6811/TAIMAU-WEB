@@ -271,6 +271,7 @@ function KO_ShipmentItem(data) {
     self.order_id = data.order_id;
     self.shipment = data.shipment_id;
     self.shipment_no = ko.observable(self.shipment ? self.shipment.shipment_no : undefined);
+    self.shipmentnote = ko.observable(data.shipmentnote || '');
     
     self.qty = ko.observable(data.qty || '');
     self.lot = ko.observable(data.lot || '');
@@ -335,6 +336,55 @@ function ShipmentItemRow(item) {
     });
 }
 
+/**
+ * Model for row in all shipments listing.
+ * @param {Object} item Database JSON object.
+ */
+function KO_ShipmentListRow(item) {
+    var self = this;
+    
+    self.order_id = item.order_id;
+    self.shipmentitem_id = item.id;
+    self.invoiceitem_id = item.invoiceitem_id;
+    
+    self.orderID = item.orderID;
+    self.price = item.price;
+    self.is_supply = item.is_supply;
+    self.MPN = item.MPN;
+    
+    self.SKU = item.SKU;
+    self.unitpriced = item.unitpriced;
+    self.units = item.units;
+    self.UM = item.UM;
+    
+    self.inventory_name = item.inventory_name;
+    self.qty = item.qty;
+    self.shipmentdate = new Date(item.shipmentdate);
+    self.shipped = item.shipped ? true : false;
+    self.shipment_no = item.shipment_no;
+    
+    self.invoice_no = item.invoice_no;
+    self.paid = item.paid;
+    
+    var d = self.shipmentdate;
+    self.date = d.getFullYear() + ' / ' + (d.getMonth() + 1) + ' / ' + d.getDate();
+    self.countUnit = self.SKU == '槽車' ? self.UM : self.SKU;
+    
+    self.selected = ko.observable(false);
+    
+    self.totalUnits = (function () {
+        var val = parseInt(self.qty) * self.units;
+        if (!isNaN(val)) {
+            return val.toString() + ' ' + self.UM;
+        } else {
+            return '0 ' + self.UM;
+        }
+    })();
+}
+
+function KO_Invoice(item) {
+    
+}
 
 
 toInputDate = function (datestr) {

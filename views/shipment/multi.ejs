@@ -1,0 +1,190 @@
+<!--START: Multi-Shipment form-->
+<div data-bind="with: multiModalVM">
+    <div id="form modal" class="modal" data-bind="style: {display: multiEntryVisible() ? 'block' : 'none'}">
+        <div class="panel panel-success">
+            <div class="panel-heading" data-bind="with: productData">
+                <h2 class="text-center">出貨 - <span data-bind="text: inventory_name"></span></h2>
+            </div>
+            <form class="form-horizontal" data-bind="submit: doSubmit">
+                <div class="panel-body">
+
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">台茂</label>
+                                <div class="col-md-9 has-success">
+                                    <select class="form-control" data-bind="value: us" required>
+                                        <option value="台茂">台茂</option>
+                                        <option value="永茂">永茂</option>
+                                        <option value="富茂">富茂</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">客戶</label>
+                                <div class="col-md-9 has-success">
+                                    <select class="form-control" data-bind="value: them" required>
+                                    <% cogroup.branches.forEach(function(branch) { %>
+                                    <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
+                                    <% }); %>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <table class="table table-condensed table-striped">
+                        <thead class="text-uppercase">
+                            <tr>
+                                <th>#</th>
+                                <th class="text-center">日期</th>
+                                <th class="text-center">出貨單編號</th>
+                                <th class="text-center">件數</th>
+                                <th class="text-center">出貨資訊</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: shipments">
+                            <tr>
+                                <td data-bind="text: $index() + 1"></td>
+                                <td class="text-left has-success">
+                                    <input type="date" class="form-control" data-bind="value: shipdate, attr: {required: qty() != '' ? true : false}">
+                                </td>
+                                <td class="text-center has-success">
+                                    <input type="text" class="form-control" maxlength="10" placeholder="" data-bind="textInput: shipment_no">
+                                </td>
+                                <td style="width: 20%">
+                                    <div class="input-group has-success">
+                                        <input type="number" min=1 class="form-control text-right" data-bind="textInput: qty">
+                                        <div class="input-group-addon" data-bind="text: $parent.productData.SKU"></div>
+                                    </div>
+                                </td>
+                                <td class="has-success">
+                                    <input type="text" class="form-control" data-bind="textInput: shipmentnote">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="panel-footer lightorange-blend">
+
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <button type="button" class="btn btn-lg btn-danger" data-bind="click: exitMEModal">回到列表 <span class="badge">Esc</span></button>
+                            <input type="submit" class="btn btn-lg btn-medium btn-success" name="make_po_shipment" value="創造新出貨單">
+                            <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+                            <input type="hidden" name="group" value="<%= cogroup.name %>" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--END: Multi-Shipment form-->
+
+<script>
+var viewModel = viewModel || {};
+var _csrf = viewModel._csrf = '<%= _csrf %>';
+    
+
+var key = {
+    ESC: 27,
+    ENTER: 13,
+    PLUS: 43
+};
+
+function MultiModalVM() {
+    var self = this;
+    
+    
+    self.productData = new KO_Product();
+    self.us = ko.observable();
+    self.them = ko.observable();
+    
+    /**
+     * Load the product from data with given MPN (ID).
+     * @param {String} productID Product ID string.
+     */
+    self.open = function(productID) {
+        var params = {_csrf: _csrf, id: productID};
+        post('/database/get/product', params, function(res) {            
+            self.productData.MPN(res.MPN);
+            self.productData.inventory_name(res.inventory_name);
+            self.productData.SKU(res.SKU);
+            self.productData.curr_price(res.curr_price);
+            self.productData.is_supply(res.is_supply);
+            
+            self.multiEntryVisible(true);
+        });
+    };
+
+    self.multiEntryVisible = ko.observable(false);
+    
+    self.exitMEModal = function(clickedItem) {
+        self.multiEntryVisible(false);
+    };
+
+    
+    self.shipments = ko.observableArray();
+    self.shipments.push(new KO_ShipmentItem());
+    
+    /**
+     * If last line qty is filled in then add a new line for another entry.
+     */
+    ko.computed(function() {
+        if (self.shipments()[self.shipments().length - 1].qty() != '') {
+            self.shipments.push(new KO_ShipmentItem());
+            self.shipments()[self.shipments().length - 1].qty(); // Force listener update.
+        }
+    });
+    
+    self.doSubmit = function() {
+        // Number of rows should be greater than 1. Last one is always incomplete.
+        if (self.shipments().length == 1) {
+            alert('Enter at least one quantity to submit');
+            return;
+        }
+        
+        var items = [];
+        for (var i=0; i<self.shipments().length; i++) {
+            var shipmentItem = self.shipments()[i];
+            if (shipmentItem.qty() != '') {
+                items.push({
+                    orderID: '',
+                    ordernote: '(auto-generated single shipment order)',
+                    group: viewModel.co_name,
+                    MPN: self.productData.MPN(),
+                    is_purchase: self.productData.is_supply(),
+                    is_sale: !self.productData.is_supply(),
+                    seller: self.productData.is_supply() ? self.them() : self.us(),
+                    buyer: self.productData.is_supply() ? self.us() : self.them(),
+                    qty: shipmentItem.qty(),
+                    price: self.productData.curr_price(),
+                    shipmentdate: new Date(shipmentItem.shipdate().replace(/-/g, "/")),
+                    orderdate: new Date(shipmentItem.shipdate().replace(/-/g, "/")),
+                    shipment_no: shipmentItem.shipment_no() || '',
+                    shipmentnote: shipmentItem.shipmentnote() || '',
+                    is_open: false,
+                });
+            }
+        }
+        var params = {
+            _csrf: _csrf,
+            items: items
+        };
+        post('/database/save/multipleshipments', params, function(res) {
+            console.log(res);
+        });
+    };
+}
+    
+viewModel.multiModalVM = new MultiModalVM();
+</script>

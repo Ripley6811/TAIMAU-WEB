@@ -1,0 +1,130 @@
+<!--Modal for viewing a single shipment-->
+<div data-bind="with: shipmentModalVM">
+    <div id="form modal" class="modal" data-bind="style: {display: shipmentModalVisible() ? 'block' : 'none'}">
+        <div class="panel panel-success">
+            <div class="panel-heading" data-bind="with: lastSelection">
+                <h2 class="text-center">出貨 - <span data-bind="text: label"></span></h2>
+            </div>
+            <form action="/shipment/create" method="post" class="form-horizontal">
+                <div class="panel-body">
+
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">台茂</label>
+                                <div class="col-md-9 has-success">
+                                    <select class="form-control" name="us" required>
+                                        <option value="台茂">台茂</option>
+                                        <option value="永茂">永茂</option>
+                                        <option value="富茂">富茂</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">客戶</label>
+                                <div class="col-md-9 has-success">
+                                    <select class="form-control" name="them" required>
+                                    <% cogroup.branches.forEach(function(branch) { %>
+                                    <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
+                                    <% }); %>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <table class="table table-condensed table-striped">
+                        <thead class="text-uppercase">
+                            <tr>
+                                <th class="text-center">日期</th>
+                                <th class="text-center">出貨單編號</th>
+                                <th class="text-center">件數</th>
+                                <th class="text-center">數量</th>
+                                <th class="text-center">出貨資訊</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="with: lastSelection">
+                            <input type="hidden" name="price" data-bind="value: price">
+                            <input type="hidden" name="is_supply" data-bind="value: is_supply">
+                            <input type="hidden" name="MPN" data-bind="value: MPN">
+                            <tr>
+                                <td class="text-left has-success">
+                                    <input type="date" class="form-control" name="shipmentdate" required>
+                                </td>
+                                <td class="text-center has-success">
+                                    <input type="text" class="form-control" maxlength="8" placeholder="" name="shipment_no">
+                                </td>
+                                <td style="width: 20%">
+                                    <div class="input-group has-success">
+                                        <input type="number" min=1 class="form-control text-right" name="qty" data-bind="textInput: qty" required>
+                                        <div class="input-group-addon" data-bind="text: jianshu"></div>
+                                    </div>
+                                </td>
+                                <td style="width: 20%" class="text-center" data-bind="text: totalUnits"></td>
+                                <td class="has-success">
+                                    <input type="text" class="form-control" name="shipmentnote">
+                                </td>
+                            </tr>
+                            </tbody>
+                    </table>
+
+                </div>
+                <div class="panel-footer lightorange-blend">
+
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <button type="button" class="btn btn-lg btn-danger" data-bind="click: exitMEModal">回到列表 <span class="badge">Esc</span></button>
+                            <input type="submit" class="btn btn-lg btn-medium btn-success" name="make_po_shipment" value="創造新出貨單">
+                            <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+                            <input type="hidden" name="group" value="<%= cogroup.name %>" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+var viewModel = viewModel || {};
+var _csrf = viewModel._csrf = '<%= _csrf %>';
+    
+    
+function ShipmentModalVM() {
+    var self = this;
+    
+    self.shipmentModalVisible = ko.observable(false);
+    self.showShipmentModal = function(clickedItem) {
+        self.shipmentModalVisible(true);
+    };
+    self.exitShipmentModal = function(clickedItem) {
+        self.shipmentModalVisible(false);
+    };
+    
+    document.onkeydown = function(evt) {
+        if (evt.keyCode == 27 && self.shipmentModalVisible() == true) {
+            self.exitShipmentModal();
+        }
+        if (evt.keyCode == 13 && self.shipmentModalVisible() == false) {
+            self.showShipmentModal();
+        }
+    };
+    
+    self.shipment = new KO_Shipment();
+    self.isNewEntry = ko.observable(true); // True for new entry, false for edit mode.
+    self.onModalClose = null; // Callback to execute when modal closes.
+        
+    self.open = function(shipmmentID) {
+        
+    };
+}
+    
+viewModel.shipmentModalVM = new ShipmentModalVM();
+</script>

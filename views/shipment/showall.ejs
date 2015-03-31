@@ -6,7 +6,7 @@
 <hr>
 <!--START: List view of shipments-->
 <div data-bind="with: pageVM">
-<div>
+    <div>
         <div class="panel panel-success" style="margin: 0px">
             <div class="panel-heading" style="padding: 0px">
                 <div class="row">
@@ -14,6 +14,8 @@
                         <span class="h4" style="margin: 0px">Shipments</span>
                     </div>
                     <div class="col-md-4">
+                        <button class="btn btn-success" data-bind="click: clearSelections">Clear Selections <span class="badge">Esc</span></button>
+                        <button class="btn btn-success" data-bind="click: openInvoiceModal">Create Invoice <span class="badge">Enter</span></button>
                     </div>
                     <div class="col-md-4">
                         <div class="input-group">
@@ -28,29 +30,40 @@
             <div class="panel-body" style="padding: 0px">
                 <table class="table table-striped">
                     <thead>
-                        <th>Order ID</th>
-                        <th>Shipment ID</th>
-                        <th>QTY</th>
-                        <th>容器</th>
-                        <th>Date</th>
+                        <th class="text-center">訂單編號 <span class="badge">ID#</span></th>
+                        <th class="text-center">出貨日期</th>
+                        <th class="text-center">出貨單編號 <span class="badge">ID#</span></th>
+                        <th class="text-center">選</th>
+                        <th class="text-center">QTY</th>
+                        <th class="text-center">產品/服務</th>
+                        <th class="text-center">發票編號 <span class="badge">ID#</span></th>
                     </thead>
                     <tbody data-bind="foreach: shipmentsItems">
                         <tr>
-                            <td><span data-bind="text: order_id"></span></td>
-                            <td><span data-bind="text: shipment"></span>-<span data-bind="text: shipment_no"></span></td>
-                            <td><span data-bind="text: qty"></span></td>
-                            <td><span data-bind="text: shipment"></span></td>
-                            <td><span data-bind="text: duedate"></span></td>
+                            <td style="padding: 3px 3px" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + order_id}"><strong data-bind="text: orderID"></strong> <span class="badge" data-bind="text: order_id"></span></a></td>
+                            <td style="padding: 3px 3px" class="text-center"><span data-bind="text: date"></span></td>
+                            <td style="padding: 3px 3px" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '#'}"><strong data-bind="text: shipment_no"></strong> <span class="badge" data-bind="text: shipmentitem_id"></span></a></td>
+                            <td style="padding: 3px 3px; width: 30px">
+                                <input style="margin: 0px; width:26px; height:26px; vertical-align: top;" type="checkbox" name="purchaseorder" data-bind="checked: selected">
+                            </td>
+                            <td style="padding: 3px 3px" class="text-right"><span data-bind="text: qty"></span> <span data-bind="text: countUnit"></span></td>
+                            <td style="padding: 3px 3px"><span data-bind="text: inventory_name"></span></td>
+                            <td style="padding: 3px 3px" class="text-center" data-bind="if: invoice_no != undefined"><button style="padding: 2px 10px" class="btn btn-custom"><strong data-bind="text: invoice_no"></strong> <span class="badge" data-bind="text: invoiceitem_id"></span></button></td>
+
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
+    </div>
 </div>
-</div>
-    
 <!--END: List view of shipments-->
+    
+    
+<%- partial ('../invoice/modal.ejs') %>
+    
+    
 </div><!--END: container-fluid-->
 
 
@@ -60,59 +73,78 @@ var co_name = '<%= cogroup.name %>';
 addCompanyNavButtons(co_name);
 var _csrf = '<%= _csrf %>';
     
+
+var key = {
+    ESC: 27,
+    ENTER: 13,
+    PLUS: 43
+};
+    
 function PageModel() {
     var self = this;
     
-    self.recordLimit = ko.observable(40);
+    self.recordLimit = ko.observable(80);
     
     /**
      * SHIPMENT methods
      */
     self.shipments = ko.observableArray();
     self.shipmentsItems = ko.observableArray();
-    self.shipmentsGet = function () {
+    
+    self.clearSelections = function() {
+        for (var i=0; i<self.shipmentsItems().length; i++) {
+            self.shipmentsItems()[i].selected(false);
+        }
+    };
+    
+    self.openInvoiceModal = function() {
+        var items = [];
+        for (var i=0; i<self.shipmentsItems().length; i++) {
+            var si = self.shipmentsItems()[i];
+            if (si.selected() && si.invoice_id == null) {
+                items.push(si);
+            }
+        }
+        viewModel.invoiceModalVM.showModal(items);
+    };
+    
+    document.onkeydown = function(evt) {
+        // Exit any modal if displayed.
+        if (evt.keyCode == key.ESC) {
+            if (viewModel.invoiceModalVM.isVisible()) viewModel.invoiceModalVM.exitModal();
+            else self.clearSelections();
+        }
+        // Enter the normal shipment form.
+        if (evt.keyCode == key.ENTER) {
+            if (viewModel.invoiceModalVM.isVisible()) return true;
+            else self.openInvoiceModal();
+        }
+    };
+    
+    
+    
+    self.getShipmentsArray = function() {
         params = {
             _csrf: _csrf, 
             id: co_name,
-            limit: self.recordLimit(),
+            limit: Number(self.recordLimit()),
         };
-        callback = function (shipments) {
-//            alert(JSON.stringify(shipments, null, '   '));
-            self.shipments.removeAll();
+        post('/database/get/shipmentitems', params, function(response) {
+            console.log(response);
+            
             self.shipmentsItems.removeAll();
-            for (var i=0; i<shipments.length; i++) {
-                if (!shipments[i].discontinued) {
-                    self.shipments.push(new KO_Shipment(shipments[i]));
-                    for (var j=0; j<shipments[i].items.length; j++) {
-                        self.shipmentsItems.push(new KO_ShipmentItem(shipments[i].items[j]));
-                    }
-                }
+            for (var i=0; i<response.length; i++) {
+                self.shipmentsItems.push(new KO_ShipmentListRow(response[i]));
             }
-        };
-        getShipments(params, callback);
+        });
     };
-    self.shipmentsGet();
+//    self.getShipmentsArray();
     
     ko.computed(function () {
         var val = Number(self.recordLimit());
         if (isNaN(val)) return;
-        else self.shipmentsGet();
+        else self.getShipmentsArray();
     });
-    
-    
-    
-    var getShipmentsProcess = function () {
-        post(
-            '/database/get/shipments', 
-            {
-                _csrf: _csrf, 
-            }, 
-            function (res_records) {
-                
-            }
-        );
-    };
-    getShipmentsProcess()
 }
 
 viewModel.pageVM = new PageModel();
