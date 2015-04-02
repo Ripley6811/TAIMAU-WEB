@@ -22,12 +22,12 @@
                         <input type="radio" name="a" data-bind="checked: is_supply, checkedValue: false, enable: $parent.isNewEntry">出貨(賣) </label>
                 </div>
                 <div class="input-group has-warning"><div class="input-group-addon">內用名稱</div><input class="form-control" placeholder="名稱" style="width: 100%;" data-bind="textInput: inventory_name" required></div>
-                <div class="input-group has-success"><div class="input-group-addon">標籤名稱</div><input class="form-control" placeholder="標籤 (選修的)" style="width: 100%;" data-bind="textInput: product_label"></div>
-                <div class="input-group has-success"><div class="input-group-addon">英文名稱</div><input class="form-control" placeholder="英文 (選修的)" style="width: 100%;" data-bind="textInput: english_name"></div>
-                <div class="input-group has-success"><div class="input-group-addon">包裝描述</div><input class="form-control" placeholder="描述 (選修的)" style="width: 100%;" data-bind="textInput: SKUlong"></div>
-                <div class="input-group has-success"><div class="input-group-addon">備註</div><input class="form-control" placeholder="備註 (選修的)" style="width: 100%;" data-bind="textInput: note"></div>
-                <div class="input-group has-success"><div class="input-group-addon">PN(外用)</div><input class="form-control" placeholder="PN (選修的)" style="width: 100%;" data-bind="textInput: ASE_PN"></div>
-                <div class="input-group has-success"><div class="input-group-addon">RT(外用)</div><input class="form-control" placeholder="RT (選修的)" style="width: 100%;" data-bind="textInput: ASE_RT"></div>
+                <div class="input-group has-success"><div class="input-group-addon">標籤名稱</div><input class="form-control" placeholder="標籤 (可選擇)" style="width: 100%;" data-bind="textInput: product_label"></div>
+                <div class="input-group has-success"><div class="input-group-addon">英文名稱</div><input class="form-control" placeholder="英文 (可選擇)" style="width: 100%;" data-bind="textInput: english_name"></div>
+                <div class="input-group has-success"><div class="input-group-addon">包裝描述</div><input class="form-control" placeholder="描述 (可選擇)" style="width: 100%;" data-bind="textInput: SKUlong"></div>
+                <div class="input-group has-success"><div class="input-group-addon">備註</div><input class="form-control" placeholder="備註 (可選擇)" style="width: 100%;" data-bind="textInput: note"></div>
+                <div class="input-group has-success"><div class="input-group-addon">PN(外用)</div><input class="form-control" placeholder="PN (可選擇)" style="width: 100%;" data-bind="textInput: ASE_PN"></div>
+                <div class="input-group has-success"><div class="input-group-addon">RT(外用)</div><input class="form-control" placeholder="RT (可選擇)" style="width: 100%;" data-bind="textInput: ASE_RT"></div>
                 <div class="input-group has-warning"><div class="input-group-addon">容量</div><input class="form-control" placeholder="一個容器的數量" style="width: 100%;" data-bind="textInput: units, enable: $parent.isNewEntry" required><div class="input-group-addon">數字</div></div>
                 <div class="input-group has-warning"><div class="input-group-addon">單位</div><input class="form-control" placeholder="容量的單位" style="width: 100%;" data-bind="textInput: UM, enable: $parent.isNewEntry" required><div class="input-group-addon">kg, L, gal, 次, 塊, 件...</div></div>
                 <div class="input-group has-warning"><div class="input-group-addon">容器</div><input class="form-control" placeholder="容器簡寫" style="width: 100%;" data-bind="textInput: SKU, enable: $parent.isNewEntry" required><div class="input-group-addon">瓶, 包, 桶, 盒, 槽車...</div></div>
@@ -45,9 +45,9 @@
                 </div>
                 <div>
                     <label>
-                        <input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: true, enable: $parent.isNewEntry">用<strong data-bind="text: UM"></strong>件數</label>
+                        <input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: true, enable: $parent.isNewEntry">用<strong data-bind="text: UM"></strong>數量</label>
                     <label>
-                        <input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: false, enable: $parent.isNewEntry">用<strong data-bind="text: SKU"></strong>件數</label>
+                        <input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: false, enable: $parent.isNewEntry">用<strong data-bind="text: SKU"></strong>數量</label>
                 </div>
                 
                 <hr>

@@ -57,8 +57,9 @@
                                 </td>
 
                     <!--        Product inventory name    -->
-                                <td>
-                                    <a data-bind="attr: {href: '/order/show/' + id}">PO#: <span data-bind="text: orderID"></span></a> <span class="label label-primary" data-bind="text: ordernote"></span>
+                                <td style="padding: 3px 3px" class="text-left">
+                                    <a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + id}"><strong data-bind="text: orderID"></strong> <span class="badge" data-bind="text: id"></span></a>
+                                    <span class="label label-primary" data-bind="text: ordernote"></span>
                                 </td>
                                 <td>
                                     <span data-bind="text: label"></span> <span class="label label-primary" data-bind="text: id_note"></span>
@@ -381,6 +382,11 @@ function ItemsModel() {
                 if (orders[i].is_open) {
                     self.orders.push(new KO_PurchaseOrder(orders[i].MPN, orders[i]));
                 }
+            }
+            // If no orders then set view to product list.
+            if (self.orders().length == 0) {
+                self.prod_tab(true);
+                self.po_tab(false);
             }
         };
         getOrders(params, callback);

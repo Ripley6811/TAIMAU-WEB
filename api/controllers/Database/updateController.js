@@ -34,6 +34,22 @@ module.exports = {
         return res.json({
             todo: 'branch() is not implemented yet!'
         });
+    },
+
+
+    /**
+    * `Database/updateController.order()`
+    */
+    order: function (req, res) {
+        var editRecord = req.param('order');
+        
+        if (editRecord.id) {
+            Order.update(editRecord.id, editRecord, function(err, rec) {
+                if (err) { res.send(err); return; }
+
+                res.send(rec[0]);
+            });
+        }
     }
 };
 

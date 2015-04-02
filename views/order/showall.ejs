@@ -20,7 +20,6 @@
 <table class="table table-condensed table-striped">
     <thead class="text-uppercase">
         <tr>
-            <th></th>
             <th>訂單編號</th>
             <th class="text-center">使用中</th>
             <th>標籤品名</th>
@@ -35,12 +34,8 @@
     
     <tbody data-bind="foreach: orders">
         <tr>
-            <td>
-                <a data-bind="attr: {href: '/order/show/' + id}" class="btn btn-xs btn-custom"><span class="glyphicon glyphicon-eye-open"></span></a>
-            </td>
-            
-            <td>
-                <span class="badge" data-bind="text: id"></span> <span data-bind="text: orderID"></span>
+            <td> 
+                <a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + id}"><strong data-bind="text: orderID"></strong> <span class="badge" data-bind="text: id"></span></a>
             </td>
             
 <!--        Order open/close toggle    -->
@@ -134,11 +129,12 @@ function PageModel() {
             order: order
         };
         var cb = function (response) {
+            console.log(response, order);
             if (response.is_open !== order.is_open()) {
                 order.is_open(!order.is_open());
             }
         };
-        post('/order/merge', params, cb);
+        post('/database/update/order', params, cb);
     };
     
     self.removeOrder = function (order) {
