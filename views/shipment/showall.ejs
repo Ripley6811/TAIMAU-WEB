@@ -130,7 +130,7 @@ function PageModel() {
             limit: Number(self.recordLimit()),
         };
         post('/database/get/shipmentitems', params, function(response) {
-            console.log(response);
+//            console.log(response);
             
             self.shipmentsItems.removeAll();
             for (var i=0; i<response.length; i++) {

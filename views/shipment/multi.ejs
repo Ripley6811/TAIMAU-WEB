@@ -178,10 +178,13 @@ function MultiModalVM() {
         }
         var params = {
             _csrf: _csrf,
+            co_name: viewModel.co_name,
             items: items
         };
         post('/database/save/multipleshipments', params, function(res) {
-            console.log(res);
+            //console.log(res);
+            if ('error' in res) alert(res);
+            else window.location = '../showall/'+viewModel.co_name;
         });
     };
 }
