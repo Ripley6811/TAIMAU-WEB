@@ -58,7 +58,7 @@ module.exports = {
                 price: params.price[i],
                 orderdate: params.shipmentdate,
                 ordernote: '(auto-generated : 自動創造)',
-                orderID: '(NA)',
+                orderID: '',
                 is_open: false,
             }
             defaultOrders.push(record);

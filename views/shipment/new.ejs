@@ -39,13 +39,16 @@
                                 </th>
                                 <th>
                                     品名
-                                    <span class="label label-primary">備註</span>
+                                    <span class="label label-primary">產品備註</span>
                                 </th>
                                 <th class="text-center">
                                     數量 容器
                                 </th>
                                 <th class="text-center">
                                     價格
+                                </th>
+                                <th class="text-center">
+                                    備註
                                 </th>
                             </tr>
                         </thead>
@@ -59,7 +62,6 @@
                     <!--        Product inventory name    -->
                                 <td style="padding: 3px 3px" class="text-left">
                                     <a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + id}"><strong data-bind="text: orderID"></strong> <span class="badge" data-bind="text: id"></span></a>
-                                    <span class="label label-primary" data-bind="text: ordernote"></span>
                                 </td>
                                 <td>
                                     <span data-bind="text: label"></span> <span class="label label-primary" data-bind="text: id_note"></span>
@@ -69,6 +71,9 @@
                                 </td>
                                 <td class="text-center">
                                     $ <span data-bind="text: price"></span> <span data-bind="text: pricing"></span>
+                                </td>
+                                <td>
+                                    <span class="label label-primary" data-bind="text: ordernote"></span>
                                 </td>
                             </tr>
                         </tbody>
@@ -225,18 +230,23 @@
                 <tr>
                     <td class="text-left" data-bind="text: label"></td>
                     <td class="text-center" data-bind="text: guige"></td>
-                    <td style="width: 30%">
+                    <td style="width: 20%">
+                        <input type="hidden" name="PO" data-bind="value: id">
+                        <input type="hidden" name="is_supply" data-bind="value: is_supply">
+                        <input type="hidden" name="price" data-bind="value: price">
+                        <input type="hidden" name="MPN" data-bind="value: MPN">
                         <div class="input-group has-success">
-                            <input type="hidden" name="PO" data-bind="value: id">
-                            <input type="hidden" name="price" data-bind="value: price">
-                            <input type="hidden" name="is_supply" data-bind="value: is_supply">
-                            <input type="hidden" name="MPN" data-bind="value: MPN">
-                            <input style="font-size: 18px; width: 100%" type="number" min=1 size="2" class="text-right" name="qty"  data-bind="textInput: qty, attr: {max: qtymax}" required>
+                            <input style="font-size: 18px; width: 100%" type="number" min=1 size="2" class="form-control text-right" name="qty"  data-bind="textInput: qty, attr: {max: qtymax}" required>
                             <div class="input-group-addon" data-bind="text: jianshu"></div>
                         </div>
                     </td>
                     <td class="text-center" data-bind="text: totalUnits"></td>
-                    <td class="text-center">$<span data-bind="text: price"></span></td>
+                    <td class="text-center" style="width: 15%">
+                        <div class="input-group has-success">
+                            <div class="input-group-addon">$</div>
+                            <input type="number" class="form-control" data-bind="disable: $parent.isPO, textInput: price">
+                        </div>
+                    </td>
                     <td class="text-left" data-bind="text: id_note"></td>
                 </tr>
                 </tbody>
@@ -393,7 +403,7 @@ function ItemsModel() {
     };
     self.ordersGet();
     
-    
+    self.isPO = ko.observable(true);
     self.rows = ko.observableArray([]);
     
     var selectCompute = ko.computed(function () {
@@ -402,12 +412,14 @@ function ItemsModel() {
             if (self.orders()[i].selected()) {
                 var item = new ShipmentItemRow(ko.toJS(self.orders()[i]));
                 self.rows.push(item);
+                self.isPO(true);
             }
         }
         for (var i=0; i<self.products().length; i++) {
             if (self.products()[i].selected()) {
                 var item = new ShipmentItemRow(ko.toJS(self.products()[i]));
                 self.rows.push(item);
+                self.isPO(false);
             }
         }
     });
