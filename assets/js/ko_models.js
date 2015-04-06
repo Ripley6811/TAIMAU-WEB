@@ -199,7 +199,8 @@ function KO_PurchaseOrder(product, order) {
     self.sku = product.SKU;
     self.guige = product.SKU;
     self.qty = ko.observable(order.qty ? order.qty : '');
-    self.price = ko.observable(product.curr_price);
+//    self.price = ko.observable(product.curr_price); // Why did i do this?
+    self.price = ko.observable(order.price);
     self.applytax = ko.observable(order.applytax);
     self.um = product.UM;
     self.jianshu = self.sku !== '槽車' ? self.sku : self.um;
