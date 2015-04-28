@@ -1,80 +1,103 @@
 <!--Table view of all products ordered by products-->
+<div id="this body" class="container">
+    <div class="row-fluid" data-bind="with: productsVM">
+        <div class="col-md-4 h2">
+            <strong>產品和服務</strong>
+        </div>
+        <div class="col-md-8">
+            <div class="input-group has-success">
+                <div class="input-group-addon">
+                    搜尋
+                </div>
+                <input class="form-control" type="text" placeholder="全部" data-bind="textInput: searchTerm">
+            </div>
+        </div>
+    </div>
 
-<h2>產品和服務</h2>
-<table class="table table-condensed">
-    <thead class="text-uppercase"><tr>
-        <th>公司</th>
-        <th>進/出貨</th>
-        <th>內用品名</th>
-        <th>標籤品名</th>
-        <th><abbr title="桶, 包, 瓶, 等...">容器</abbr></th>
-        <th><abbr title="# of kg, L, gal per container">容量</abbr></th>
-        <th><abbr title="kg, L, gal, etc.">單位</abbr></th>
-<!--        <th><abbr title="Price by container or volume?">價格單位</abbr></th>-->
-        <th>包裝描述</th>
-        <th>備註</th>
-        <th></th>
-    </tr></thead>
-    <tbody>
-    <% products.forEach(function(product) { %>
+<table class="table table-condensed table-striped" data-bind="with: productsVM">
+    <thead class="text-uppercase">
         <tr>
-            <td><% if (product.group !== undefined) { %><%= product.group.name %>
-                <% } else { %>
-                {MPN:<%= product.MPN %>}
-                <% } %>
-            
-            </td>
-            <td>
-                <span class="badge">
-                <% if (product.is_supply === true) { %>
-                <abbr title="買:We buy"><span class="glyphicon glyphicon-arrow-right"></span></abbr>
-                    <% } else { %>
-                    <span class="glyphicon glyphicon-none"></span>
-                    <% } %>
-                <% if (product.discontinued === false) { %>
-                    <span class="glyphicon glyphicon-home"></span>
-                    <% } else { %>
-                    <font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
-                    <% } %>
-                <% if (product.is_supply === false) { %>
-                <abbr title="賣:We sell"><span class="glyphicon glyphicon-arrow-right"></span></abbr>
-                    <% } else { %>
-                    <span class="glyphicon glyphicon-none"></span>
-                    <% } %>
-                    </span>
-            </td>
-            <td>
-                <font color=<% if (product.product_label != "") { %>
-                "grey"
-                <% } else { %>
-                "black"
-                <% } %>>
-                <% if (product.english_name != "") { %>
-                    <abbr title="<%= product.english_name %>"><%= product.inventory_name %></abbr>
-                <% } else { %>
-                    <%= product.inventory_name %>
-                <% } %>
-            </font>
-                
-                <% if (product.discontinued === true) { %>
-                <font color="red"><abbr title="已停用:Not currently used"><span class="glyphicon glyphicon-ban-circle"></span></abbr></font>
-                <% } %>
-            </td>
-            <td><%= product.product_label %></td>
-            <td><%= product.SKU %><% if (product.unitpriced === false) { %>
-                <span class="badge"><abbr title="Priced by container" class="glyphicon glyphicon-usd"></abbr></span>
-                <% } %></td>
-            <td><%= product.units %></td>
-            <td><%= product.UM %><% if (product.unitpriced === true) { %>
-                <span class="badge"><abbr title="Priced by unit" class="glyphicon glyphicon-usd"></abbr></span>
-                <% } %></td>
-            <td><%= product.SKUlong %></td>
-            <td><%= product.note %></td>
-            
-            
-                <td><a href="/product/edit/<%= product.MPN %>" class="btn btn-xs btn-custom">Edit</a>
-                </td>
+            <th>內用品名 <span class="badge">標籤品名</span><span class="label label-default">English</span></th>
+            <th><abbr title="桶, 包, 瓶, 等...">容器</abbr></th>
+    <!--
+            <th><abbr title="# of kg, L, gal per container">容量</abbr></th>
+            <th><abbr title="kg, L, gal, etc.">單位</abbr></th>
+    -->
+            <th>公司</th>
+            <th>包裝描述</th>
+            <th>備註</th>
         </tr>
-    <% }); %>
+    </thead>
+    <tbody data-bind="foreach: products">
+        <tr>
+            <td>
+                <span data-bind="text: inventory_name"></span>
+                <br>
+                <span class="badge" data-bind="text: product_label"></span>
+                <span class="label label-default" data-bind="text: english_name"></span>
+            </td>
+            <td>
+                <div class="text-center" style="padding: 0px">
+                    <strong data-bind="text: units, visible: SKU() != '槽車'"></strong>
+                    <strong data-bind="text: UM, visible: SKU() != '槽車'"></strong>
+                    <strong data-bind="visible: SKU() != '槽車'">/</strong>
+                    <strong data-bind="text: SKU"></strong>
+                </div>
+            </td>
+            <td>
+                <a class="btn btn-custom" style="width: 100%; padding: 2px 10px; font-size: 16px" data-bind="attr: {href: '/shipment/new/'+group()}">
+                    <span data-bind="text: group"></span>
+                </button>
+            </td>
+            <td>
+                <span data-bind="text: SKUlong"></span>
+            </td>
+            <td>
+                <span data-bind="text: note"></span>
+            </td>
+            
+            
+        </tr>
         </tbody>
 </table>
+</div>
+
+<script>
+var viewModel = viewModel || {};
+var _csrf = viewModel._csrf = '<%= _csrf %>';
+    
+function ProductsVM() {
+    var self = this;
+    
+    self.products = ko.observableArray([]);
+    self.searchTerm = ko.observable();
+    
+    /**
+     * Load all products in database. Filter term is optional.
+     * @param {String} filterWord Return results containing filter text.
+     */
+    self.loadProducts = function(filterWord) {
+        params = {
+            _csrf: _csrf,
+            filter: filterWord || '',
+        };
+        callback = function(products) {
+            self.products.removeAll();
+            for (var i=0; i<products.length; i++) {
+                self.products.push(new KO_Product(products[i]));
+            }
+        };
+        post('/database/get/products', params, callback);
+    };
+    
+    ko.computed(function() {
+        console.log(self.searchTerm());
+        // Activate when search field entry changes.
+        var term = self.searchTerm();
+        self.loadProducts(term);
+    });
+}
+    
+viewModel.productsVM = new ProductsVM();
+ko.applyBindings(viewModel, document.getElementById('this body'));
+</script>

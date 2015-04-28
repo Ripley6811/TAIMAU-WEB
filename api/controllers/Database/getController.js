@@ -54,12 +54,35 @@ module.exports = {
     * `Database/getController.products()`
     */
     products: function (req, res) {
-        Product
-        .find({group: req.param('id')})
-        .exec(function (err, records) {
-            if (err) { res.send(err); return; }
-            res.send(records);
-        });
+        if (req.param('id') != undefined) {
+            Product
+            .find({group: req.param('id')})
+            .sort('inventory_name')
+            .exec(function (err, records) {
+                if (err) { res.send(err); return; }
+                res.send(records);
+            });
+        } else if(req.param('filter') != '') {
+            var term = req.param('filter');
+            Product
+            .find().where({or:[{product_label: {'contains': term}}, 
+                               {inventory_name: {'contains': term}},
+                               {english_name: {'contains': term}},
+                              ]})
+            .sort('inventory_name')
+            .exec(function (err, records) {
+                if (err) { res.send(err); return; }
+                res.send(records);
+            });
+        } else {
+            Product
+            .find()
+            .sort('inventory_name')
+            .exec(function (err, records) {
+                if (err) { res.send(err); return; }
+                res.send(records);
+            });
+        }
     },
 
 
