@@ -105,6 +105,7 @@ function InvoiceModalVM() {
      */
     self.showModal = function(items) {
         // Use order ID to preset the branch selections for the invoice.
+        self.invoiceItems.removeAll();
         for (var i=0; i<items.length; i++) {
             self.invoiceItems.push(new KO_ShipmentListRow(items[i]));
         }

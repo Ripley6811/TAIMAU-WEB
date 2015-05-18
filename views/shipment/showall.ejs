@@ -101,7 +101,8 @@ function PageModel() {
         var items = [];
         for (var i=0; i<self.shipmentsItems().length; i++) {
             var si = self.shipmentsItems()[i];
-            if (si.selected() && si.invoice_id == null) {
+            if (si.selected() && si.invoiceitem_id == null) {
+                console.log(si);
                 items.push(si);
             }
         }
