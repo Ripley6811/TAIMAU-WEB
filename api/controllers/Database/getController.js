@@ -221,7 +221,7 @@ module.exports = {
             + " JOIN `order` po ON po.id = shipi.order_id "
             + " JOIN product prod ON prod.MPN = po.MPN "
             + " WHERE po.group LIKE ? "
-            + " ORDER BY sh.id DESC, shipmentdate DESC "
+            + " ORDER BY shipmentdate DESC, sh.id DESC"
             + " LIMIT ?;", [req.param('id'), req.param('limit')],
         function(err, recs) {
             if (err) console.log(err);
