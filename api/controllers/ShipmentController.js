@@ -106,7 +106,9 @@ module.exports = {
     showall: function (req, res) {
         var params = req.params.all();
         
-        Cogroup.findOne({name: params.id}, function (err, cogroup) {
+        Cogroup.findOne({name: params.id})
+        .populate('branches')
+        .exec( function (err, cogroup) {
             if (err) {
                 res.json({
                     error: err

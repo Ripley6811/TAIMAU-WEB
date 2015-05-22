@@ -247,6 +247,19 @@ module.exports = {
         return res.json({
         todo: 'invoiceitems() is not implemented yet!'
         });
+    },
+
+
+    /**
+    * `Database/getController.last_invoice_number()`
+    */
+    last_invoice_number: function (req, res) {
+        Invoice.findOne({buyer: req.param('br_name')})
+        .sort('invoicedate desc')
+        .exec(function (err, rec) {
+            if (err) { res.send(err); return; }
+            res.send(rec);
+        });
     }
 };
 

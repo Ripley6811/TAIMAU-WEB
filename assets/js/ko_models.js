@@ -359,6 +359,7 @@ function KO_ShipmentListRow(item) {
     self.UM = item.UM;
     
     self.inventory_name = item.inventory_name;
+    self.product_label = item.product_label || item.inventory_name;
     self.qty = item.qty;
     self.shipmentdate = new Date(item.shipmentdate);
     self.shipped = item.shipped ? true : false;
@@ -379,6 +380,15 @@ function KO_ShipmentListRow(item) {
             return val.toString() + ' ' + self.UM;
         } else {
             return '0 ' + self.UM;
+        }
+    })();
+    
+    self.value = (function () {
+        var val = self.price * self.qty;
+        if (self.unitpriced) {
+            return Math.round(val * self.units);
+        } else {
+            return Math.round(val);
         }
     })();
 }

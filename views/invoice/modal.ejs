@@ -5,48 +5,18 @@
             <div class="panel-heading">
                 <h2 class="text-center">發票</h2>
             </div>
-            <form action="/shipment/create" method="post" class="form-horizontal">
+            <form class="form-horizontal" data-bind="submit: doSubmit">
                 <div class="panel-body">
-
-                    <div class="row">
-                        <div class="col-md-7">
-                            <div class="form-group">
-                                <label class="col-md-3 control-label">台茂</label>
-                                <div class="col-md-9 has-success">
-                                    <select class="form-control" name="us" required>
-                                        <option value="台茂">台茂</option>
-                                        <option value="永茂">永茂</option>
-                                        <option value="富茂">富茂</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-7">
-                            <div class="form-group">
-                                <label class="col-md-3 control-label">客戶</label>
-                                <div class="col-md-9 has-success">
-                                    <select class="form-control" name="them" required>
-                                    <% cogroup.branches.forEach(function(branch) { %>
-                                    <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
-                                    <% }); %>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
 
                     <table class="table table-condensed table-striped">
                         <thead class="text-uppercase">
                             <tr>
-                                <th class="text-center">日期</th>
                                 <th class="text-center">出貨單編號</th>
+                                <th class="text-center">內用品名 (標籤)</th>
                                 <th class="text-center">件數</th>
                                 <th class="text-center">數量</th>
+                                <th class="text-center">價格</th>
+                                <th class="text-center">總額</th>
                             </tr>
                         </thead>
                         <tbody data-bind="foreach: invoiceItems">
@@ -54,21 +24,206 @@
                             <input type="hidden" name="is_supply" data-bind="value: is_supply">
                             <input type="hidden" name="MPN" data-bind="value: MPN">
                             <tr>
-                                <td class="text-left has-success">
-                                    <span data-bind="text: date"></span>
-                                </td>
                                 <td class="text-center">
                                     <span data-bind="text: shipment_no">
+                                </td>
+                                <td class="text-center has-success">
+                                    <span data-bind="text: inventory_name"></span>
+                                    <span data-bind="visible: inventory_name != product_label">
+                                        (<span data-bind="text: product_label"></span>)
+                                    </span>
                                 </td>
                                 <td class="text-right">
                                     <span data-bind="text: qty"></span>
                                     <span data-bind="text: countUnit"></span>
                                 </td>
-                                <td class="text-right"><span data-bind="text: totalUnits"></span></td>
+                                <td class="text-right">
+                                    <span data-bind="text: totalUnits"></span>
+                                </td>
+                                <td class="text-right">
+                                    $ <span data-bind="text: price"></span>
+                                    /<span data-bind="text: unitpriced ? UM : SKU"></span>
+                                </td>
+                                <td class="text-right">
+                                    $ <span data-bind="text: value"></span>
+                                </td>
                             </tr>
-                            </tbody>
+                        </tbody>
                     </table>
-
+                    
+                    <div style="border: 2px solid blue; padding: 4px; letter-spacing: 2px">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <input class="text-center" type="text" maxlength="10" placeholder="發票編號" data-bind="textInput: invoice_no">
+                                    </div>
+                                    <label class="col-md-8 text-center" style="color: blue; letter-spacing: 10px;">
+                                        統 一 發 票 ( 三 聯 式 )
+                                    </label>
+                                </div>
+                                
+                                <div class="row" style="padding-top: 8px;">
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <label class="col-md-4" style="color: blue; font-size: 14px">買 受 人 :</label>
+                                            <div class="col-md-8">
+                                                <div data-bind="visible: is_sale() == false">
+                                                    <select data-bind="value: us" required>
+                                                        <option value="台茂">台茂</option>
+                                                        <option value="永茂">永茂</option>
+                                                        <option value="富茂">富茂</option>
+                                                    </select>
+                                                </div>
+                                                <div data-bind="visible: is_sale()">
+                                                    <select data-bind="value: them" required>
+                                                    <% cogroup.branches.forEach(function(branch) { %>
+                                                    <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %></option>
+                                                    <% }); %>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                    <!-- Date entry -->
+                                    <div class="col-md-6 text-center" style="font-size: 14px">
+                                        <label class="text-center" style="color: blue;">
+                                            中華民國
+                                        </label>
+                                        <input class="text-center" type="text" size="1" maxlength="3" data-bind="textInput: inv_year">
+                                        <label class="text-center" style="color: blue;">
+                                            年
+                                        </label>
+                                        <input class="text-center" type="text" size="1" maxlength="2" data-bind="textInput: inv_month">
+                                        <label class="text-center" style="color: blue;">
+                                            月
+                                        </label>
+                                        <input class="text-center" type="text" size="1" maxlength="2" data-bind="textInput: inv_day">
+                                        <label class="text-center" style="color: blue;">
+                                            日
+                                        </label>
+                                        <br>
+                                        
+                                        <label class="text-center" data-bind="text: '( ' + invoicedate() + ' )'" disabled></label>
+                                        
+                                    </div>
+                                </div>
+                                
+                                
+                                
+                            </div>
+                            
+                        </div>
+                        
+                        
+                        <div class="row">
+                            <div class="col-md-9">
+                                <!-- Products aggregated table -->
+                                <table class="table table-condensed table-bordered">
+                                    <thead class="text-uppercase">
+                                        <tr style="color: blue; letter-spacing: 10px">
+                                            <th class="text-center">品 名</th>
+                                            <th class="text-center">數 量</th>
+                                            <th class="text-center">單 價</th>
+                                            <th class="text-center">金 額</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: aggregateItems">
+                                        <tr>
+                                            <td class="text-center">
+                                                <span data-bind="text: product_label"></span>
+                                            </td>
+                                            <td class="text-right">
+                                                <span data-bind="text: x_qty"></span>
+                                                <span data-bind="text: x_um"></span>
+                                            </td>
+                                            <td class="text-right">
+                                                $ <span data-bind="text: price"></span>
+                                                /<span data-bind="text: x_um"></span>
+                                            </td>
+                                            <td class="text-right" style="width: 20%">
+                                                $ <span data-bind="text: value"></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-3">
+                                <table class="table table-condensed table-bordered">
+                                    <thead class="text-uppercase">
+                                        <tr style="color: blue; letter-spacing: 10px">
+                                            <th class="text-center">備註</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="">
+                                        <tr>
+                                            <td class="text-center">
+                                                
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-9">
+                                <!-- Products aggregated table -->
+                                <table class="table table-condensed table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-center" style="color: blue; letter-spacing: 16px;">銷 售 額 合 計</td>
+                                            <td class="text-right" style="width: 20%">
+                                                $ <span data-bind="text: subtotal()"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center" style="color: blue; letter-spacing: 16px;">營&nbsp;&nbsp;&nbsp;業&nbsp;&nbsp;&nbsp;稅</td>
+                                            <td class="text-right" style="width: 20%">
+                                                $ <span data-bind="text: taxtotal()"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center" style="color: blue; letter-spacing: 16px;">總&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;計</td>
+                                            <td class="text-right" style="width: 20%">
+                                                $ <span data-bind="text: grandtotal()"></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-3">
+                                <table class="table table-condensed table-bordered">
+                                    <thead class="text-uppercase">
+                                        <tr style="color: blue;">
+                                            <th class="text-center">營業人統一發票專用章</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr rowspan="2">
+                                            <td class="text-center">
+                                                <div data-bind="visible: is_sale()">
+                                                    <select data-bind="value: us" required>
+                                                        <option value="台茂">台茂</option>
+                                                        <option value="永茂">永茂</option>
+                                                        <option value="富茂">富茂</option>
+                                                    </select>
+                                                </div>
+                                                <div data-bind="visible: is_sale() == false">
+                                                    <select data-bind="value: them" required>
+                                                    <% cogroup.branches.forEach(function(branch) { %>
+                                                    <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %></option>
+                                                    <% }); %>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="panel-footer lightorange-blend">
 
@@ -83,13 +238,19 @@
                 </div>
             </form>
         </div>
+        <div>
+            asdfasdf
+        </div>
     </div>
 </div>
 
 <script>
 var viewModel = viewModel || {};
 var _csrf = viewModel._csrf = '<%= _csrf %>';
+var tax_rate = 0.05;
     
+var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
+var branches = <%- JSON.stringify(cogroup.branches) %>
     
 function InvoiceModalVM() {
     var self = this;
@@ -108,14 +269,91 @@ function InvoiceModalVM() {
         self.invoiceItems.removeAll();
         for (var i=0; i<items.length; i++) {
             self.invoiceItems.push(new KO_ShipmentListRow(items[i]));
+            self.invoiceItems()[i].shipmentitem_id = items[i].shipmentitem_id;
         }
+        self.is_sale( self.invoiceItems()[0].is_supply ? false : true );
+        self.invoice_no(self.lastInvoiceNumber().substring(0,6));
         self.isVisible(true);
     };
     self.exitModal = function() {
         self.isVisible(false);
     };
     
+    self.aggregateItems = ko.observableArray();
     self.invoiceItems = ko.observableArray();
+    self.invoicenote = ko.observable();
+    self.invoice_no = ko.observable('');
+    self.us = ko.observable();
+    self.them = ko.observable('');
+    self.is_sale = ko.observable(true);
+    var date_today = new Date();
+    self.inv_year = ko.observable(date_today.getFullYear()-1911);
+    self.inv_month = ko.observable(date_today.getMonth()+1);
+    self.inv_day = ko.observable(date_today.getDate());
+    
+    self.invoicedate = ko.computed(function () {
+        var text = [parseInt(self.inv_year())+1911,
+                    self.inv_month().length == 1 ? '0' + self.inv_month() : self.inv_month(),
+                    self.inv_day().length == 1 ? '0' + self.inv_day() : self.inv_day()].join('-');
+        return text;
+    });
+    
+    self.aggregateItems = ko.observableArray();
+    ko.computed(function () {
+        var aggregator = {};
+        for (var i=0; i<self.invoiceItems().length; i++) {
+            var item = self.invoiceItems()[i];
+            if (aggregator[item.MPN] !== undefined) {
+                aggregator[item.MPN].x_qty += item.qty * (item.unitpriced ? item.units : 1);
+                aggregator[item.MPN].value += item.value;
+            } else {
+                aggregator[item.MPN] = {
+                    product_label: item.product_label,
+                    x_qty: item.qty * (item.unitpriced ? item.units : 1),
+                    x_um: item.unitpriced ? item.UM : item.SKU,
+                    price: item.price,
+                    value: item.value
+                }
+            }
+        }
+        self.aggregateItems.removeAll();
+        for (var key in aggregator) {
+            self.aggregateItems.push(aggregator[key]);
+        }
+    });
+    
+    // Check invoice number is all caps
+    ko.computed(function () { 
+        self.invoice_no(self.invoice_no().toUpperCase()); 
+    });
+    // Check month is in range
+    ko.computed(function () { 
+        if (parseInt(self.inv_month()) > 12)
+            self.inv_month(self.inv_month().substring(0,1)); 
+    });
+    // Check day is reasonable
+    ko.computed(function () { 
+        if (parseInt(self.inv_day()) > 32)
+            self.inv_day(self.inv_day().substring(0,1)); 
+    });
+    
+    // Before tax total
+    self.subtotal = function() {
+        var val = 0;
+        for (var i=0; i<self.invoiceItems().length; i++) {
+            val += self.invoiceItems()[i].value;
+        }
+        return val;
+    }
+    // Total tax to add
+    self.taxtotal = function() {
+        var val = self.subtotal() * tax_rate;
+        return Math.round(val);
+    }
+    // Total after tax
+    self.grandtotal = function() {
+        return self.subtotal() + self.taxtotal();
+    }
     
     self.invoice = new KO_Invoice();
     self.isNewEntry = ko.observable(true); // True for new entry, false for edit mode.
@@ -128,6 +366,53 @@ function InvoiceModalVM() {
     self.loadInvoice = function(invoiceID) {
         
     };
+    
+    
+    self.doSubmit = function() {
+        var is_purchase = self.invoiceItems()[0].is_supply;
+        var invoice = {
+            invoice_no: self.invoice_no,
+            seller: self.is_purchase ? self.them() : self.us(),
+            buyer: self.is_purchase ? self.us() : self.them(),
+            invoicedate: self.invoicedate,
+            invoicenote: self.invoicenote
+        };
+        var items = [];
+        for (var i=0; i<self.invoiceItems().length; i++) {
+            var invoiceItem = self.invoiceItems()[i];
+//            console.log(invoiceItem);
+            items.push({
+                shipmentitem_id: invoiceItem.shipmentitem_id,
+                order_id: invoiceItem.order_id,
+                qty: invoiceItem.qty
+            });
+        }
+        var params = {
+            _csrf: _csrf,
+            co_name: viewModel.co_name,
+            invoice_data: invoice,
+            items: items
+        };
+        post('/database/save/invoice', params, function(res) {
+            //console.log(res);
+            if ('error' in res) alert(res);
+            else window.location = '../showall/'+viewModel.co_name;
+        });
+    };
+    
+    self.lastInvoiceNumber = ko.observable('');
+    // Update last invoice number when branch is selected.
+    ko.computed(function () {
+        var params = {
+            _csrf: _csrf, 
+            co_name: viewModel.co_name,
+            br_name: self.them()
+        };
+        post('/database/get/last_invoice_number', params, function(res) {
+            if ('error' in res) alert(res);
+            if (res) self.lastInvoiceNumber(res.invoice_no);
+        });
+    });
 }
     
 viewModel.invoiceModalVM = new InvoiceModalVM();

@@ -69,7 +69,7 @@
 
 <script>
 var cogroup = <%- JSON.stringify(cogroup) %>;
-var co_name = '<%= cogroup.name %>';
+var co_name = viewModel.co_name = '<%= cogroup.name %>';
 addCompanyNavButtons(co_name);
 var _csrf = '<%= _csrf %>';
     

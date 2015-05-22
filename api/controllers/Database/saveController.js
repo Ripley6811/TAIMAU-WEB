@@ -219,8 +219,22 @@ module.exports = {
      * `Database/saveController.invoice()`
      */
     invoice: function (req, res) {
-        return res.json({
-            todo: 'invoice() is not implemented yet!'
+        var co_name = req.param('co_name');
+        var invoice_data = req.param('invoice_data');
+        var items = req.param('items');
+        
+        Invoice.create(invoice_data, function(err, inv) {
+            if (err) { res.send(err); return; }
+
+            // Add `invoice` ID to the item records.
+            for (var i=0; i<items.length; i++) {
+                items[i].invoice_id = inv.id;
+            }
+            Invoiceitem.create(items, function(err, inv_items) {
+                if (err) { res.send(err); return; }
+
+                res.send({inv_items: inv_items, inv: inv});
+            });
         });
     },
 
