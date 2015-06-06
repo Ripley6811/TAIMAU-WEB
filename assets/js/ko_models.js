@@ -135,7 +135,7 @@ function KO_Product(data) {
     self.note = ko.observable(data.note || '');
     self.ASE_PN = ko.observable(data.ASE_PN || '');
     self.ASE_RT = ko.observable(data.ASE_RT || '');
-    self.curr_price = ko.observable(data.curr_price || 10.0);
+    self.curr_price = ko.observable(data.curr_price);
     self.unitpriced = ko.observable(data.unitpriced === undefined ? true : data.unitpriced);
     self.unitcounted = ko.observable(data.unitcounted === undefined ? true : data.unitcounted);
     self.is_supply = ko.observable(data.is_supply === undefined ? false : data.is_supply);

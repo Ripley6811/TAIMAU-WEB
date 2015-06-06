@@ -64,7 +64,11 @@ module.exports = {
             defaultOrders.push(record);
         }
         
+        // Update prices in the product records
         
+        
+        
+        // Create shipment
         Shipment.create(newShipment)
         .exec( function (err, shipment) {
             if (err) { res.json(err); return; }

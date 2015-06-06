@@ -148,7 +148,7 @@ function ProductModalVM() {
         self.product.note('');
         self.product.ASE_PN('');
         self.product.ASE_RT('');
-        self.product.curr_price(10.0);
+        self.product.curr_price();
         self.product.unitpriced(true);
         self.product.unitcounted(true);
         self.product.is_supply(false);
@@ -209,6 +209,7 @@ function ProductModalVM() {
             var params = {_csrf: _csrf, product: self.product};
             post('/database/save/product', params, function(res) {
                 if ('error' in res) {
+                    console.log(res);
                     alert('ERROR saving to database. Check fields or reload page.');
                 } else {
                     alert('Product saved to database\nID: '+res.MPN);
