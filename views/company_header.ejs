@@ -3,11 +3,11 @@ Company header and navigation buttons for pages referring to a specific company.
 
 Requires: "cogroup" object.
 -->
-<div id="company header" class="row text-center" data-bind="with: cogroupVM">
+<div id="company_header" class="row text-center" data-bind="with: cogroupVM">
     <div class="col-md-4 h2 text-center" style="margin: 0px; padding: 0px 0px">
         <div class="row">
             <strong><%= cogroup.name %></strong>
-            <font color="lightgrey">(公司)</font>
+            <span style="color: lightgrey">(公司)</span>
         </div>
         <div class="row">
             <form action="/cogroup/toggle" method="post"><input type="hidden" name="_csrf" value="<%= _csrf %>" />

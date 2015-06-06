@@ -1,6 +1,6 @@
 <!--Modal for viewing a single invoice-->
 <div data-bind="with: invoiceModalVM">
-    <div id="form modal" class="modal" data-bind="style: {display: isVisible() ? 'block' : 'none'}">
+    <div id="form_modal" class="modal" data-bind="style: {display: isVisible() ? 'block' : 'none'}">
         <div class="panel panel-success">
             <div class="panel-heading">
                 <h2 class="text-center">發票</h2>
@@ -20,12 +20,12 @@
                             </tr>
                         </thead>
                         <tbody data-bind="foreach: invoiceItems">
-                            <input type="hidden" name="price" data-bind="value: price">
-                            <input type="hidden" name="is_supply" data-bind="value: is_supply">
-                            <input type="hidden" name="MPN" data-bind="value: MPN">
                             <tr>
                                 <td class="text-center">
-                                    <span data-bind="text: shipment_no">
+                                    <input type="hidden" name="price" data-bind="value: price">
+                                    <input type="hidden" name="is_supply" data-bind="value: is_supply">
+                                    <input type="hidden" name="MPN" data-bind="value: MPN">
+                                    <span data-bind="text: shipment_no"></span>
                                 </td>
                                 <td class="text-center has-success">
                                     <span data-bind="text: inventory_name"></span>
@@ -56,7 +56,7 @@
                             <div class="col-md-10">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <input class="text-center" type="text" maxlength="10" placeholder="發票編號" data-bind="textInput: invoice_no">
+                                        <input class="text-center" type="text" maxlength="10" placeholder="發票編號" data-bind="textInput: invoice_no, disable: invoice_id">
                                     </div>
                                     <label class="col-md-8 text-center" style="color: blue; letter-spacing: 10px;">
                                         統 一 發 票 ( 三 聯 式 )
@@ -69,14 +69,14 @@
                                             <label class="col-md-4" style="color: blue; font-size: 14px">買 受 人 :</label>
                                             <div class="col-md-8">
                                                 <div data-bind="visible: is_sale() == false">
-                                                    <select data-bind="value: us" required>
+                                                    <select data-bind="value: us, disable: invoice_id" required>
                                                         <option value="台茂">台茂</option>
                                                         <option value="永茂">永茂</option>
                                                         <option value="富茂">富茂</option>
                                                     </select>
                                                 </div>
                                                 <div data-bind="visible: is_sale()">
-                                                    <select data-bind="value: them" required>
+                                                    <select data-bind="value: them, disable: invoice_id" required>
                                                     <% cogroup.branches.forEach(function(branch) { %>
                                                     <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %></option>
                                                     <% }); %>
@@ -92,15 +92,15 @@
                                         <label class="text-center" style="color: blue;">
                                             中華民國
                                         </label>
-                                        <input class="text-center" type="text" size="1" maxlength="3" data-bind="textInput: inv_year">
+                                        <input class="text-center" type="text" size="1" maxlength="3" data-bind="textInput: inv_year, disable: invoice_id">
                                         <label class="text-center" style="color: blue;">
                                             年
                                         </label>
-                                        <input class="text-center" type="text" size="1" maxlength="2" data-bind="textInput: inv_month">
+                                        <input class="text-center" type="text" size="1" maxlength="2" data-bind="textInput: inv_month, disable: invoice_id">
                                         <label class="text-center" style="color: blue;">
                                             月
                                         </label>
-                                        <input class="text-center" type="text" size="1" maxlength="2" data-bind="textInput: inv_day">
+                                        <input class="text-center" type="text" size="1" maxlength="2" data-bind="textInput: inv_day, disable: invoice_id">
                                         <label class="text-center" style="color: blue;">
                                             日
                                         </label>
@@ -226,20 +226,17 @@
                     </div>
                 </div>
                 <div class="panel-footer lightorange-blend">
-
                     <div class="row">
                         <div class="col-md-12 text-center">
                             <button type="button" class="btn btn-lg btn-danger" data-bind="click: exitModal">回到列表 <span class="badge">Esc</span></button>
-                            <input type="submit" class="btn btn-lg btn-medium btn-success" name="make_po_shipment" value="創造新出貨單">
+                            <button type="button" class="btn btn-lg btn-warning" data-bind="click: delete_invoice, visible: invoice_id() != undefined">刪除發票</button>
+                            <input type="submit" class="btn btn-lg btn-medium btn-success" name="make_po_shipment" value="創造新出貨單" data-bind="visible: invoice_id() == undefined">
                             <input type="hidden" name="_csrf" value="<%= _csrf %>" />
                             <input type="hidden" name="group" value="<%= cogroup.name %>" />
                         </div>
                     </div>
                 </div>
             </form>
-        </div>
-        <div>
-            asdfasdf
         </div>
     </div>
 </div>
@@ -259,25 +256,9 @@ function InvoiceModalVM() {
      * Visibility of this modal div.
      */
     self.isVisible = ko.observable(false);
-    
-    /**
-     * Process a list of shipments for creating an invoice and show this modal.
-     * @param {Array} items Array of shipment items.
-     */
-    self.showModal = function(items) {
-        // Use order ID to preset the branch selections for the invoice.
-        self.invoiceItems.removeAll();
-        for (var i=0; i<items.length; i++) {
-            self.invoiceItems.push(new KO_ShipmentListRow(items[i]));
-            self.invoiceItems()[i].shipmentitem_id = items[i].shipmentitem_id;
-        }
-        self.is_sale( self.invoiceItems()[0].is_supply ? false : true );
-        self.invoice_no(self.lastInvoiceNumber().substring(0,6));
-        self.isVisible(true);
-    };
-    self.exitModal = function() {
-        self.isVisible(false);
-    };
+    self.edit_mode = ko.observable(false);
+    self.invoice_id = ko.observable();
+    self.invoice_item_ids = [];
     
     self.aggregateItems = ko.observableArray();
     self.invoiceItems = ko.observableArray();
@@ -290,6 +271,54 @@ function InvoiceModalVM() {
     self.inv_year = ko.observable(date_today.getFullYear()-1911);
     self.inv_month = ko.observable(date_today.getMonth()+1);
     self.inv_day = ko.observable(date_today.getDate());
+    
+    /**
+     * Process a list of shipments for creating an invoice and show this modal.
+     * @param {Array} items Array of shipment items.
+     */
+    self.showModal = function(items) {
+        // Use order ID to preset the branch selections for the invoice.
+        self.invoiceItems.removeAll();
+        for (var i=0; i<items.length; i++) {
+            self.invoiceItems.push(new KO_ShipmentListRow(items[i]));
+            self.invoiceItems()[i].shipmentitem_id = items[i].shipmentitem_id;
+            // Fill in all fields if this is an edit to existing invoice.
+            if (items[i].invoice_no != undefined) {
+                self.invoice_id(items[i].invoice_id);
+                self.edit_mode(true);
+                self.invoice_no(items[i].invoice_no);
+                self.invoice_item_ids.push(items[i].invoiceitem_id);
+                var date_today = new Date(items[i].invoicedate);
+                self.inv_year(date_today.getFullYear()-1911);
+                self.inv_month(date_today.getMonth()+1);
+                self.inv_day(date_today.getDate());
+                if (['台茂','富茂','永茂'].indexOf(items[i].buyer) >= 0) {
+                    self.us(items[i].buyer);
+                    self.them(items[i].seller);
+                } else {
+                    self.us(items[i].seller);
+                    self.them(items[i].buyer);
+                }
+            }
+        }
+        if (self.invoiceItems().length == 0) return;
+        self.is_sale( self.invoiceItems()[0].is_supply ? false : true );
+        if (self.invoice_no() == '') {
+            self.invoice_no(self.lastInvoiceNumber().substring(0,6));
+        }
+        self.isVisible(true);
+    };
+    self.exitModal = function() {
+        self.isVisible(false);
+        // Clear/reset fields
+        self.invoice_id(undefined);
+        self.edit_mode(false);
+        self.invoice_no('');
+        var date_today = new Date();
+        self.inv_year(date_today.getFullYear()-1911);
+        self.inv_month(date_today.getMonth()+1);
+        self.inv_day(date_today.getDate());
+    };
     
     self.invoicedate = ko.computed(function () {
         var text = [parseInt(self.inv_year())+1911,
@@ -359,59 +388,78 @@ function InvoiceModalVM() {
     self.isNewEntry = ko.observable(true); // True for new entry, false for edit mode.
     self.onModalClose = null; // Callback to execute when modal closes.
         
-    /**
-     * Load an existing invoice for display.
-     * @param {String} invoiceID Database ID of invoice.
-     */
-    self.loadInvoice = function(invoiceID) {
-        
-    };
     
     
     self.doSubmit = function() {
-        var is_purchase = self.invoiceItems()[0].is_supply;
-        var invoice = {
-            invoice_no: self.invoice_no,
-            seller: self.is_purchase ? self.them() : self.us(),
-            buyer: self.is_purchase ? self.us() : self.them(),
-            invoicedate: self.invoicedate,
-            invoicenote: self.invoicenote
-        };
-        var items = [];
-        for (var i=0; i<self.invoiceItems().length; i++) {
-            var invoiceItem = self.invoiceItems()[i];
-//            console.log(invoiceItem);
-            items.push({
-                shipmentitem_id: invoiceItem.shipmentitem_id,
-                order_id: invoiceItem.order_id,
-                qty: invoiceItem.qty
+        if (!self.edit_mode() && self.invoice_id() == undefined) {
+            var is_purchase = self.invoiceItems()[0].is_supply;
+            var invoice = {
+                invoice_no: self.invoice_no,
+                seller: self.is_purchase ? self.them() : self.us(),
+                buyer: self.is_purchase ? self.us() : self.them(),
+                invoicedate: self.invoicedate,
+                invoicenote: self.invoicenote
+            };
+            var items = [];
+            for (var i=0; i<self.invoiceItems().length; i++) {
+                var invoiceItem = self.invoiceItems()[i];
+    //            console.log(invoiceItem);
+                items.push({
+                    shipmentitem_id: invoiceItem.shipmentitem_id,
+                    order_id: invoiceItem.order_id,
+                    qty: invoiceItem.qty
+                });
+            }
+            var params = {
+                _csrf: _csrf,
+                co_name: viewModel.co_name,
+                invoice_data: invoice,
+                items: items
+            };
+            post('/database/save/invoice', params, function(res) {
+                //console.log(res);
+                if ('error' in res) alert(res.error);
+                else window.location = '../showall/'+viewModel.co_name;
             });
         }
-        var params = {
-            _csrf: _csrf,
-            co_name: viewModel.co_name,
-            invoice_data: invoice,
-            items: items
-        };
-        post('/database/save/invoice', params, function(res) {
-            //console.log(res);
-            if ('error' in res) alert(res);
-            else window.location = '../showall/'+viewModel.co_name;
-        });
+    };
+    
+    self.delete_invoice = function() {
+        if (self.edit_mode() && self.invoice_id() != undefined) {
+            var c = confirm('Are you sure you want to delete this invoice?');
+            if (c == false) return;
+            
+            var item_ids = []
+            for (var i=0; i<self.invoice_item_ids.length; i++) {
+                item_ids.push(self.invoice_item_ids[i]);
+            }
+            var params = {
+                _csrf: _csrf,
+                delete_id: self.invoice_id(),
+                delete_item_ids: item_ids,
+            };
+            post('/database/destroy/invoice', params, function(res) {
+                console.log(res);
+                if ('error' in res) alert('ERROR: See console output');
+                else window.location = '../showall/'+viewModel.co_name;
+            });
+        }
     };
     
     self.lastInvoiceNumber = ko.observable('');
     // Update last invoice number when branch is selected.
     ko.computed(function () {
-        var params = {
-            _csrf: _csrf, 
-            co_name: viewModel.co_name,
-            br_name: self.them()
-        };
-        post('/database/get/last_invoice_number', params, function(res) {
-            if ('error' in res) alert(res);
-            if (res) self.lastInvoiceNumber(res.invoice_no);
-        });
+        if (!self.edit_mode() && self.invoice_id() == undefined) {
+            var params = {
+                _csrf: _csrf, 
+                co_name: viewModel.co_name,
+                br_name: self.them()
+            };
+            post('/database/get/last_invoice_number', params, function(res) {
+                if ('error' in res) alert(res);
+                if (res) self.lastInvoiceNumber(res.invoice_no);
+            });
+        }
     });
 }
     

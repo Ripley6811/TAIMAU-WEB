@@ -113,9 +113,22 @@ module.exports = {
      * `Database\destroyController.invoice()`
      */
     invoice: function (req, res) {
-        return res.json({
-            todo: 'invoice() is not implemented yet!'
-        });
+        if (!isNaN(parseInt(req.param('delete_id')))) {
+            Invoiceitem.destroy(req.param('delete_item_ids'))
+            .exec(function (err, record) {
+                if (err) res.send({error: err});
+                else {
+                    Invoice.destroy({id: req.param('delete_id')})
+                    .exec(function (err, record) {
+                        if (err) {
+                            res.send({error: err});
+                        } else {
+                            res.send({record: record});
+                        }
+                    });
+                }
+            });
+        }
     },
 
 

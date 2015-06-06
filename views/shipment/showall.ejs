@@ -1,5 +1,5 @@
 <!--List view of all shipments-->
-<div id="this body" class='container-fluid'>
+<div id="this_body" class='container-fluid'>
 <!--vvv START: Company header and buttons vvv-->
 <%- partial ('../company_header.ejs') %>
 <!--^^^ END: Company header and buttons ^^^-->
@@ -30,25 +30,27 @@
             <div class="panel-body" style="padding: 0px">
                 <table class="table table-striped">
                     <thead>
-                        <th class="text-center">訂單編號 <span class="badge">ID#</span></th>
-                        <th class="text-center">出貨日期</th>
-                        <th class="text-center">出貨單編號 <span class="badge">ID#</span></th>
-                        <th class="text-center">選</th>
-                        <th class="text-center">QTY</th>
-                        <th class="text-center">產品/服務</th>
-                        <th class="text-center">發票編號 <span class="badge">ID#</span></th>
+                        <tr>
+                            <th class="text-center">訂單編號 <span class="badge">DB#</span></th>
+                            <th class="text-center">出貨日期</th>
+                            <th class="text-center">出貨單編號 <span class="badge">DB#</span></th>
+                            <th class="text-center">選</th>
+                            <th class="text-center">QTY</th>
+                            <th class="text-center">產品/服務</th>
+                            <th class="text-center">發票編號 <span class="badge">DB#</span></th>
+                        </tr>
                     </thead>
                     <tbody data-bind="foreach: shipmentsItems">
                         <tr>
-                            <td style="padding: 3px 3px" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + order_id}"><strong data-bind="text: orderID"></strong> <span class="badge" data-bind="text: order_id"></span></a></td>
+                            <td style="padding: 3px 3px" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + order_id}"><strong data-bind="text: orderID"></strong> <span class="badge" data-bind="visible: !orderID || $parent.debug, text: order_id"></span></a></td>
                             <td style="padding: 3px 3px" class="text-center"><span data-bind="text: date"></span></td>
-                            <td style="padding: 3px 3px" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '#'}"><strong data-bind="text: shipment_no"></strong> <span class="badge" data-bind="text: shipmentitem_id"></span></a></td>
+                            <td style="padding: 3px 3px" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '#'}"><strong data-bind="text: shipment_no"></strong> <span class="badge" data-bind="visible: !shipment_no || $parent.debug, text: shipmentitem_id"></span></a></td>
                             <td style="padding: 3px 3px; width: 30px">
-                                <input style="margin: 0px; width:26px; height:26px; vertical-align: top;" type="checkbox" name="purchaseorder" data-bind="checked: selected">
+                                <input style="margin: 0px; width:26px; height:26px; vertical-align: top;" type="checkbox" data-bind="visible: invoice_id == undefined, checked: selected;">
                             </td>
                             <td style="padding: 3px 3px" class="text-right"><span data-bind="text: qty"></span> <span data-bind="text: countUnit"></span></td>
                             <td style="padding: 3px 3px"><span data-bind="text: inventory_name"></span></td>
-                            <td style="padding: 3px 3px" class="text-center" data-bind="if: invoice_no != undefined"><button style="padding: 2px 10px" class="btn btn-custom"><strong data-bind="text: invoice_no"></strong> <span class="badge" data-bind="text: invoiceitem_id"></span></button></td>
+                            <td style="padding: 3px 3px" class="text-center" data-bind="if: invoice_id != undefined"><button style="padding: 2px 10px" class="btn btn-custom" data-bind="click: $parent.view_invoice"><strong data-bind="text: invoice_no"></strong> <span class="badge" data-bind="visible: !invoice_no || $parent.debug, text: invoice_id"></span></button></td>
 
                         </tr>
                     </tbody>
@@ -83,6 +85,7 @@ var key = {
 function PageModel() {
     var self = this;
     
+    self.debug = false; // Show database ID numbers in all cases if true
     self.recordLimit = ko.observable(80);
     
     /**
@@ -107,6 +110,24 @@ function PageModel() {
             }
         }
         viewModel.invoiceModalVM.showModal(items);
+    };
+    
+    self.view_invoice = function(invoice_btn_data) {
+//        console.log(invoice_btn_data.invoice_no);
+        params = {
+            _csrf: _csrf, 
+            id: co_name,
+            invoice_no: invoice_btn_data.invoice_no,
+        };
+        post('/database/get/invoiceitems', params, function(response) {
+            console.log(response);
+            
+            var items = [];
+            for (var i=0; i<response.length; i++) {
+                items.push(response[i]);
+            }
+            viewModel.invoiceModalVM.showModal(items);
+        });
     };
     
     document.onkeydown = function(evt) {
@@ -149,5 +170,5 @@ function PageModel() {
 }
 
 viewModel.pageVM = new PageModel();
-ko.applyBindings(viewModel, document.getElementById('this body'));
+ko.applyBindings(viewModel, document.getElementById('this_body'));
 </script>
