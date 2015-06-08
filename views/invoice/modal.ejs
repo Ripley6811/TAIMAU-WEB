@@ -230,7 +230,7 @@
                         <div class="col-md-12 text-center">
                             <button type="button" class="btn btn-lg btn-danger" data-bind="click: exitModal">回到列表 <span class="badge">Esc</span></button>
                             <button type="button" class="btn btn-lg btn-warning" data-bind="click: delete_invoice, visible: invoice_id() != undefined">刪除發票</button>
-                            <input type="submit" class="btn btn-lg btn-medium btn-success" name="make_po_shipment" value="創造新出貨單" data-bind="visible: invoice_id() == undefined">
+                            <input type="submit" class="btn btn-lg btn-medium btn-success" name="make_po_shipment" value="創造新發票" data-bind="visible: invoice_id() == undefined">
                             <input type="hidden" name="_csrf" value="<%= _csrf %>" />
                             <input type="hidden" name="group" value="<%= cogroup.name %>" />
                         </div>

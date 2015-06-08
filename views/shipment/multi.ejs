@@ -3,7 +3,7 @@
     <div id="form modal" class="modal" data-bind="style: {display: multiEntryVisible() ? 'block' : 'none'}">
         <div class="panel panel-success">
             <div class="panel-heading" data-bind="with: productData">
-                <h2 class="text-center">出貨 - <span data-bind="text: inventory_name"></span></h2>
+                <h2 class="text-center">出貨 - <span data-bind="text: inventory_name"></span> - $ <span data-bind="text: curr_price"></span></h2>
             </div>
             <form class="form-horizontal" data-bind="submit: doSubmit">
                 <div class="panel-body">
