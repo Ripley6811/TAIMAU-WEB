@@ -78,7 +78,7 @@
                                                 <div data-bind="visible: is_sale()">
                                                     <select data-bind="value: them, disable: invoice_id" required>
                                                     <% cogroup.branches.forEach(function(branch) { %>
-                                                    <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %></option>
+                                                    <option value="<%= branch.name %>"><%= branch.fullname %> : <%= branch.tax_id %></option>
                                                     <% }); %>
                                                     </select>
                                                 </div>

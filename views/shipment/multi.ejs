@@ -61,7 +61,8 @@
                                 </td>
                                 <td style="width: 20%">
                                     <div class="input-group has-success">
-                                        <input type="number" min=1 class="form-control text-right" data-bind="textInput: qty">
+                                        <!--Using "tel" prevent scrollwheel changes to number and have number pad on device-->
+                                        <input type="tel" min=1 class="form-control text-right" data-bind="textInput: qty">
                                         <div class="input-group-addon" data-bind="text: $parent.productData.SKU"></div>
                                     </div>
                                 </td>

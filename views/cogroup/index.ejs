@@ -18,12 +18,9 @@
                 <td style="width: 280px">
                     <div class="btn-group">
                         <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn btn-custom">訊息</a>
-                        <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom">訂單</a>
-                    </div>
-                    <br class="hidden-sm hidden-md hidden-lg">
-                    <div class="btn-group">
                         <a href="/order/new/<%= cogroup.name %>" class="btn btn-custom">新訂單</a>
-                        <a href="/shipment/new/<%= cogroup.name %>" class="btn btn-custom">新出貨單</a>
+                        <a href="/shipment/new/<%= cogroup.name %>" class="btn btn-custom">做出貨單</a>
+                        <a href="/shipment/showall/<%= cogroup.name %>" class="btn btn-custom">做發票</a>
                     </div>
                 </td>
                 <td class="hidden-xs"><%= cogroup.name %><font color="#acacac">公司</font></td>
