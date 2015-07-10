@@ -69,9 +69,78 @@
 
 body {
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif,"新細明體", "PMingLiU";
-    font-size: 14px;
+    font-size: 18px;
+    padding-top: 60px;
+    padding-bottom: 40px;
 }
 
+.jumbotron {
+    text-align: center;
+}
+
+.jumbotron h2 {
+    font-size: 1.5em;
+    letter-spacing: -1px;
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: normal;
+    color: cyan;
+}
+
+/*
+.container .gray {
+    color: gray;
+}
+
+.container .footer {
+    width: 25%;
+}
+*/
+
+.form-signin {
+    border: 2px solid;
+    padding: 0px 29px 10px;
+    width: 400px;
+    background-color: rgb(255, 242, 199);
+    border-color: rgb(0, 102, 0);
+    margin: 0 auto 20px;
+    margin-top: 20px;
+        text-align: center;
+    border-radius: 15px;
+}
+
+.form-signin input {
+    font-size: 16px;
+    height: auto;
+    margin-bottom: 15px;
+    padding: 7px 9px;
+}
+
+.branch-edit {
+    border: 2px solid;
+    padding: 0px 29px 10px;
+    width: 100%;
+    background-color: rgb(255, 242, 199);
+    border-color: rgb(0, 102, 0);
+/*    margin: 0 auto 20px;*/
+    margin-top: 20px;
+        text-align: center;
+    border-radius: 15px;
+}
+
+.branch-edit .col-md-2 {
+    line-height: 220%;
+    vertical-align: middle;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.branch-edit input {
+    font-size: 16px;
+    height: auto;
+    margin-bottom: 2px;
+    padding: 7px 9px;
+}
 
 
 table {
@@ -83,7 +152,48 @@ table {
     margin: 0px;
 }
 
+/*
+table {
+  border-collapse:collapse;
+    width: 80%;
+    margin-top: 20px;
+    border-radius: 15px;
+}
+*/
 
+nav {
+    font-size: 24px;
+}
+
+nav ul li:hover > ul {
+    display: block;
+}
+
+/*
+th {
+  color:rgb(255, 230, 140);
+  background-color: hsl(110, 56%, 16%) !important;
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#398f28", endColorstr="#193f11");
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#398f28), to(#193f11));
+  background-image: -moz-linear-gradient(top, #398f28, #193f11);
+  background-image: -ms-linear-gradient(top, #398f28, #193f11);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #398f28), color-stop(100%, #193f11));
+  background-image: -webkit-linear-gradient(top, #398f28, #193f11);
+  background-image: -o-linear-gradient(top, #398f28, #193f11);
+  background-image: linear-gradient(#398f28, #193f11);
+  border-color: #193f11 #193f11 hsl(110, 56%, 11%);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.33);
+  -webkit-font-smoothing: antialiased;
+}
+
+tr .:nth-child(even) {
+    background-color: rgb(255, 248, 225);
+}
+tr:nth-child(odd) {
+    background-color: rgb(255, 250, 246);
+}
+*/
 
 .table-striped>thead>tr>th {
   color:rgb(255, 230, 140);
@@ -108,6 +218,26 @@ table {
    background-color: rgb(210, 232, 212);
 }
 
+
+
+/*
+tbody tr:hover{
+  background-color: hsl(36, 100%, 73%) !important;
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#fff8ef", endColorstr="#ffc775");
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#fff8ef), to(#ffc775));
+  background-image: -moz-linear-gradient(top, #fff8ef, #ffc775);
+  background-image: -ms-linear-gradient(top, #fff8ef, #ffc775);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fff8ef), color-stop(100%, #ffc775));
+  background-image: -webkit-linear-gradient(top, #fff8ef, #ffc775);
+  background-image: -o-linear-gradient(top, #fff8ef, #ffc775);
+  background-image: linear-gradient(#fff8ef, #ffc775);
+  border-color: #ffc775 #ffc775 hsl(36, 100%, 67%);
+  color: #333 !important;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.39);
+  -webkit-font-smoothing: antialiased;
+}
+*/
 
 /*http://coolestguidesontheplanet.com/styling-placeholder-text-input-fields-forms-css/*/
 ::-webkit-input-placeholder {
@@ -139,7 +269,6 @@ table {
  font-weight: bold;
 }
 
-/*
 .btn-default {
     border-color: hsl(30, 100%, 60%);
     background-color: hsl(30, 100%, 60%);
@@ -148,8 +277,12 @@ table {
     border-color: rgb(255, 128, 0);
     background-color: rgb(255, 128, 0);
 }
-*/
 
+
+.navbar-default {
+    background-color: rgb(187, 216, 187);
+    border-color: black;
+}
 
 .dropdown-menu > li > a:hover,
 .dropdown-menu > li > a:focus {
@@ -159,6 +292,16 @@ table {
       /*change color of links in drop down here*/
 }
 
+.navbar-default .navbar-nav > li > a {
+       font-weight: 700;
+  color: rgb(0, 102, 0);
+  /*Change active text color here*/
+}
+.navbar-default .navbar-nav > li > a:hover {
+       font-weight: 700;
+  color: black;
+  /*Change active text color here*/
+}
 
 .btn-custom {
   background-color: #f99500 !important;
@@ -228,7 +371,6 @@ table {
   -webkit-font-smoothing: antialiased;
 }
 
-/*
 .label-as-badge {
     border-radius: 1em;
 }
@@ -242,70 +384,89 @@ table {
     background-color: #ffd698;
     color: rgb(37, 109, 22);
 }
-*/
+
+.glyphicon-none:before {
+    content: ".-";
+    color: transparent !important;
+}
 
 
 hr {
     border: 0;
-    height: 4px;
+    height: 3px;
     background-image: -webkit-linear-gradient(left, rgba(0,0,0,.1), rgba(44, 111, 31, 0.8), rgba(0,0,0,.1));
     background-image:    -moz-linear-gradient(left, rgba(0,0,0,.1), rgba(44, 111, 31, 0.8), rgba(0,0,0,.1));
     background-image:     -ms-linear-gradient(left, rgba(0,0,0,.1), rgba(44, 111, 31, 0.8), rgba(0,0,0,.1));
     background-image:      -o-linear-gradient(left, rgba(0,0,0,.1), rgba(44, 111, 31, 0.8), rgba(0,0,0,.1));
 }
 
-.btn.sharp {
-    border-radius: 0px;
+/*
+.input-30 {
+    font-size: 30px;
+}
+.input-24 {
+    font-size: 24px;
+}
+*/
+
+/*
+.form-group-lg {
+    font-size: 20px;
+}
+*/
+
+
+.form-control, .input-group-addon {
+    padding: 2px;
+    font-size: 16px;
+    height: 28px;
+/*    font-weight: bold;*/
 }
 
+
+.h1, .h2, .h3, h1, h2, h3 {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+
+.modal {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+
+}
+
+.modal > .panel {
+    margin: 6%;
+}
+
+#tab.active > a {
+    background-color: #8aff8a;
+}
+
+#tab > a {
+    background-color: #c9c9c9;
+}
 
 #sidebar-wrapper {
   z-index: 1000;
   position: fixed;
-/*  left: 250px;*/
-  width: 52px;
+  left: 250px;
+  width: 250px;
   height: 100%;
-/*  margin-left: -250px;*/
+  margin-left: -250px;
   overflow-y: auto;
   background: #DFF0D8;
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
   transition: all 0.5s ease;
-
-  background-color: hsl(110, 56%, 16%) !important;
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#398f28", endColorstr="#193f11");
-  background-image: -khtml-gradient(linear, left top, left bottom, from(#398f28), to(#193f11));
-  background-image: -moz-linear-gradient(top, #398f28, #193f11);
-  background-image: -ms-linear-gradient(top, #398f28, #193f11);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #398f28), color-stop(100%, #193f11));
-  background-image: -webkit-linear-gradient(top, #398f28, #193f11);
-  background-image: -o-linear-gradient(top, #398f28, #193f11);
-  background-image: linear-gradient(#398f28, #193f11);
-  border-color: #193f11 #193f11 hsl(110, 56%, 11%);
-  color: #fff !important;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.33);
-  -webkit-font-smoothing: antialiased;
 }
 
 #page-content-wrapper {
   width: 100%;
   position: absolute;
-    padding-left: 52px;
-  -webkit-transition: all 0.5s ease;
-  -moz-transition: all 0.5s ease;
-  -o-transition: all 0.5s ease;
-  transition: all 0.5s ease;
-}
-
-@media (min-width: 985px) {
-
-    #sidebar-wrapper {
-      width: 250px;
-    }
-
-    #page-content-wrapper {
-        padding-left: 250px;
-    }
+  padding: 15px;
+    padding-left: 250px;
 }

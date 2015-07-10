@@ -1,38 +1,29 @@
 <!--Table views of a single company's branches, contacts and products-->
 
-<div id="this body" class="container-fluid">
-    
-    
-    <!--vvv START: Company header and buttons vvv-->
-    <%- partial ('../company_header.ejs') %>
-    <!--^^^ END: Company header and buttons ^^^-->
+<div class="container-fluid">
 
-    <!--SHOW DELETE BUTTON IF THERE ARE NO BRANCHES-->
-    <% if (cogroup.branches.length == 0) { %>
-    <div class="row text-center">
-        <a href="/cogroup/destroy/<%= cogroup.name %>" class="btn btn-danger btn-lg">DELETE COMPANY GROUP ID</a>
+
+
+
+    <div>
+        <!--SHOW DELETE BUTTON IF THERE ARE NO BRANCHES-->
+        <% if (cogroup.branches.length == 0) { %>
+        <div class="row text-center">
+            <a href="/cogroup/destroy/<%= cogroup.name %>" class="btn btn-danger btn-lg">DELETE COMPANY GROUP ID</a>
+        </div>
+        <% } %>
+
+        <!--COMPANY BRANCHES LIST-->
+        <%- partial ('../branch/panel.ejs') %>
+
+        <hr>
+        <!--CONTACTS LIST-->
+        <%- partial ('../contact/panel.ejs') %>
+
+        <hr>
+        <!--PRODUCT AND SERVICES LIST-->
+        <%- partial ('../product/panel.ejs') %>
+        <%- partial ('../product/modal.ejs') %>
     </div>
-    <% } %>
-
-
-
-    <hr>
-    <!--COMPANY BRANCHES LIST-->
-    <%- partial ('../branch/panel.ejs') %>
-
-    <hr>
-    <!--CONTACTS LIST-->
-    <%- partial ('../contact/panel.ejs') %>
-
-    <hr>
-    <!--PRODUCT AND SERVICES LIST-->
-    <%- partial ('../product/panel.ejs') %>
-    <%- partial ('../product/modal.ejs') %>
-    
 </div>
 
-<script>
-var viewModel = viewModel || {};
-console.dir(viewModel);
-ko.applyBindings(viewModel, document.getElementById('this body'));
-</script>

@@ -7,17 +7,17 @@
     <!-- Viewport mobile tag for sensible mobile support -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><!--    <script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js"></script>-->
 
-    <!--  
+    <!--
         Stylesheets and Preprocessors
         ==============================
         By default, stylesheets from your `assets/styles` folder are included
         here automatically (between STYLES and STYLES END). Both CSS (.css) and LESS (.less)
         are supported. In production, your styles will be minified and concatenated into
         a single file.
-        
+
         To customize any part of the built-in behavior, just edit `tasks/pipeline.js`.
         For example, here are a few things you could do:
-            
+
             + Change the order of your CSS files
             + Import stylesheets from other directories
             + Use a different or additional preprocessor, like SASS, SCSS or Stylus
@@ -25,77 +25,40 @@
     <!--STYLES-->
     <link rel="stylesheet" href="/styles/bootstrap.min.css">
     <link rel="stylesheet" href="/styles/custom.css">
+    <link rel="stylesheet" href="/styles/font-awesome-4.3.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/styles/importer.css">
     <!--STYLES END-->
 </head>
 
-<body>
+<body id="body">
     <!--SCRIPTS-->
     <script src="/js/dependencies/sails.io.js"></script>
+    <script src="/js/a_jquery-2.1.4.min.js"></script>
+    <script src="/js/dropdown.js"></script>
     <script src="/js/knockout-3.2.0.js"></script>
     <script src="/js/ko_ajax.js"></script>
     <script src="/js/ko_extenders.js"></script>
     <script src="/js/ko_models.js"></script>
     <script src="/js/navmenu.js"></script>
     <!--SCRIPTS END-->
-    
-    <!--NAVBAR-->
-    <div id="navDropdown" class="hidden-md hidden-lg">
-        <button data-bind="click: toggleMenu()" type="button" style="position: fixed; z-index: 3000; left: 0px; top: 0px; padding: 4px;">
-            <img alt="taimau_logo" src="/images/taimau_symbol_h360_raised.png" height="43">
-        </button>
-        <div data-bind="visible: showNavMenu" style="position: fixed; z-index: 3000; left: 54px; top: 0px; padding: 4px">
-            <div class="btn-group-vertical btn-group-lg" style="position: absolute">
-                <a class="btn darkgreen-blend" href="/cogroup/index">企業名錄</a>
-                <a class="btn darkgreen-blend" href="/cogroup/index/suppliers">供應商</a>
-                <a class="btn darkgreen-blend" href="/cogroup/index/customers">客戶</a>
-                <a class="btn darkgreen-blend" href="/cogroup/new">加新公司</a>
-            </div>
-            <div id="navButtons" class="btn-group-vertical btn-group-lg" style="position: absolute; left: 114px">
-            </div>
-        </div>
+
+
+    <!--vvv START: Navigation sidebar_v2 and buttons vvv-->
+    <div id="sidebar-wrapper">
+        <%- partial ('sidebar_v2.ejs') %>
     </div>
-    <script>ko.applyBindings(new NavModel(), document.getElementById("navDropdown"));</script>
+    <!--^^^ END: Navigation sidebar_v2 and buttons ^^^-->
 
-    <div class="hidden-xs hidden-sm">
-        <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="container-fluid">
-                <a class="navbar-brand" style="padding: 4px;" href="/cogroup/index">
-                    <img alt="taimau_logo" src="/images/taimau_symbol_h360_raised.png" height="43">
-                </a>
-                <div id="navbar" class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav">
-
-                        <li role="presentation" class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="/cogroup" role="button" aria-expanded="false">企業名錄 <span class="caret"></span></a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="/cogroup/index/suppliers">供應商</a></li>
-                                <li><a href="/cogroup/index/customers">客戶</a></li>
-                                <li class="divider"></li>
-                                <li><a href="/cogroup/new">加新公司</a></li>
-                            </ul>
-                        </li>
-                        
-                        <li><a href="/product/index">產品名錄</a></li>
-                        
-                        <li><a href="/order/due">即將到期</a></li>
-                    </ul>
-                </div>
-                <!--/.nav-collapse -->
-            </div>
-            <!--/.container-fluid -->
-        </nav>
-
+    <div id="page-content-wrapper">
+        <%- body %>
+<!--        <div class="container">-->
+            <hr>
+            <footer class="footer pull-right">
+                <div>Written by Jay W. Johnson (2015)</div>
+            </footer>
+<!--        </div>-->
     </div>
 
-    <%- body %>
-
-    <div class="container">
-        <hr>
-        <footer class="footer pull-right">
-            <div>Written by Jay W. Johnson (2015)</div>
-        </footer>
-    </div>
 
     <!--
     Client-side Templates
@@ -121,6 +84,13 @@
     <!--TEMPLATES-->
     
     <!--TEMPLATES END-->
+    <script>
+        // Adds the KnockoutJS viewmodel to page
+        // Add sub-models to the `viewModel` namespace
+        var viewModel = viewModel || {};
+        console.dir(viewModel);
+        ko.applyBindings(viewModel, document.getElementById('body'));
+    </script>
 </body>
 
 </html>

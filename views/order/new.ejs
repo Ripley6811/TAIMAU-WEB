@@ -1,16 +1,16 @@
 <!--Table view of all products for a single company-->
 
 <div id="this body" class="container-fluid">
-    
-    
+
+
 <!--START: Main row for two-panes-->
-<div class="row">   
+<div class="row">
     <div class="col-md-12">
 <!--vvv START: Company header and buttons vvv-->
     <%- partial ('../company_header.ejs') %>
 <!--^^^ END: Company header and buttons ^^^-->
 	<hr>
-        
+
 <!--vvv START: Panel for products and services list vvv-->
         <div class="panel panel-success" style="margin: 0px" data-bind="with: itemsVM">
             <div class="panel-heading">
@@ -42,7 +42,7 @@
                         </tr>
                     </thead>
                     <tbody data-bind="foreach: products">
-                        <tr>            
+                        <tr>
                 <!--        Product Manifest selection    -->
                             <td style="width: 30px; height: 30px">
                                 <input style="width:28px; height:28px;" type="checkbox" name="product" data-bind="checked: selected">
@@ -74,16 +74,16 @@
 <!--^^^ END: Panel for products and services list ^^^-->
     </div>
 </div>
-    
-        
-        
+
+
+
 
 <!--START: PO entry form-->
 <div data-bind="with: itemsVM">
     <div id="form modal" class="modal" data-bind="style: {display: modalVisible() ? 'block' : 'none'}">
         <div class="panel panel-success">
             <div class="panel-heading">
-            
+
                 <div class="row-fluid h2">
                     <strong>訂單</strong>
                 </div>
@@ -134,7 +134,7 @@
                         <th>備註</th>
                     </tr></thead>
                     <tbody data-bind="foreach: rows">
-                        <tr>     
+                        <tr>
                             <input type="hidden" name="MPN" data-bind="value: MPN">
                             <input type="hidden" name="is_supply" data-bind="value: is_supply">
                             <td style="width:70%">
@@ -169,7 +169,7 @@
                                                     <div class="input-group has-success">
                                                         <div class="input-group-addon">$</div>
             <!--Subtotal-->                             <input disabled style="font-size: 18px;" type="number" min=1 step="0.001" class="form-control text-left total-value" data-bind="value: total_value">
-                                                        
+
                                                         <div class="input-group-addon">
                                                             <input type="hidden" name="applytax" value="apply?">
                                                             <input type="checkbox" name="applytax" value="yes" checked>應稅
@@ -197,7 +197,7 @@
                 </table>
             </div>
             <div class="panel-footer lightorange-blend">
-        
+
                 <div class="row">
                     <div class="col-sm-6 text-center">
                         <input type="hidden" name="back" value="/product/show/<%= cogroup.name %>">
@@ -222,23 +222,23 @@
     </div>
 </div>
 <!--END: PO entry form-->
-    
-    
+
+
 </div>
-    
-    
+
+
 <script>
 var viewModel = viewModel || {};
 var co_name = viewModel.co_name = '<%= cogroup.name %>';
 var _csrf = viewModel._csrf = '<%= _csrf %>';
-    
-    
+
+
 var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
-addCompanyNavButtons(co_name);
-    
+//addCompanyNavButtons(co_name);
+
 function ItemsModel() {
     var self = this;
-    
+
     self.modalVisible = ko.observable(false);
     self.showModal = function(clickedItem) {
         self.modalVisible(true);
@@ -246,7 +246,7 @@ function ItemsModel() {
     self.exitModal = function(clickedItem) {
         self.modalVisible(false);
     };
-    
+
     document.onkeydown = function(evt) {
         if (evt.keyCode == 27 && self.modalVisible() == true) {
             self.exitModal();
@@ -255,18 +255,18 @@ function ItemsModel() {
             self.showModal();
         }
     };
-    
+
     self.showCalc = ko.observable(false);
     self.toggleCalc = function() {
         self.showCalc(!self.showCalc());
     };
-    
+
     self.orderID = ko.observable();
-    
+
     self.products = ko.observableArray([]);
     self.productsGet = function () {
         params = {
-            _csrf: _csrf, 
+            _csrf: _csrf,
             id: co_name,
         };
         callback = function (products) {
@@ -280,9 +280,9 @@ function ItemsModel() {
         getProducts(params, callback);
     };
     self.productsGet();
-    
+
     self.rows = ko.observableArray([]);
-    
+
     self.grand_total = ko.computed( function () {
         var total = 0;
         for (var i=0; i<self.rows().length; i++) {
@@ -290,11 +290,11 @@ function ItemsModel() {
         }
         return isNaN(total) ? '' : total;
     });
-    
+
     for (var i=0; i<self.products.length; i=i+1) {
         self.rows.push(new KO_PurchaseOrder(self.products[i], self.orderID));
     }
-    
+
     var selectCompute = ko.computed(function () {
         self.rows.removeAll()
         for (var i=0; i<self.products().length; i++) {
@@ -305,7 +305,7 @@ function ItemsModel() {
     });
 }
 
-    
+
 viewModel.itemsVM = new ItemsModel();
 ko.applyBindings(viewModel, document.getElementById('this body'));
 </script>

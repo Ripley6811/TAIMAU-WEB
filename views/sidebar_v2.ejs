@@ -1,0 +1,240 @@
+<div class="container-fluid" data-bind="with: sidebarVM">
+    <div class="row">
+        <!--TODO: Logo button toggle minify/maximize sidebar-->
+        <a class="navbar-brand" style="padding: 4px;" href="#">
+            <img alt="taimau_logo" src="/images/taimau_symbol_h360_raised.png" height="43">
+        </a>
+    </div>
+    <div class="row">
+        <a href="/cogroup" role="button" class="btn sharp btn-success btn-block">
+            <i class="fa fa-fw fa-book fa-lg"></i>&nbsp;
+            <strong class="hidden-sm hidden-xs">企業名錄</strong>
+        </a>
+    </div>
+    <div class="row">
+        <a href="/cogroup/index/suppliers" role="button" class="btn sharp btn-success btn-block">
+            <i class="fa fa-fw fa-lg fa-ambulance"></i>&nbsp;
+            <strong class="hidden-sm hidden-xs">供應企業</strong>
+        </a>
+    </div>
+    <div class="row">
+        <a href="/cogroup/index/customers" role="button" class="btn sharp btn-success btn-block">
+            <i class="fa fa-fw fa-lg fa-users"></i>&nbsp;
+            <strong class="hidden-sm hidden-xs">客戶企業</strong>
+        </a>
+    </div>
+    <div class="row">
+        <a href="/product/index" role="button" class="btn sharp btn-success btn-block">
+            <i class="fa fa-fw fa-flask fa-lg"></i>&nbsp;
+            <strong class="hidden-sm hidden-xs">產品名錄</strong>
+        </a>
+    </div>
+    <div class="row">
+        <a href="/order/due" role="button" class="btn sharp btn-success btn-block">
+            <i class="fa fa-fw fa-calendar fa-lg"></i>&nbsp;
+            <strong class="hidden-sm hidden-xs">即將到期</strong>
+        </a>
+    </div>
+
+    <hr>
+
+
+
+    <div data-bind="visible: company_id">
+        <!--Company group name-->
+        <div class="row text-center h2">
+            <strong>
+                <strong data-bind="text: company_id"></strong>
+            </strong>
+        </div>
+
+        <div class="row">
+            <button type="button" onclick="" class="btn sharp btn-custom btn-block">
+                <i class="fa fa-fw fa-info-circle fa-lg"></i>&nbsp;
+                <strong class="hidden-sm hidden-xs">公司訊息</strong>
+            </button>
+        </div>
+
+        <div class="row">
+            <button type="button" onclick="" class="btn sharp btn-custom btn-block">
+                <i class="fa fa-fw fa-file-powerpoint-o fa-lg"></i>&nbsp;
+                <strong class="hidden-sm hidden-xs">創造訂單</strong>
+            </button>
+        </div>
+
+        <div class="row">
+            <button type="button" onclick="" class="btn sharp btn-custom btn-block">
+                <i class="fa fa-fw fa-truck fa-flip-horizontal fa-lg"></i>&nbsp;
+                <strong class="hidden-sm hidden-xs">做出貨單</strong>
+            </button>
+        </div>
+
+        <div class="row">
+            <button type="button" onclick="" class="btn sharp btn-custom btn-block">
+                <i class="fa fa-fw fa-th-list fa-lg"></i>&nbsp;
+                <strong class="hidden-sm hidden-xs">出貨紀錄</strong>
+            </button>
+        </div>
+
+        <div class="row">
+            <button type="button" onclick="" class="btn sharp btn-custom btn-block">
+                <i class="fa fa-fw fa-line-chart fa-lg"></i>&nbsp;
+                <strong class="hidden-sm hidden-xs">買賣趨勢</strong>
+            </button>
+        </div>
+
+
+        <div class="hidden-sm hidden-xs">
+            <hr>
+            <div data-bind="visible: branchesArray().length > 1">
+                <div class="row text-center h2">
+                    <strong>
+                        <strong>分公司</strong>
+                    </strong>
+                </div>
+
+                <div class="row text-center">
+                    <div class="btn-group" data-bind="foreach: branchesArray">
+                        <button type="button" class="btn btn-custom" data-bind="click: $parent.showBranch, disable: name == $parent.branchname()">
+                            <strong data-bind="text: name"></strong>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" data-bind="visible: fullname">
+                <div class="col-md-3">
+                    <strong>Name:</strong>
+                </div>
+                <div class="col-md-9">
+                    <span data-bind="text: fullname"></span>
+                </div>
+            </div>
+
+            <div class="row" data-bind="visible: tax_id">
+                <div class="col-md-3">
+                    <strong>TaxID:</strong>
+                </div>
+                <div class="col-md-9">
+                    <span data-bind="text: tax_id"></span>
+                </div>
+            </div>
+
+            <div class="row" data-bind="visible: phone">
+                <div class="col-md-3">
+                    <strong>Phone:</strong>
+                </div>
+                <div class="col-md-9">
+                    <span data-bind="text: phone"></span>
+                </div>
+            </div>
+
+            <div class="row" data-bind="visible: fax">
+                <div class="col-md-3">
+                    <strong>Fax:</strong>
+                </div>
+                <div class="col-md-9">
+                    <span data-bind="text: fax"></span>
+                </div>
+            </div>
+
+            <div class="row" data-bind="visible: email">
+                <div class="col-md-3">
+                    <strong>Email:</strong>
+                </div>
+                <div class="col-md-9">
+                    <span data-bind="text: email"></span>
+                </div>
+            </div>
+
+            <div class="row" data-bind="visible: note">
+                <div class="col-md-3">
+                    <strong>Note:</strong>
+                </div>
+                <div class="col-md-9">
+                    <span data-bind="text: note"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hidden-sm hidden-xs" data-bind="visible: !company_id()">
+            <div class="row text-center">
+                <div class="" data-bind="foreach: company_list">
+                    <button type="button" style="margin: 4px; padding: 2px" class="btn btn-custom btn-lg" data-bind="click: $parent.loadCompany">
+                        <strong data-bind="text: name"></strong>
+                    </button>
+                </div>
+            </div>
+    </div>
+</div>
+
+
+
+<script>
+    var viewModel = viewModel || {};
+
+
+    function SidebarVM() {
+        var self = this;
+
+        self.company_id = ko.observable('<%= res.locals.cogroup ? cogroup.name : "" %>')
+
+        self.branchesArray = ko.observableArray(
+            <%- res.locals.cogroup ? JSON.stringify(cogroup.branches) : "[]" %>
+        );
+
+        self.showBranch = function (branch) {
+            self.branchname(branch.name);
+            self.fullname(branch.fullname);
+            self.tax_id(branch.tax_id);
+            self.phone(branch.phone);
+            self.fax(branch.fax);
+            self.email(branch.email);
+            self.note(branch.note);
+        }
+
+        self.branchname = ko.observable();
+        self.fullname = ko.observable();
+        self.tax_id = ko.observable();
+        self.phone = ko.observable();
+        self.fax = ko.observable();
+        self.email = ko.observable();
+        self.note = ko.observable();
+
+        self.load_company = function (name) {
+            self.company_id(name);
+        };
+
+        if (self.branchesArray().length > 0) {
+            self.showBranch(self.branchesArray()[0]);
+        }
+
+
+        self.company_list = ko.observableArray([]);
+
+        // Populate company buttons if no company is selected
+        if (self.company_id() === '') {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState !== 4) return;
+                self.company_list.removeAll()
+                var res = JSON.parse(xmlhttp.response)
+                // Show first few items
+                res.slice(0, 40).forEach(function(name) {
+                    self.company_list.push({'name':name});
+                });
+            };
+            xmlhttp.open('GET', '/cogroup/namelist', true);
+            xmlhttp.send();
+        }
+
+        self.loadCompany = function (branch) {
+            window.location = '/shipment/showall/' + branch.name;
+        };
+    }
+
+
+
+    viewModel.sidebarVM = new SidebarVM();
+</script>

@@ -1,0 +1,40 @@
+<!--
+Company header and navigation buttons for pages referring to a specific company.
+
+Requires: "cogroup" object.
+-->
+<div id="company_sidebar" class="text-center" data-bind="with: cogroupVM">
+    <div class="row h2 text-center" style="margin: 0px; padding: 0px 0px">
+        <div class="row">
+            <strong><%= cogroup.name %></strong>
+            <span style="color: lightgrey">(公司)</span>
+        </div>
+        <div class="row">
+            <form action="/cogroup/toggle" method="post"><input type="hidden" name="_csrf" value="<%= _csrf %>" />
+                <input type="hidden" name="cogroup" value="<%= cogroup.name %>">
+                <input type="hidden" name="back" value="/cogroup/show/<%= cogroup.name %>">
+                <div class="btn-group">
+                    <button data-bind="click: toggleSupplier, attr: {'class': supplierStatus}"> 供應商</button>
+                    <button data-bind="click: toggleCustomer, attr: {'class': customerStatus}"> 客戶</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row" style="margin: 0px; padding: 0px 5px">
+        <div>
+            <div class="btn-group-vertical hidden-xs text-left">
+                <a href="/cogroup/show/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-info-sign"></i> <strong>公司與產品訊息</strong></a>
+                <a href="/order/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-pencil"></i> <strong>創造一個訂單</strong></a>
+                <a href="/order/showall/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-folder-open"></i> <strong>管理訂單與到期日</strong></a>
+                <a href="/shipment/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-shopping-cart"></i> <strong>創造出貨單</strong></a>
+                <a href="/shipment/showall/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-usd"></i> <strong>出貨單+創造發票</strong></a>
+<!--                <a disabled href="/invoice/new/<%= cogroup.name %>" class="btn btn-custom"><i class="glyphicon glyphicon-piggy-bank"></i> <strong>發票</strong></a>-->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var viewModel = viewModel || {};
+viewModel.cogroupVM = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
+</script>

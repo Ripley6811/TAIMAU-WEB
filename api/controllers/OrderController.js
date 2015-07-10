@@ -6,12 +6,12 @@
  */
 
 module.exports = {
-	
+
     // Sort and show all orders arranged by due date.
     due: function (req, res) {
         var page = req.param('id');
         if (page === undefined || page < 1) page = 1;
-        
+
         Order.find()
         .where({is_open: true, duedate: {'!': null}})
         .paginate({page: page, limit: 16})
@@ -23,7 +23,7 @@ module.exports = {
                 error: err.message
             }, 400);
 
-            res.view({ 
+            res.view({
                 orders: orders,
                 page: Number(page),
                 today: new Date()
@@ -33,8 +33,9 @@ module.exports = {
     // Form for creating POs
     new: function (req, res) {
         var params = req.params.all();
-        
+
         Cogroup.findOne(params.id)
+        .populate('branches')
         .exec( function (err, cogroup) {
                 res.view({
                     cogroup: cogroup,
@@ -45,13 +46,13 @@ module.exports = {
     create: function (req, res) {
         var params = req.params.all();
         console.log('CREATE PO\n', params, '\n');
-        
+
         // Create PO's for each item
         var newOrders = [],
             productUpdates = [],
             prodMPNs = [],
             taxIt = [];
-        
+
         for (var i=0; i<params.applytax.length; i++) {
             if (params.applytax[i] == 'apply?') {
                 if (params.applytax[i+1] == 'yes') {
@@ -87,12 +88,12 @@ module.exports = {
             });
             // Update current price for each product
             Product.update(
-                {MPN: params.MPN[i]}, 
-                {curr_price: params.price[i]}, 
+                {MPN: params.MPN[i]},
+                {curr_price: params.price[i]},
                 function (err, products) {}
             );
         }
-        
+
         console.log('CREATE PO\n', newOrders, '\n');
         Order.create(newOrders, function (err, orders) {
             if (err) {
@@ -102,7 +103,7 @@ module.exports = {
                 }, 400);
                 return;
             }
-        
+
             console.log('ORDERS RETURNED:\n', orders);
             // Create Shipment for item group
             if ('make_shipment' in params) {
@@ -112,7 +113,7 @@ module.exports = {
                     shipmentnote: params['shipmentnote'],
                     shipmentdest: params['shipmentdest'],
                 };
-                
+
                 Shipment.create(newShipment, function (err, shipment) {
                     if (err) res.json({
                         where: 'Shipment.create(newShipment)',
@@ -141,7 +142,7 @@ module.exports = {
     // Get all shipments for an order and order by duedate or id.
     show: function (req, res) {
         console.log('SHOW\n', req.params.all());
-        
+
         Shipmentitem.find()
         .where({order_id: req.param('id')})
         .populate('shipment_id')
@@ -150,7 +151,7 @@ module.exports = {
             if (err) res.json({
                 error: err.message
             }, 400);
-            
+
             Order.findOne(req.param('id'))
             .populate('group')
             .populate('MPN')
@@ -160,7 +161,7 @@ module.exports = {
                     error: err.message
                 }, 400);
 
-                res.view({ 
+                res.view({
                     order: order,
                     cogroup: order.group,
                     shipments: shipmentitems,
@@ -169,19 +170,19 @@ module.exports = {
             });
         });
     },
-	
+
     showall: function (req, res) {
         console.log('SHOWALL\n', req.params.all());
         var groupName = req.param('id'),
             page = parseInt(req.param('page')),
             pageLimit = 16; // Records per page.
-        
+
         // Calculate number of pages.
         Order.count({group: groupName}, function(e, count){
             var maxPage = Math.ceil(count / pageLimit);
             if (page === undefined || isNaN(page) || page < 1) page = 1;
             if (page > maxPage) page = maxPage;
-            
+
             Order.find({group: groupName})
             .sort('orderdate DESC')
             .populate('MPN')
@@ -194,7 +195,7 @@ module.exports = {
                 }, 400);
 
                 Cogroup.findOne(req.param('id'), function (err, cogroup) {
-                    res.view({ 
+                    res.view({
                         cogroup: cogroup,
                         orders: orders,
                         page: page,
@@ -211,7 +212,7 @@ module.exports = {
         Order.update({id: req.param('id')}, req.params.all())
         .exec( function (err, orders) {
             if (err) { res.send(err); return; }
-            
+
 //            req.flash('message', 'Record Updated!');
 //            res.send(orders[0]);
             res.redirect('/order/show/'+orders[0].id);

@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-    
+
 
     'index': function (req, res) {
         var findParams = { sort: 'name' };
@@ -25,18 +25,18 @@ module.exports = {
                 res.json({error: err.message}, 400);
                 return
             }
-            
+
             // Sort by the number of attached order records.
             cogroups.sort(function(a, b) {return b.orders.length - a.orders.length})
 
             res.view({ cogroups: cogroups });
         });
     },
-	
+
     'new': function (req, res) {
         res.view();
     },
-	
+
     show: function (req, res) {
         Cogroup.findOne(req.param('id'))
         .populate('branches')
@@ -46,7 +46,7 @@ module.exports = {
             if (err) res.json({
                 error: err.message
             }, 400);
-            
+
             // Add default product ranking if not entered already.
 //            var products = cogroup.products || [];
 //            for (var i=0; i<products.length; i=i+1) {
@@ -65,18 +65,18 @@ module.exports = {
 //            // Sort products by rank
 //            products.sort(function (a, b) {return a.json.rank - b.json.rank});
 
-            res.view({ 
+            res.view({
                 cogroup: cogroup,
             });
         });
     },
-    
+
     create: function (req, res) {
         var cogroupObj = {
             name: req.param('name')
         };
 
-        // Create a User with the params sent from 
+        // Create a User with the params sent from
         // the sign-up form --> new.ejs
         Cogroup.create(cogroupObj, function(err, cogroup) {
 
@@ -89,13 +89,13 @@ module.exports = {
 
             res.redirect('/cogroup/show/' + cogroupObj.name);
         });
-        
+
     },
     // Obsolete??
     toggle: function(req, res) {
         var name = req.param('cogroup'),
             toggle = req.param('toggle');
-        
+
         Cogroup.findOneByName(name, function (err, group) {
             if (err) res.json({
                 error: err.message
@@ -133,7 +133,7 @@ module.exports = {
                     var delRecord = {
                         name: cogroup.name
                     };
-                    
+
                     Cogroup.destroy(delRecord).exec(function (err, cogroups) {
                         if (err) res.json({
                             error: err.message
@@ -154,10 +154,31 @@ module.exports = {
     // Update record from parameter.
     update: function (req, res, next) {
         var updateObject = req.param('cogroup_update');
-        
+
         Cogroup.update({name: updateObject.name}, updateObject)
         .exec(function (err, cogroup) {
             res.send(cogroup);
+        });
+    },
+    // Get list of names
+    namelist: function (req, res) {
+        Cogroup.find()
+        .populate('orders')
+        .exec(function (err, cogroups) {
+            if (err) {
+                res.json({error: err.message}, 400);
+                return
+            }
+
+            // Sort by the number of attached order records.
+            cogroups.sort(function(a, b) {return b.orders.length - a.orders.length})
+
+            cogroupnames = []
+            cogroups.forEach(function(co) {
+                cogroupnames.push(co.name);
+            });
+
+            res.send(cogroupnames);
         });
     }
 };
