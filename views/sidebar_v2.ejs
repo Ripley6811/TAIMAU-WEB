@@ -8,31 +8,31 @@
     <div class="row">
         <a href="/cogroup" role="button" class="btn sharp btn-success btn-block">
             <i class="fa fa-fw fa-book fa-lg"></i>&nbsp;
-            <strong class="hidden-sm hidden-xs">企業名錄</strong>
+            <strong class="hidden-sm hidden-xs h4">企業名錄</strong>
         </a>
     </div>
     <div class="row">
         <a href="/cogroup/index/suppliers" role="button" class="btn sharp btn-success btn-block">
             <i class="fa fa-fw fa-lg fa-ambulance"></i>&nbsp;
-            <strong class="hidden-sm hidden-xs">供應企業</strong>
+            <strong class="hidden-sm hidden-xs h4">供應企業</strong>
         </a>
     </div>
     <div class="row">
         <a href="/cogroup/index/customers" role="button" class="btn sharp btn-success btn-block">
             <i class="fa fa-fw fa-lg fa-users"></i>&nbsp;
-            <strong class="hidden-sm hidden-xs">客戶企業</strong>
+            <strong class="hidden-sm hidden-xs h4">客戶企業</strong>
         </a>
     </div>
     <div class="row">
         <a href="/product/index" role="button" class="btn sharp btn-success btn-block">
             <i class="fa fa-fw fa-flask fa-lg"></i>&nbsp;
-            <strong class="hidden-sm hidden-xs">產品名錄</strong>
+            <strong class="hidden-sm hidden-xs h4">產品名錄</strong>
         </a>
     </div>
     <div class="row">
         <a href="/order/due" role="button" class="btn sharp btn-success btn-block">
             <i class="fa fa-fw fa-calendar fa-lg"></i>&nbsp;
-            <strong class="hidden-sm hidden-xs">即將到期</strong>
+            <strong class="hidden-sm hidden-xs h4">即將到期</strong>
         </a>
     </div>
 
@@ -40,7 +40,7 @@
 
 
 
-    <div data-bind="visible: company_id">
+    <% if (res.locals.cogroup) { %>
         <!--Company group name-->
         <div class="row text-center h2">
             <strong>
@@ -49,38 +49,45 @@
         </div>
 
         <div class="row">
-            <button type="button" onclick="" class="btn sharp btn-custom btn-block">
+            <a href="/cogroup/show/<%= cogroup.name %>" class="btn sharp btn-custom btn-block">
                 <i class="fa fa-fw fa-info-circle fa-lg"></i>&nbsp;
-                <strong class="hidden-sm hidden-xs">公司訊息</strong>
-            </button>
+                <strong class="hidden-sm hidden-xs h4">公司訊息</strong>
+            </a>
         </div>
 
         <div class="row">
-            <button type="button" onclick="" class="btn sharp btn-custom btn-block">
+            <a href="/product/showall/<%= cogroup.name %>" class="btn sharp btn-custom btn-block">
+                <i class="fa fa-fw fa-flask fa-lg"></i>&nbsp;
+                <strong class="hidden-sm hidden-xs h4">編輯產品</strong>
+            </a>
+        </div>
+
+        <div class="row">
+            <a href="/order/new/<%= cogroup.name %>" class="btn sharp btn-custom btn-block">
                 <i class="fa fa-fw fa-file-powerpoint-o fa-lg"></i>&nbsp;
-                <strong class="hidden-sm hidden-xs">創造訂單</strong>
-            </button>
+                <strong class="hidden-sm hidden-xs h4">創造訂單</strong>
+            </a>
         </div>
 
         <div class="row">
-            <button type="button" onclick="" class="btn sharp btn-custom btn-block">
+            <a href="/shipment/new/<%= cogroup.name %>" class="btn sharp btn-custom btn-block">
                 <i class="fa fa-fw fa-truck fa-flip-horizontal fa-lg"></i>&nbsp;
-                <strong class="hidden-sm hidden-xs">做出貨單</strong>
-            </button>
+                <strong class="hidden-sm hidden-xs h4">做出貨單</strong>
+            </a>
         </div>
 
         <div class="row">
-            <button type="button" onclick="" class="btn sharp btn-custom btn-block">
+            <a href="/shipment/showall/<%= cogroup.name %>" class="btn sharp btn-custom btn-block">
                 <i class="fa fa-fw fa-th-list fa-lg"></i>&nbsp;
-                <strong class="hidden-sm hidden-xs">出貨紀錄</strong>
-            </button>
+                <strong class="hidden-sm hidden-xs h4">出貨紀錄</strong>
+            </a>
         </div>
 
         <div class="row">
-            <button type="button" onclick="" class="btn sharp btn-custom btn-block">
+            <a disabled href="#" class="btn sharp btn-custom btn-block">
                 <i class="fa fa-fw fa-line-chart fa-lg"></i>&nbsp;
-                <strong class="hidden-sm hidden-xs">買賣趨勢</strong>
-            </button>
+                <strong class="hidden-sm hidden-xs h4">買賣趨勢</strong>
+            </a>
         </div>
 
 
@@ -156,17 +163,21 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="hidden-sm hidden-xs" data-bind="visible: !company_id()">
+    <% } else { %>
+        <!--Show several quick link buttons to frequently used active companies-->
+        <div class="hidden-sm hidden-xs">
             <div class="row text-center">
-                <div class="" data-bind="foreach: company_list">
+                <div class="" data-bind="visible: company_list().length > 0, foreach: company_list">
                     <button type="button" style="margin: 4px; padding: 2px" class="btn btn-custom btn-lg" data-bind="click: $parent.loadCompany">
                         <strong data-bind="text: name"></strong>
                     </button>
                 </div>
+                <div class="" data-bind="visible: company_list().length == 0">
+                    <i class="fa fa-spinner fa-pulse"></i> 加載常用的公司
+                </div>
             </div>
-    </div>
+        </div>
+    <% } %>
 </div>
 
 
@@ -215,18 +226,41 @@
 
         // Populate company buttons if no company is selected
         if (self.company_id() === '') {
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange = function () {
-                if (xmlhttp.readyState !== 4) return;
-                self.company_list.removeAll()
-                var res = JSON.parse(xmlhttp.response)
+            // Get from 'co_list' cookie if exists else AJAJ and set cookie
+            var cookieStr = document.cookie;
+            var cl_index = cookieStr.indexOf('co_list');
+            if (cl_index >= 0) {
+                var res = JSON.parse(cookieStr.substring(cl_index+8));
                 // Show first few items
+                self.company_list.removeAll();
                 res.slice(0, 40).forEach(function(name) {
                     self.company_list.push({'name':name});
                 });
-            };
-            xmlhttp.open('GET', '/cogroup/namelist', true);
-            xmlhttp.send();
+                // Use lines below to delete 'co_list' cookie
+//                var d = new Date();
+//                document.cookie=['co_list=', 'expires='+d.toUTCString(), 'path=/'].join('; ');
+            } else {
+                // AJAJ request for company list
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function () {
+                    if (xmlhttp.readyState !== 4) return;
+                    // Save list as 'co_list' cookie that expires in 24 hours
+                    var d = new Date();
+                    d.setTime(d.getTime() + 24*60*60*1000);
+                    var c_data = 'co_list=' + xmlhttp.response.replace(/[\n\r/ ]/g, '');
+                    var expires = 'expires=' + d.toUTCString();
+                    document.cookie=[c_data, expires, 'path=/'].join('; ');
+
+                    var res = JSON.parse(xmlhttp.response);
+                    // Show first few items
+                    self.company_list.removeAll();
+                    res.slice(0, 40).forEach(function(name) {
+                        self.company_list.push({'name':name});
+                    });
+                };
+                xmlhttp.open('GET', '/cogroup/namelist', true);
+                xmlhttp.send();
+            }
         }
 
         self.loadCompany = function (branch) {

@@ -1,14 +1,10 @@
 <!--List view of all shipments-->
-<div id="this_body" class='container-fluid'>
-<!--vvv START: Company header and buttons vvv-->
-<%- partial ('../company_header.ejs') %>
-<!--^^^ END: Company header and buttons ^^^-->
-<hr>
+<div>
 <!--START: List view of shipments-->
 <div data-bind="with: pageVM">
     <div>
-        <div class="panel panel-success" style="margin: 0px">
-            <div class="panel-heading" style="padding: 0px">
+        <div class="panel panel-success">
+            <div id="showall-p-head" class="panel-heading" style="padding: 0px; position: fixed; z-index: 10;">
                 <div class="row">
                     <div class="col-xs-3">
                         <span class="h4" style="margin: 0px">Shipments</span>
@@ -22,24 +18,26 @@
                             <div class="input-group-addon">紀錄數量</div>
                             <input class="form-control" type="number" data-bind="textInput: recordLimit">
                         </div>
-                        
+
                     </div>
                 </div>
-                
-            </div>
-            <div class="panel-body" style="padding: 0px">
-                <table class="table table-striped">
+                <table id="showall-th" class="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th class="text-center">訂單編號 <span class="badge">DB#</span></th>
+                            <th class="text-center">訂單編號</th>
                             <th class="text-center">出貨日期</th>
-                            <th class="text-center">出貨單編號 <span class="badge">DB#</span></th>
+                            <th class="text-center">出貨單編號</th>
                             <th class="text-center">選</th>
                             <th class="text-center">QTY</th>
                             <th class="text-center">產品/服務</th>
-                            <th class="text-center">發票編號 <span class="badge">DB#</span></th>
+                            <th class="text-center">發票編號</th>
                         </tr>
                     </thead>
+                </table>
+
+            </div>
+            <div id="showall-p-body" class="panel-body" style="padding: 0px">
+                <table id="showall-td" class="table table-striped table-bordered">
                     <tbody data-bind="foreach: shipmentsItems">
                         <tr>
                             <td style="padding: 3px 3px" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + order_id}"><strong data-bind="text: orderID"></strong> <span class="badge" data-bind="visible: !orderID || $parent.debug, text: order_id"></span></a></td>
@@ -57,49 +55,47 @@
                 </table>
             </div>
         </div>
-
     </div>
 </div>
 <!--END: List view of shipments-->
-    
-    
+
+
 <%- partial ('../invoice/modal.ejs') %>
-    
-    
+
+
 </div><!--END: container-fluid-->
 
 
 <script>
 var cogroup = <%- JSON.stringify(cogroup) %>;
 var co_name = viewModel.co_name = '<%= cogroup.name %>';
-addCompanyNavButtons(co_name);
 var _csrf = '<%= _csrf %>';
-    
+
 
 var key = {
     ESC: 27,
     ENTER: 13,
     PLUS: 43
 };
-    
+
 function PageModel() {
     var self = this;
-    
-    self.debug = false; // Show database ID numbers in all cases if true
+
+    self.debug = false;  // Show database ID numbers in all cases if true
     self.recordLimit = ko.observable(80);
-    
+
     /**
      * SHIPMENT methods
      */
     self.shipments = ko.observableArray();
     self.shipmentsItems = ko.observableArray();
-    
+
     self.clearSelections = function() {
         for (var i=0; i<self.shipmentsItems().length; i++) {
             self.shipmentsItems()[i].selected(false);
         }
     };
-    
+
     self.openInvoiceModal = function() {
         var items = [];
         for (var i=0; i<self.shipmentsItems().length; i++) {
@@ -111,17 +107,17 @@ function PageModel() {
         }
         viewModel.invoiceModalVM.showModal(items);
     };
-    
+
     self.view_invoice = function(invoice_btn_data) {
 //        console.log(invoice_btn_data.invoice_no);
         params = {
-            _csrf: _csrf, 
+            _csrf: _csrf,
             id: co_name,
             invoice_no: invoice_btn_data.invoice_no,
         };
         post('/database/get/invoiceitems', params, function(response) {
             console.log(response);
-            
+
             var items = [];
             for (var i=0; i<response.length; i++) {
                 items.push(response[i]);
@@ -129,7 +125,7 @@ function PageModel() {
             viewModel.invoiceModalVM.showModal(items);
         });
     };
-    
+
     document.onkeydown = function(evt) {
         // Exit any modal if displayed.
         if (evt.keyCode == key.ESC) {
@@ -142,18 +138,18 @@ function PageModel() {
             else self.openInvoiceModal();
         }
     };
-    
-    
-    
+
+
+
     self.getShipmentsArray = function() {
         params = {
-            _csrf: _csrf, 
+            _csrf: _csrf,
             id: co_name,
             limit: Number(self.recordLimit()),
         };
         post('/database/get/shipmentitems', params, function(response) {
 //            console.log(response);
-            
+
             self.shipmentsItems.removeAll();
             for (var i=0; i<response.length; i++) {
                 self.shipmentsItems.push(new KO_ShipmentListRow(response[i]));
@@ -161,14 +157,30 @@ function PageModel() {
         });
     };
 //    self.getShipmentsArray();
-    
+
     ko.computed(function () {
         var val = Number(self.recordLimit());
         if (isNaN(val)) return;
         else self.getShipmentsArray();
     });
+
+    // Set the header cell widths to match the body cell widths
+    ko.computed(function () {
+        if (self.shipmentsItems().length > 0) {
+            var ths = document.getElementById('showall-th').getElementsByTagName('th');
+            var tds = document.getElementById('showall-td').getElementsByTagName('td');
+            if (tds.length >= ths.length) {
+                for (var i = 0; i < ths.length; i++) {
+                    ths[i].style.width = tds[i].offsetWidth + 'px';
+                }
+            }
+            // Edit body starting offset from header
+            var panel_head = document.getElementById("showall-p-head");
+            var panel_body = document.getElementById("showall-p-body");
+            panel_body.style.marginTop = panel_head.offsetHeight + 'px';
+        }
+    });
 }
 
 viewModel.pageVM = new PageModel();
-ko.applyBindings(viewModel, document.getElementById('this_body'));
 </script>

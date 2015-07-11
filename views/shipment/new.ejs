@@ -1,138 +1,134 @@
 
-<div id="this body" class="container-fluid">
-<!--vvv START: Company header and buttons vvv-->
-<%- partial ('../company_header.ejs') %>
-<!--^^^ END: Company header and buttons ^^^-->
-            
-            <hr>
-    <div class="row">    
-    
-        <div class="col-md-12" data-bind="with: itemsVM">
-            
-            <div class="row">
-                <div class="col-sm-4 col-sm-push-4 text-center">
-                    <button class="btn btn-lg btn-success" data-bind="click: showModal">創造出貨單 <span class="badge">Enter</span></button>
-                </div>
-                <div class="col-sm-4 col-sm-pull-4">
-                    <ul class="nav nav-tabs">
-                        <li id="tab" data-bind="css: {active: po_tab}">
-                            <a href="#" data-bind="click: toggleTab">
-                                <strong>訂單</strong>
-                            </a>
-                        </li>
-                        <li id="tab" data-bind="css: {active: prod_tab}">
-                            <a href="#" data-bind="click: toggleTab">
-                                <strong>產品</strong>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="tab-content">
-                <div  data-bind="visible: po_tab" style="padding: 0px; overflow-y:scroll; height:68vh;">
-                    <table class="table table-condensed table-striped">
-                        <thead class="text-uppercase">
-                            <tr>
-                                <th>選</th>
-                                <th>
-                                    訂單編號
-                                </th>
-                                <th>
-                                    品名
-                                    <span class="label label-primary">產品備註</span>
-                                </th>
-                                <th class="text-center">
-                                    數量 容器
-                                </th>
-                                <th class="text-center">
-                                    價格
-                                </th>
-                                <th class="text-center">
-                                    備註
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody data-bind="foreach: orders">
-                            <tr>            
-                    <!--        Product Manifest selection    -->
-                                <td style="width: 30px">
-                                    <input style="margin: 0px; width:26px; height:26px; vertical-align: top;" type="checkbox" name="purchaseorder" data-bind="checked: selected">
-                                </td>
+<div class="row">
 
-                    <!--        Product inventory name    -->
-                                <td style="padding: 3px 3px" class="text-left">
-                                    <a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + id}"><strong data-bind="text: orderID"></strong> <span class="badge" data-bind="text: id"></span></a>
-                                </td>
-                                <td>
-                                    <span data-bind="text: label"></span> <span class="label label-primary" data-bind="text: id_note"></span>
-                                </td>
-                                <td class="text-center" style="width: 40%">
-                                    <span data-bind="text: qty"></span> <span data-bind="text: sku"></span>
-                                </td>
-                                <td class="text-center">
-                                    $ <span data-bind="text: price"></span> <span data-bind="text: pricing"></span>
-                                </td>
-                                <td>
-                                    <span class="label label-primary" data-bind="text: ordernote"></span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div data-bind="visible: prod_tab" style="padding: 0px; overflow-y:scroll; height:68vh;">
-                    <table class="table table-condensed table-striped">
-                        <thead class="text-uppercase">
-                            <tr>
-                                <th>選</th>
-                                <th>
-                                    品名
-                                </th>
-                                <th class="text-center">
-                                    容量 / 容器
-                                </th>
-                                <th class="text-center">
-                                    價格 / 單位
-                                </th>
-                                <th>
-                                    <span class="label label-primary">備註</span>
-                                    <span class="badge">標籤</span>
-                                    <span class="label label-success">英文</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody data-bind="foreach: products">
-                            <tr>            
-                    <!--        Product Manifest selection    -->
-                                <td>
-                                    <input style="margin: 0px; width:26px; height:26px; vertical-align: top;" type="checkbox" name="product" data-bind="checked: selected">
-                                    <button style="padding: 3px 6px; vertical-align: top;" class="btn btn-sm btn-custom" data-bind="click: $parent.showMEModal"><span class="glyphicon glyphicon-th-list"></span></button>
-                                </td>
+    <div class="col-md-12" data-bind="with: itemsVM">
 
-                    <!--        Product inventory name    -->
-                                <td>
-                                    <span data-bind="text: inventory_name"></span>                                </td>
-                                <td class="text-center">
-                                    <span data-bind="text: units() + ' ' + UM()"></span> / <span data-bind="text: SKU"></span>
-                                </td>
-                                <td class="text-center">
-                                    $ <span data-bind="text: curr_price"></span> <span data-bind="text: pricing"></span>
-                                </td>
-                                <td>
-                                    <span class="label label-primary" data-bind="text: note"></span>
-                                    <label class="badge" data-bind="text: product_label"></label>
-                                    <span style="white-space: normal;" class="label label-success" data-bind="text: english_name"></span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+        <div class="row">
+            <div class="col-sm-4 col-sm-push-4 text-center">
+                <button class="btn btn-lg btn-success" data-bind="click: showModal">創造出貨單 <span class="badge">Enter</span></button>
             </div>
-        
-        
+            <div class="col-sm-4 col-sm-pull-4">
+                <ul class="nav nav-tabs">
+                    <li id="tab" data-bind="css: {active: po_tab}">
+                        <a href="#" data-bind="click: toggleTab">
+                            <strong>訂單</strong>
+                        </a>
+                    </li>
+                    <li id="tab" data-bind="css: {active: prod_tab}">
+                        <a href="#" data-bind="click: toggleTab">
+                            <strong>產品</strong>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
+        <div class="tab-content">
+            <div  data-bind="visible: po_tab" style="padding: 0px; overflow-y:scroll; height:84vh;">
+                <table class="table table-condensed table-striped">
+                    <thead class="text-uppercase">
+                        <tr>
+                            <th>選</th>
+                            <th>
+                                訂單編號
+                            </th>
+                            <th>
+                                品名
+                                <span class="label label-primary">產品備註</span>
+                            </th>
+                            <th class="text-center">
+                                數量 容器
+                            </th>
+                            <th class="text-center">
+                                價格
+                            </th>
+                            <th class="text-center">
+                                備註
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: orders">
+                        <tr>
+                <!--        Product Manifest selection    -->
+                            <td style="width: 30px">
+                                <input style="margin: 0px; width:26px; height:26px; vertical-align: top;" type="checkbox" name="purchaseorder" data-bind="checked: selected">
+                            </td>
+
+                <!--        Product inventory name    -->
+                            <td style="padding: 3px 3px" class="text-left">
+                                <a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + id}"><strong data-bind="text: orderID"></strong> <span class="badge" data-bind="text: id"></span></a>
+                            </td>
+                            <td>
+                                <span data-bind="text: label"></span> <span class="label label-primary" data-bind="text: id_note"></span>
+                            </td>
+                            <td class="text-center" style="width: 40%">
+                                <span data-bind="text: qty"></span> <span data-bind="text: sku"></span>
+                            </td>
+                            <td class="text-center">
+                                $ <span data-bind="text: price"></span> <span data-bind="text: pricing"></span>
+                            </td>
+                            <td>
+                                <span class="label label-primary" data-bind="text: ordernote"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div data-bind="visible: prod_tab" style="padding: 0px; overflow-y:scroll; height:84vh;">
+                <table class="table table-condensed table-striped">
+                    <thead class="text-uppercase">
+                        <tr>
+                            <th>選</th>
+                            <th>
+                                品名
+                            </th>
+                            <th class="text-center">
+                                容量 / 容器
+                            </th>
+                            <th class="text-center">
+                                價格 / 單位
+                            </th>
+                            <th>
+                                <span class="label label-primary">備註</span>
+                                <span class="badge">標籤</span>
+                                <span class="label label-success">英文</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: products">
+                        <tr>
+                <!--        Product Manifest selection    -->
+                            <td>
+                                <input style="margin: 0px; width:26px; height:26px; vertical-align: top;" type="checkbox" name="product" data-bind="checked: selected">
+                                <button style="padding: 3px 6px; vertical-align: top;" class="btn btn-sm btn-custom" data-bind="click: $parent.showMEModal"><span class="glyphicon glyphicon-th-list"></span></button>
+                            </td>
+
+                <!--        Product inventory name    -->
+                            <td>
+                                <i class="fa fa-fw fa-lg fa-ambulance" data-bind="visible: is_supply"></i>
+                                <i class="fa fa-fw fa-lg fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
+                                <span data-bind="text: inventory_name"></span>                                </td>
+                            <td class="text-center">
+                                <span data-bind="text: units() + ' ' + UM()"></span> / <span data-bind="text: SKU"></span>
+                            </td>
+                            <td class="text-center">
+                                $ <span data-bind="text: curr_price"></span> <span data-bind="text: pricing"></span>
+                            </td>
+                            <td>
+                                <span class="label label-primary" data-bind="text: note"></span>
+                                <label class="badge" data-bind="text: product_label"></label>
+                                <span style="white-space: normal;" class="label label-success" data-bind="text: english_name"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
     </div>
-    
-    
+</div>
+
+
 <!--START: Shipment form-->
 <div data-bind="with: itemsVM">
     <div id="form modal" class="modal" data-bind="style: {display: modalVisible() ? 'block' : 'none'}">
@@ -279,23 +275,19 @@
     </div>
 </div>
 <!--END: Shipment form-->
-    
+
 <!--START: Multi entry modal for one product-->
 <%- partial ('../shipment/multi.ejs') %>
 <!--END: Multi entry modal for one product-->
-    
-    
-</div>
+
 
 <script>
 var viewModel = viewModel || {};
 var co_name = viewModel.co_name = '<%= cogroup.name %>';
 var _csrf = viewModel._csrf = '<%= _csrf %>';
-    
-    
+
 var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
-addCompanyNavButtons(co_name);
-    
+
 var key = {
     ESC: 27,
     ENTER: 13
@@ -303,33 +295,33 @@ var key = {
 
 function ItemsModel() {
     var self = this;
-    
-    
+
+
     self.modalVisible = ko.observable(false);
     self.showModal = function(clickedItem) {
         if (self.rows().length == 0) {
             alert('Select at least one item from list.\n選擇至少一個項目.');
             return;
         }
-        
+
         if (self.rows().length > 5) {
             alert('Select no more than five items.\n限制五個選擇.');
             return;
         }
-        
+
         self.modalVisible(true);
     };
     self.exitModal = function(clickedItem) {
         self.modalVisible(false);
     };
-    
-    
+
+
     self.lastSelection = ko.observable(null);
-    
+
     self.showMEModal = function(clickedItem) {
         viewModel.multiModalVM.open(clickedItem.MPN);
     };
-    
+
     document.onkeydown = function(evt) {
         // Exit any modal if displayed.
         if (evt.keyCode == key.ESC) {
@@ -341,14 +333,14 @@ function ItemsModel() {
             self.showModal();
         }
     };
-    
+
     self.po_tab = ko.observable(true);
     self.prod_tab = ko.observable(false);
-    
+
     self.toggleTab = function (whatami) {
         self.po_tab(!self.po_tab());
         self.prod_tab(!self.prod_tab());
-        
+
         for (var i=0; i<self.orders().length; i++) {
             self.orders()[i].selected(false);
         }
@@ -356,12 +348,12 @@ function ItemsModel() {
             self.products()[i].selected(false);
         }
     };
-    
-    
+
+
     self.products = ko.observableArray();
     self.productsGet = function () {
         params = {
-            _csrf: _csrf, 
+            _csrf: _csrf,
             id: co_name,
         };
         callback = function (products) {
@@ -375,14 +367,14 @@ function ItemsModel() {
         getProducts(params, callback);
     };
     self.productsGet();
-    
-    
-    
-    
+
+
+
+
     self.orders = ko.observableArray();
     self.ordersGet = function () {
         params = {
-            _csrf: _csrf, 
+            _csrf: _csrf,
             id: co_name,
         };
         callback = function (orders) {
@@ -401,10 +393,10 @@ function ItemsModel() {
         getOrders(params, callback);
     };
     self.ordersGet();
-    
+
     self.isPO = ko.observable(true);
     self.rows = ko.observableArray([]);
-    
+
     var selectCompute = ko.computed(function () {
         self.rows.removeAll()
         for (var i=0; i<self.orders().length; i++) {
@@ -422,9 +414,8 @@ function ItemsModel() {
             }
         }
     });
-    
+
 }
 
 viewModel.itemsVM = new ItemsModel();
-ko.applyBindings(viewModel, document.getElementById('this body'));
 </script>

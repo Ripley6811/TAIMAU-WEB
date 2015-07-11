@@ -1,29 +1,21 @@
 <!--Table views of a single company's branches, contacts and products-->
 
-<div class="container-fluid">
+<div>
 
 
 
 
-    <div>
-        <!--SHOW DELETE BUTTON IF THERE ARE NO BRANCHES-->
-        <% if (cogroup.branches.length == 0) { %>
-        <div class="row text-center">
-            <a href="/cogroup/destroy/<%= cogroup.name %>" class="btn btn-danger btn-lg">DELETE COMPANY GROUP ID</a>
-        </div>
-        <% } %>
-
-        <!--COMPANY BRANCHES LIST-->
-        <%- partial ('../branch/panel.ejs') %>
-
-        <hr>
-        <!--CONTACTS LIST-->
-        <%- partial ('../contact/panel.ejs') %>
-
-        <hr>
-        <!--PRODUCT AND SERVICES LIST-->
-        <%- partial ('../product/panel.ejs') %>
-        <%- partial ('../product/modal.ejs') %>
+    <!--SHOW DELETE BUTTON IF THERE ARE NO BRANCHES-->
+    <% if (cogroup.branches.length == 0) { %>
+    <div class="row text-center">
+        <a href="/cogroup/destroy/<%= cogroup.name %>" class="btn btn-danger btn-lg">DELETE COMPANY GROUP ID</a>
     </div>
+    <% } %>
+
+    <!--COMPANY BRANCHES LIST-->
+    <%- partial ('../branch/panel.ejs') %>
+
+    <!--CONTACTS LIST-->
+    <%- partial ('../contact/panel.ejs') %>
 </div>
 

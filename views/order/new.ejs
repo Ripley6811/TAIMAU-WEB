@@ -1,79 +1,73 @@
 <!--Table view of all products for a single company-->
 
-<div id="this body" class="container-fluid">
+<div>
 
 
 <!--START: Main row for two-panes-->
-<div class="row">
-    <div class="col-md-12">
-<!--vvv START: Company header and buttons vvv-->
-    <%- partial ('../company_header.ejs') %>
-<!--^^^ END: Company header and buttons ^^^-->
-	<hr>
 
 <!--vvv START: Panel for products and services list vvv-->
-        <div class="panel panel-success" style="margin: 0px" data-bind="with: itemsVM">
-            <div class="panel-heading">
-                <div class="row">
-                    <div class="col-xs-5 panel-title text-center">
-                            <h2><strong>產品 / 服務</strong></h2>
-                    </div>
-                    <div class="col-xs-7">
-                        <button type="button" class="btn btn-lg btn-success" data-bind="click: showModal">創造訂單 <span class="badge">Enter</span></button>
-                    </div>
+    <div class="panel panel-success" style="margin: 0px" data-bind="with: itemsVM">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-xs-5 panel-title text-center">
+                        <h2><strong>產品 / 服務</strong></h2>
                 </div>
-            </div>
-            <div class="panel-body" style="padding: 0px; overflow-y:scroll; height:62vh;">
-                <table class="table table-condensed table-striped">
-                    <thead class="text-uppercase">
-                        <tr>
-                            <th>選</th>
-                            <th>
-                                品名
-                            </th>
-                            <th>
-                                容量 - 容器
-                            </th>
-                            <th>
-                                <span class="label label-primary">備註</span>
-                                <span class="badge">標籤</span>
-                                <span class="label label-success">英文</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody data-bind="foreach: products">
-                        <tr>
-                <!--        Product Manifest selection    -->
-                            <td style="width: 30px; height: 30px">
-                                <input style="width:28px; height:28px;" type="checkbox" name="product" data-bind="checked: selected">
-                            </td>
-
-                <!--        Product inventory name    -->
-                            <td>
-                                <span data-bind="text: inventory_name"></span>
-                            </td>
-                            <td style="width: 25%">
-                                <span data-bind="text: units() + ' ' + UM()"></span> - <span data-bind="text: SKU"></span>
-                            </td>
-                            <td>
-                                <span class="label label-primary" data-bind="text: note"></span>
-                                <label class="badge" data-bind="text: product_label"></label>
-                                <span style="white-space: normal;" class="label label-success" data-bind="text: english_name"></span>
-                            </td>
-
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="panel-footer lightorange-blend">
-                <div class="text-center">
-                    已停用的產品藏起來了. 看公司訊息.
+                <div class="col-xs-7">
+                    <button type="button" class="btn btn-lg btn-success" data-bind="click: showModal">創造訂單 <span class="badge">Enter</span></button>
                 </div>
             </div>
         </div>
-<!--^^^ END: Panel for products and services list ^^^-->
+        <div class="panel-body" style="padding: 0px">
+            <table class="table table-condensed table-striped table-bordered">
+                <thead class="text-uppercase">
+                    <tr>
+                        <th>選</th>
+                        <th>
+                            品名
+                        </th>
+                        <th>
+                            容量 - 容器
+                        </th>
+                        <th>
+                            <span class="label label-primary">備註</span>
+                            <span class="badge">標籤</span>
+                            <span class="label label-success">英文</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: products">
+                    <tr>
+            <!--        Product Manifest selection    -->
+                        <td style="width: 30px; height: 30px">
+                            <input style="width:28px; height:28px;" type="checkbox" name="product" data-bind="checked: selected">
+                        </td>
+
+            <!--        Product inventory name    -->
+                        <td>
+                            <i class="fa fa-fw fa-lg fa-ambulance" data-bind="visible: is_supply"></i>
+                            <i class="fa fa-fw fa-lg fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
+                            <span data-bind="text: inventory_name"></span>
+                        </td>
+                        <td style="width: 25%">
+                            <span data-bind="text: units() + ' ' + UM()"></span> - <span data-bind="text: SKU"></span>
+                        </td>
+                        <td>
+                            <span class="label label-primary" data-bind="text: note"></span>
+                            <label class="badge" data-bind="text: product_label"></label>
+                            <span style="white-space: normal;" class="label label-success" data-bind="text: english_name"></span>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="panel-footer lightorange-blend">
+            <div class="text-center">
+                已停用的產品藏起來了. 看公司訊息.
+            </div>
+        </div>
     </div>
-</div>
+<!--^^^ END: Panel for products and services list ^^^-->
 
 
 
@@ -213,7 +207,9 @@
                     </div>
 
                     <div class="col-sm-3 text-center">
-                        <input type="submit" class="btn btn-lg btn-success" name="make_po" value="提交訂單">
+                        <input type="submit" class="btn btn-lg btn-success"
+                               name="make_po" value="提交訂單"
+                               data-bind="disable: grand_total() === ''">
                     </div>
                 </div>
             </div>
@@ -307,5 +303,4 @@ function ItemsModel() {
 
 
 viewModel.itemsVM = new ItemsModel();
-ko.applyBindings(viewModel, document.getElementById('this body'));
 </script>

@@ -160,9 +160,9 @@ module.exports = {
             res.send(cogroup);
         });
     },
-    // Get list of names
+    // Get list of names of active companies
     namelist: function (req, res) {
-        Cogroup.find()
+        Cogroup.find({or:[{is_supplier:true},{is_customer:true}]})
         .populate('orders')
         .exec(function (err, cogroups) {
             if (err) {

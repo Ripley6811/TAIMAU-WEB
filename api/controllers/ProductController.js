@@ -9,7 +9,7 @@ module.exports = {
     // Show new product entry form.
     'new': function (req, res) {
         var id = req.param('id');
-        
+
         res.view({ group: id });
     },
     // Show new product entry form.
@@ -29,15 +29,15 @@ module.exports = {
                 note: req.param('note'),
                 json: req.param('json')
             };
-        
+
         Product.create(productObj, function (err, product) {
                 if (err) {
                     console.log(err);
                     // If error redirect back to creation page
                     req.flash('message', err);
-                    return res.redirect('/product/new/' + productObj.group);   
+                    return res.redirect('/product/new/' + productObj.group);
                 }
-            
+
                 res.redirect('/product/edit/' + productObj.MPN);
             });
     },
@@ -57,7 +57,7 @@ module.exports = {
     // Show products for a specific company.
     show: function (req, res) {
         var id = req.param('id');
-        
+
         Product.find()
             // Sort numbers are ascending (1) and descending (0).
             .where({group: id, discontinued: false})
@@ -77,7 +77,7 @@ module.exports = {
                                 error: err.message
                             }, 400);
 
-                            res.view({ 
+                            res.view({
                                 cogroup: cogroup,
                                 products: [],
                                 orders: []
@@ -101,11 +101,11 @@ module.exports = {
                     }
                     // Sort by product rank
                     products.sort(function (a, b) {return a.json.rank - b.json.rank});
-                    
+
                     for (var i=0; i<products.length; i=i+1) {
                         MPNs.push(products[i].MPN);
                     }
-                    
+
                     Order.find({MPN: MPNs, is_open: true})
                     .populate('shipments')
                     .populate('MPN')
@@ -113,12 +113,12 @@ module.exports = {
                         if (err) res.json({
                             error: err.message
                         }, 400);
-                        
+
                         orders.sort(function (a, b) {
                             return a.MPN.json.rank - b.MPN.json.rank;
                         });
-                        
-                        res.view({ 
+
+                        res.view({
                             products: products,
                             cogroup: products[0].group,
                             orders: orders
@@ -130,7 +130,7 @@ module.exports = {
     // Show product editing form.
     edit: function (req, res) {
         var id = req.param('id').replace('-percent-','%');
-        
+
         Product.findOne(id)
             .populate('group')
             .populate('orders')
@@ -138,7 +138,7 @@ module.exports = {
                 if (err) res.json({
                     error: err.message
                 }, 400);
-            
+
                 res.view({ product: product });
             });
     },
@@ -173,7 +173,7 @@ module.exports = {
                 if (err) res.json({
                     error: err.message
                 }, 400);
-            
+
                 var updateParams = {};
                 updateParams.discontinued = !product.discontinued;
 
@@ -185,7 +185,7 @@ module.exports = {
                     });
             });
     },
-    
+
     /**
      * Update or create a single record.
      * @param   {String}   co_name Name of company group.
@@ -194,7 +194,7 @@ module.exports = {
     updateOrCreate: function (req, res, next) {
         var co_name = req.param('co_name'),
             product = req.param('product');
-        
+
         // Blank name IDs are not allowed.
         if (product.MPN === null || product.MPN === '') {
             product.MPN = String(Math.round(Math.random()*100000000)+100)
@@ -222,11 +222,11 @@ module.exports = {
             });
         });
     },
-    
+
     /**
      * Destroy a single record.
-     * 
-     * Returns status 500 error if product cannot be deleted due to linked 
+     *
+     * Returns status 500 error if product cannot be deleted due to linked
      * records.
      * @param   {String}   co_name Name of company group.
      * @param   {String}   MPN Database id for record.
@@ -234,7 +234,7 @@ module.exports = {
     destroy: function (req, res, next) {
         var co_name = req.param('co_name'),
             MPN = req.param('MPN');
-        
+
         Product.destroy({MPN: MPN, group: co_name})
         .exec(function (err, recs) {
             if (err) {
@@ -247,7 +247,7 @@ module.exports = {
             res.send(recs[0]);
         });
     },
-    
+
     // Retrieve all products for a company.
     get: function (req, res) {
         var co_name = req.param('id'),
@@ -264,11 +264,11 @@ module.exports = {
             res.send(products);
         });
     },
-    
+
     merge: function (req, res, next) {
         var co_name = req.param('id'),
             products = req.param('products');
-        
+
         for (var i=0; i<products.length; i++) {
             if (isNaN(products[i].curr_price) || products[i].curr_price === '') {
                 products[i].curr_price = 0.0;
@@ -278,6 +278,20 @@ module.exports = {
                 console.log('PRODUCT UPDATE:', err, records);
             });
         }
-    }
+    },
+
+    showall: function (req, res) {
+        Cogroup.findOne(req.param('id'))
+//        .populate('branches')
+        .exec(function (err, cogroup) {
+            if (err) res.json({
+                error: err.message
+            }, 400);
+
+            res.view({
+                cogroup: cogroup,
+            });
+        });
+    },
 };
 

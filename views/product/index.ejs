@@ -1,4 +1,4 @@
-<!--Table view of all products ordered by products-->
+<!--Table view of all products ordered by product names-->
 <div id="this body" class="container">
     <div class="row-fluid" data-bind="with: productsVM">
         <div class="col-md-4 h2">
@@ -55,8 +55,8 @@
             <td>
                 <span data-bind="text: note"></span>
             </td>
-            
-            
+
+
         </tr>
         </tbody>
 </table>
@@ -65,13 +65,13 @@
 <script>
 var viewModel = viewModel || {};
 var _csrf = viewModel._csrf = '<%= _csrf %>';
-    
+
 function ProductsVM() {
     var self = this;
-    
+
     self.products = ko.observableArray([]);
     self.searchTerm = ko.observable();
-    
+
     /**
      * Load all products in database. Filter term is optional.
      * @param {String} filterWord Return results containing filter text.
@@ -89,7 +89,7 @@ function ProductsVM() {
         };
         post('/database/get/products', params, callback);
     };
-    
+
     ko.computed(function() {
         console.log(self.searchTerm());
         // Activate when search field entry changes.
@@ -97,7 +97,7 @@ function ProductsVM() {
         self.loadProducts(term);
     });
 }
-    
+
 viewModel.productsVM = new ProductsVM();
 ko.applyBindings(viewModel, document.getElementById('this body'));
 </script>
