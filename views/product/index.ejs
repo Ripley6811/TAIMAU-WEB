@@ -1,20 +1,19 @@
 <!--Table view of all products ordered by product names-->
-<div id="this body" class="container">
-    <div class="row-fluid" data-bind="with: productsVM">
-        <div class="col-md-4 h2">
-            <strong>產品和服務</strong>
-        </div>
-        <div class="col-md-8">
-            <div class="input-group has-success">
-                <div class="input-group-addon">
-                    搜尋
-                </div>
-                <input class="form-control" type="text" placeholder="全部" data-bind="textInput: searchTerm">
+<div class="row-fluid" data-bind="with: productsVM">
+    <div class="col-md-4 h2">
+        <strong>產品和服務</strong>
+    </div>
+    <div class="col-md-8">
+        <div class="input-group has-success">
+            <div class="input-group-addon">
+                搜尋
             </div>
+            <input class="form-control" type="text" placeholder="全部" data-bind="textInput: searchTerm">
         </div>
     </div>
+</div>
 
-<table class="table table-condensed table-striped" data-bind="with: productsVM">
+<table class="table table-condensed table-striped table-bordered" data-bind="with: productsVM">
     <thead class="text-uppercase">
         <tr>
             <th>內用品名 <span class="badge">標籤品名</span><span class="label label-default">English</span></th>
@@ -60,7 +59,6 @@
         </tr>
         </tbody>
 </table>
-</div>
 
 <script>
 var viewModel = viewModel || {};
@@ -99,5 +97,4 @@ function ProductsVM() {
 }
 
 viewModel.productsVM = new ProductsVM();
-ko.applyBindings(viewModel, document.getElementById('this body'));
 </script>
