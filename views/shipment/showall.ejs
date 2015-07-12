@@ -34,7 +34,7 @@
                             <th class="text-center">發票日期</th>
                             <th class="text-center">單價</th>
                             <th class="text-center">總價</th>
-                            <th class="text-center">付錢了</th>
+                            <th class="text-center">付錢</th>
                         </tr>
                     </thead>
                 </table>
@@ -58,7 +58,11 @@
                             <td style="padding: 3px 3px" class="text-center"><span data-bind="text: invoicedate"></span></td>
                             <td style="padding: 3px 3px" class="text-center"><span data-bind="text: '$ ' + price"></span></td>
                             <td style="padding: 3px 3px" class="text-center"><span data-bind="text: '$ ' + value"></span></td>
-                            <td style="padding: 3px 3px" class="text-center"><span data-bind="text: paid ? 'True' : 'False'"></span></td>
+                            <td style="padding: 3px 3px" class="text-center" data-bind="style: {backgroundColor: paid ? null : 'pink'}">
+                                <font color="orange"><i class="fa fa-usd" data-bind="visible: paid"></i></font>
+                                <span data-bind="text: paid ? 'Yes' : 'No'"></span>
+                                <i class="fa fa-question fa-spin" data-bind="visible: !paid"></i>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

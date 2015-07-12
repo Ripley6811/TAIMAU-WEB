@@ -282,7 +282,7 @@ module.exports = {
 
     showall: function (req, res) {
         Cogroup.findOne(req.param('id'))
-//        .populate('branches')
+        .populate('branches')
         .exec(function (err, cogroup) {
             if (err) res.json({
                 error: err.message
