@@ -2,20 +2,20 @@
 function KO_Cogroup(data) {
     var self = this,
         data = data || {};
-    
+
     self.name = ko.observable(data.name); // ID - Primary Key
     self.is_active = ko.observable(data.is_active);
     self.is_supplier = ko.observable(data.is_supplier);
     self.is_customer = ko.observable(data.is_customer);
-    
+
     self.supplierStatus = ko.computed(function () {
         return self.is_supplier() === true ? "glyphicon glyphicon-ok btn btn-success" : "glyphicon glyphicon-remove btn btn-danger";
     });
-    
+
     self.customerStatus = ko.computed(function () {
         return self.is_customer() === true ? "glyphicon glyphicon-ok btn btn-success" : "glyphicon glyphicon-remove btn btn-danger";
     });
-    
+
     self.toggleCustomer = function () {
         self.is_customer(!self.is_customer());
         self.saveUpdate();
@@ -24,18 +24,18 @@ function KO_Cogroup(data) {
         self.is_supplier(!self.is_supplier());
         self.saveUpdate();
     };
-    
-                
+
+
     self.saveUpdate = function () {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState !== 4) return;
-            
+
         };
         xmlhttp.open('POST', '/cogroup/update', true);
         xmlhttp.setRequestHeader('Content-type', 'application/json');
         xmlhttp.send(ko.toJSON({
-            _csrf: _csrf, 
+            _csrf: _csrf,
             cogroup_update: self
         }));
     };
@@ -44,7 +44,7 @@ function KO_Cogroup(data) {
 function KO_Branch(data) {
     var self = this,
         data = data || {};
-    
+
     self.name = ko.observable(data.name || null); // ID - Primary Key
     self.group = ko.observable(data.group || null);
     self.fullname = ko.observable(data.fullname || '');
@@ -59,10 +59,10 @@ function KO_Branch(data) {
     self.address_billing = ko.observable(data.address_billing || '');
     self.address = ko.observable(data.address || '');
     self.is_active = ko.observable(data.is_active === undefined ? true : data.is_active);
-    
+
     self.nameLock = ko.observable(true); // Set to true for new entries only.
     self.saved = ko.observable(true); // Set to false if any editing is done.
-    
+
     // Listen for changes to the following.
     ko.computed(function () {
         self.fullname();
@@ -78,14 +78,14 @@ function KO_Branch(data) {
         // Activate the save button.
         self.saved(false);
     });
-    
+
     self.saved(true);
 }
 
 function KO_Contact(data) {
     var self = this,
         data = data || {};
-    
+
     self.id = ko.observable(data.id || null); // ID - Primary Key
     self.group = ko.observable(data.group || null);
     self.branch = ko.observable(data.branch || '');
@@ -96,9 +96,9 @@ function KO_Contact(data) {
     self.fax = ko.observable(data.fax || '');
     self.email = ko.observable(data.email || '');
     self.note = ko.observable(data.note || '');
-    
+
     self.saved = ko.observable(true); // Set to false if any editing is done.
-    
+
     // Listen for changes to the following.
     ko.computed(function () {
         self.branch();
@@ -112,7 +112,7 @@ function KO_Contact(data) {
         // Activate the save button.
         self.saved(false);
     });
-    
+
     self.saved(true);
 }
 
@@ -122,7 +122,7 @@ var glyph_ok = '<font color="green"><span class="glyphicon glyphicon-ok"></span>
 function KO_Product(data) {
     var self = this,
         data = data || {};
-    
+
     self.MPN = ko.observable(data.MPN || null); // ID - Primary Key
     self.group = ko.observable(data.group || null);
     self.product_label = ko.observable(data.product_label || '');
@@ -141,12 +141,12 @@ function KO_Product(data) {
     self.is_supply = ko.observable(data.is_supply === undefined ? false : data.is_supply);
     self.discontinued = ko.observable(data.discontinued === undefined ? false : data.discontinued);
     self.json = ko.observable(data.json || {});
-    
+
     self.pricing = self.unitpriced() ? '/ ' + self.UM() : '/ ' + self.SKU();
-    
+
     self.locked = ko.observable(true); // Set to true for new entries only.
     self.saved = ko.observable(true); // Set to false if any editing is done.
-    
+
     // Listen for changes to the following.
     ko.computed(function () {
         self.inventory_name();
@@ -160,7 +160,7 @@ function KO_Product(data) {
         // Activate the save button.
         self.saved(false);
     });
-    
+
     self.toggleMessage = ko.computed(function () {
         if (self.discontinued()) {
             return glyph_ban;
@@ -168,9 +168,9 @@ function KO_Product(data) {
             return glyph_ok;
         }
     });
-    
+
     self.saved(true);
-    
+
     self.selected = ko.observable(false);
 }
 
@@ -209,9 +209,9 @@ function KO_PurchaseOrder(product, order) {
     if (self.guige !== '槽車') {
         self.guige = [self.units, self.um, '/', self.guige].join(' ');
     }
-    
+
     self.pricing = product.unitpriced ? '/ ' + self.um : '/ ' + self.sku;
-    
+
     self.totalUnits = ko.computed(function () {
         var val = parseInt(self.qty()) * self.units;
         if (!isNaN(val)) {
@@ -220,16 +220,16 @@ function KO_PurchaseOrder(product, order) {
             return '0 ' + self.um;
         }
     });
-    
+
     self.total_value = ko.computed( function () {
         var total = parseInt(self.qty()) * parseFloat(self.price());
         if (product.unitpriced) {
             total = Math.round(total * self.units);
         }
-        
+
         return total;
     });
-    
+
     self.toggleMessage = ko.computed(function () {
         if (self.is_open()) {
             return glyph_ok;
@@ -237,7 +237,7 @@ function KO_PurchaseOrder(product, order) {
             return glyph_ban;
         }
     });
-    
+
     self.selected = ko.observable(false);
 }
 
@@ -250,7 +250,7 @@ function KO_Shipment(data) {
     self.shipmentdest = data.shipmentdest;
     self.id = data.id;
     self.group = data.group;
-    
+
     self.displayItems = ko.observable(false);
     self.toggleDisplay = function () {
         self.displayItems(!self.displayItems());
@@ -267,26 +267,26 @@ function KO_ShipmentItem(data) {
         order = null,
         product = null,
         manifest = null;
-    
+
     self.id = data.id;
     self.order_id = data.order_id;
     self.shipment = data.shipment_id;
     self.shipment_no = ko.observable(self.shipment ? self.shipment.shipment_no : undefined);
     self.shipmentnote = ko.observable(data.shipmentnote || '');
-    
+
     self.qty = ko.observable(data.qty || '');
     self.lot = ko.observable(data.lot || '');
     self.duedate = ko.observable(toInputDate(data.duedate));
     self.shipped = ko.observable(data.shipped || false);
-    
+
     self.shipdate = ko.observable(data.shipment_id !== undefined ? toInputDate(data.shipment_id.shipmentdate) : undefined);
-    
+
     if (self.shipment_no() !== null && self.shipment_no() !== undefined) {
         self.shipped(true);
     }
     if (!self.shipped()) self.shipdate(undefined);
     self.saved = ko.observable(true);
-    
+
     self.needToSave = ko.computed(function () {
         // Listen for changes to the following.
         self.qty();
@@ -298,16 +298,16 @@ function KO_ShipmentItem(data) {
         // Activate the save button.
         self.saved(false);
     });
-    
+
     self.shippedHighlight = ko.computed(function () {
         return self.shipped();
     });
-    
+
     self.saved(true);
-    
+
 }
 
-    
+
 function ShipmentItemRow(item) {
     var self = this;
     self.id = item.id || 'default'; // From PO if 'item' is PO
@@ -326,7 +326,7 @@ function ShipmentItemRow(item) {
     if (self.guige !== '槽車') {
         self.guige = [self.units, self.um, '/', self.guige].join(' ');
     }
-    
+
     self.totalUnits = ko.computed(function () {
         var val = parseInt(self.qty()) * self.units;
         if (!isNaN(val)) {
@@ -343,38 +343,39 @@ function ShipmentItemRow(item) {
  */
 function KO_ShipmentListRow(item) {
     var self = this;
-    
+
     self.order_id = item.order_id;
     self.shipmentitem_id = item.id;
     self.invoiceitem_id = item.invoiceitem_id;
     self.invoice_id = item.invoice_id;
-    
+
     self.orderID = item.orderID;
     self.price = item.price;
     self.is_supply = item.is_supply;
     self.MPN = item.MPN;
-    
+
     self.SKU = item.SKU;
     self.unitpriced = item.unitpriced;
     self.units = item.units;
     self.UM = item.UM;
-    
+
     self.inventory_name = item.inventory_name;
     self.product_label = item.product_label || item.inventory_name;
     self.qty = item.qty;
     self.shipmentdate = new Date(item.shipmentdate);
     self.shipped = item.shipped ? true : false;
     self.shipment_no = item.shipment_no;
-    
+
     self.invoice_no = item.invoice_no;
+    self.invoicedate = item.invoicedate ? item.invoicedate.substring(0,10) : '';
     self.paid = item.paid;
-    
+
     var d = self.shipmentdate;
     self.date = d.getFullYear() + ' / ' + (d.getMonth() + 1) + ' / ' + d.getDate();
     self.countUnit = self.SKU == '槽車' ? self.UM : self.SKU;
-    
+
     self.selected = ko.observable(false);
-    
+
     self.totalUnits = (function () {
         var val = parseInt(self.qty) * self.units;
         if (!isNaN(val)) {
@@ -383,7 +384,7 @@ function KO_ShipmentListRow(item) {
             return '0 ' + self.UM;
         }
     })();
-    
+
     self.value = (function () {
         var val = self.price * self.qty;
         if (self.unitpriced) {
@@ -395,7 +396,7 @@ function KO_ShipmentListRow(item) {
 }
 
 function KO_Invoice(item) {
-    
+
 }
 
 
@@ -403,7 +404,7 @@ toInputDate = function (datestr) {
     if (typeof datestr == 'undefined') return undefined;
     if (datestr === null) return undefined;
     if (datestr === undefined) return undefined;
-    
+
     var d = new Date(datestr);
     if (d == "Invalid Date") return undefined;
     newDateStr = [

@@ -15,8 +15,9 @@
                     </div>
                     <div class="col-xs-3">
                         <div class="input-group">
-                            <div class="input-group-addon">紀錄數量</div>
-                            <input class="form-control" type="number" data-bind="textInput: recordLimit">
+                            <div class="input-group-addon">從</div>
+                            <input class="form-control" type="date" data-bind="textInput: dateStart">
+                            <div class="input-group-addon">到現在</div>
                         </div>
 
                     </div>
@@ -25,12 +26,15 @@
                     <thead>
                         <tr>
                             <th class="text-center">訂單編號</th>
-                            <th class="text-center">出貨日期</th>
-                            <th class="text-center">出貨單編號</th>
-                            <th class="text-center">選</th>
-                            <th class="text-center">QTY</th>
                             <th class="text-center">產品/服務</th>
+                            <th class="text-center">出貨單編號</th>
+                            <th class="text-center">出貨日期</th>
+                            <th class="text-center">QTY</th>
                             <th class="text-center">發票編號</th>
+                            <th class="text-center">發票日期</th>
+                            <th class="text-center">單價</th>
+                            <th class="text-center">總價</th>
+                            <th class="text-center">付錢了</th>
                         </tr>
                     </thead>
                 </table>
@@ -41,15 +45,20 @@
                     <tbody data-bind="foreach: shipmentsItems">
                         <tr>
                             <td style="padding: 3px 3px" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + order_id}"><strong data-bind="text: orderID"></strong> <span class="badge" data-bind="visible: !orderID || $parent.debug, text: order_id"></span></a></td>
-                            <td style="padding: 3px 3px" class="text-center"><span data-bind="text: date"></span></td>
-                            <td style="padding: 3px 3px" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '#'}"><strong data-bind="text: shipment_no"></strong> <span class="badge" data-bind="visible: !shipment_no || $parent.debug, text: shipmentitem_id"></span></a></td>
-                            <td style="padding: 3px 3px; width: 30px">
-                                <input style="margin: 0px; width:26px; height:26px; vertical-align: top;" type="checkbox" data-bind="visible: invoice_id == undefined, checked: selected;">
-                            </td>
-                            <td style="padding: 3px 3px" class="text-right"><span data-bind="text: qty"></span> <span data-bind="text: countUnit"></span></td>
                             <td style="padding: 3px 3px"><span data-bind="text: inventory_name"></span></td>
-                            <td style="padding: 3px 3px" class="text-center" data-bind="if: invoice_id != undefined"><button style="padding: 2px 10px" class="btn btn-custom" data-bind="click: $parent.view_invoice"><strong data-bind="text: invoice_no"></strong> <span class="badge" data-bind="visible: !invoice_no || $parent.debug, text: invoice_id"></span></button></td>
 
+                            <td style="padding: 3px 3px; border-left: solid 2px #f00;" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '#'}"><strong data-bind="text: shipment_no"></strong> <span class="badge" data-bind="visible: !shipment_no || $parent.debug, text: shipmentitem_id"></span></a></td>
+                            <td style="padding: 3px 3px" class="text-center"><span data-bind="text: date"></span></td>
+                            <td style="padding: 3px 3px" class="text-right"><span data-bind="text: qty"></span> <span data-bind="text: countUnit"></span></td>
+
+                            <td style="padding: 3px 3px; border-left: solid 2px #f00;" class="text-center">
+                                <input style="margin: 0px; width:26px; height:26px; vertical-align: top;" type="checkbox" data-bind="visible: invoice_id == undefined, checked: selected;">
+                                <button style="padding: 2px 10px" class="btn btn-custom" data-bind="visible: invoice_id != undefined, click: $parent.view_invoice"><strong data-bind="text: invoice_no"></strong> <span class="badge" data-bind="visible: !invoice_no || $parent.debug, text: invoice_id"></span></button>
+                            </td>
+                            <td style="padding: 3px 3px" class="text-center"><span data-bind="text: invoicedate"></span></td>
+                            <td style="padding: 3px 3px" class="text-center"><span data-bind="text: '$ ' + price"></span></td>
+                            <td style="padding: 3px 3px" class="text-center"><span data-bind="text: '$ ' + value"></span></td>
+                            <td style="padding: 3px 3px" class="text-center"><span data-bind="text: paid ? 'True' : 'False'"></span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -82,7 +91,9 @@ function PageModel() {
     var self = this;
 
     self.debug = false;  // Show database ID numbers in all cases if true
-    self.recordLimit = ko.observable(80);
+    var d = new Date();
+    d.setMonth(d.getMonth() - 2);
+    self.dateStart = ko.observable(d.toISOString().substring(0, 10));
 
     /**
      * SHIPMENT methods
@@ -145,7 +156,7 @@ function PageModel() {
         params = {
             _csrf: _csrf,
             id: co_name,
-            limit: Number(self.recordLimit()),
+            startDate: self.dateStart(),
         };
         post('/database/get/shipmentitems', params, function(response) {
 //            console.log(response);
@@ -159,9 +170,7 @@ function PageModel() {
 //    self.getShipmentsArray();
 
     ko.computed(function () {
-        var val = Number(self.recordLimit());
-        if (isNaN(val)) return;
-        else self.getShipmentsArray();
+        self.getShipmentsArray();
     });
 
     // Set the header cell widths to match the body cell widths

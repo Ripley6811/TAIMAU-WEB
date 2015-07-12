@@ -24,7 +24,7 @@
         </div>
         <div class="tab-content">
             <div  data-bind="visible: po_tab" style="padding: 0px; overflow-y:scroll; height:84vh;">
-                <table class="table table-condensed table-striped">
+                <table class="table table-condensed table-striped table-bordered">
                     <thead class="text-uppercase">
                         <tr>
                             <th>選</th>
@@ -36,10 +36,10 @@
                                 <span class="label label-primary">產品備註</span>
                             </th>
                             <th class="text-center">
-                                數量 容器
+                                價格
                             </th>
                             <th class="text-center">
-                                價格
+                                數量 容器
                             </th>
                             <th class="text-center">
                                 備註
@@ -55,16 +55,20 @@
 
                 <!--        Product inventory name    -->
                             <td style="padding: 3px 3px" class="text-left">
-                                <a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + id}"><strong data-bind="text: orderID"></strong> <span class="badge" data-bind="text: id"></span></a>
+                                <a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + id}">
+                                    <strong data-bind="text: orderID"></strong>
+                                    <span class="badge" data-bind="text: id"></span>
+                                    <i class="fa fa-truck fa-flip-horizontal"></i><i class="fa fa-truck fa-flip-horizontal"></i>
+                                </a>
                             </td>
                             <td>
                                 <span data-bind="text: label"></span> <span class="label label-primary" data-bind="text: id_note"></span>
                             </td>
-                            <td class="text-center" style="width: 40%">
-                                <span data-bind="text: qty"></span> <span data-bind="text: sku"></span>
-                            </td>
                             <td class="text-center">
                                 $ <span data-bind="text: price"></span> <span data-bind="text: pricing"></span>
+                            </td>
+                            <td class="text-center" style="width: 40%">
+                                <span data-bind="text: qty"></span> <span data-bind="text: sku"></span>
                             </td>
                             <td>
                                 <span class="label label-primary" data-bind="text: ordernote"></span>
@@ -74,7 +78,7 @@
                 </table>
             </div>
             <div data-bind="visible: prod_tab" style="padding: 0px; overflow-y:scroll; height:84vh;">
-                <table class="table table-condensed table-striped">
+                <table class="table table-condensed table-striped table-bordered">
                     <thead class="text-uppercase">
                         <tr>
                             <th>選</th>
@@ -82,10 +86,10 @@
                                 品名
                             </th>
                             <th class="text-center">
-                                容量 / 容器
+                                價格 / 單位
                             </th>
                             <th class="text-center">
-                                價格 / 單位
+                                容量 / 容器
                             </th>
                             <th>
                                 <span class="label label-primary">備註</span>
@@ -106,12 +110,13 @@
                             <td>
                                 <i class="fa fa-fw fa-lg fa-ambulance" data-bind="visible: is_supply"></i>
                                 <i class="fa fa-fw fa-lg fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
-                                <span data-bind="text: inventory_name"></span>                                </td>
-                            <td class="text-center">
-                                <span data-bind="text: units() + ' ' + UM()"></span> / <span data-bind="text: SKU"></span>
+                                <span data-bind="text: inventory_name"></span>
                             </td>
                             <td class="text-center">
                                 $ <span data-bind="text: curr_price"></span> <span data-bind="text: pricing"></span>
+                            </td>
+                            <td class="text-center">
+                                <span data-bind="text: units() + ' ' + UM()"></span> / <span data-bind="text: SKU"></span>
                             </td>
                             <td>
                                 <span class="label label-primary" data-bind="text: note"></span>

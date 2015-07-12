@@ -1,10 +1,5 @@
 <!--View of a PO and all related shipments-->
 
-<div id="this body" class='container-fluid'>
-<!--vvv START: Company header and buttons vvv-->
-<%- partial ('../company_header.ejs') %>
-<!--^^^ END: Company header and buttons ^^^-->
-	<hr>
 <!--START: PO Form view-->
     <form action="/order/update" class="form-inline" data-bind="with: pageVM">
         <div class="panel panel-default">
@@ -23,7 +18,7 @@
                     <div class="col-md-12 text-center">
                         <div class="form-group">
                             <label class="control-label">件數價格 </label>
-                                <div class="input-group 
+                                <div class="input-group
                                         <% if (order.applytax === true) { %>
                                             has-success">
                                         <% } else { %>
@@ -37,7 +32,7 @@
                                     <div class="input-group-addon">
                                         <input type="radio" name="applytax" value="true"  <% if (shipments.length > 0) { %> disabled <% } %> <% if (order.applytax === true) { %> checked <% } %>>應稅
                                         <input type="radio" name="applytax" value="false" <% if (shipments.length > 0) { %> disabled <% } %> <% if (order.applytax !== true) { %> checked <% } %>>無稅
-                                    
+
                                 </div>
                             </div>
                         </div>
@@ -64,12 +59,12 @@
                     <div class="form-group">
                         <label class="control-label">備註</label>
                         <input type="text" size="100%" class="form-control" name="ordernote" value="<%= order.ordernote %>">
-                        
+
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <% var flash = req.flash('message'); %>
         <% if(flash.length) { %>
         <p class="bg-primary text-center">
@@ -97,7 +92,7 @@
             <table class="table table-condensed table-striped">
                 <thead class="text-uppercase">
                     <tr>
-                        <th class="text-center">到期日</th>
+<!--                        <th class="text-center">到期日</th>-->
                         <th class="text-center">數量</th>
                         <th class="text-center">出貨單編號</th>
                         <th class="text-center">出貨日期</th>
@@ -107,21 +102,22 @@
                 <tbody data-bind="foreach: items">
                     <tr data-bind="style: {backgroundColor: saved() ? null : 'lightblue'}">
 
-            <!--        item inventory name    -->
+<!--
                         <td style="width: 12%">
                             <input class="form-control" type="date" style="width: 100%" data-bind="value: duedate, disable: shippedHighlight(), style: {backgroundColor: shippedHighlight() ? 'darkgrey' : null}">
                         </td>
-                        <td style="width: 25%">
+-->
+                        <td style="width: 30%" data-bind="style: {backgroundColor: shippedHighlight() ? null : 'pink'}">
                             <div class="input-group" style="width: 100%">
-                                <input type="text" 
-                                       class="form-control text-right" 
-                                       placeholder="數量" 
-                                       style="width: 100%" 
-                                       data-bind="textInput: qty"> 
+                                <input type="text"
+                                       class="form-control text-right"
+                                       placeholder="數量"
+                                       style="width: 100%"
+                                       data-bind="textInput: qty">
                                 <div class="input-group-addon" data-bind="text: order.jianshu"></div>
                             </div>
                         </td>
-                        <td style="width: 25%" data-bind="style: {backgroundColor: shippedHighlight() ? null : 'pink'}">
+                        <td style="width: 30%" data-bind="style: {backgroundColor: shippedHighlight() ? null : 'pink'}">
                             <div class="input-group" style="width: 100%">
                                 <div class="input-group-addon">#</div>
                                 <input class="form-control" type="text" placeholder="出貨編號" style="width: 100%" data-bind="textInput: shipment_no">
@@ -130,7 +126,7 @@
                         <td style="width: 12%" data-bind="style: {backgroundColor: shippedHighlight() ? null : 'pink'}">
                             <input class="form-control" type="date" style="width: 100%" data-bind="value: shipdate">
                         </td>
-                        <td>
+                        <td class="text-center" data-bind="style: {backgroundColor: shippedHighlight() ? null : 'pink'}">
                             <div class="btn-group btn-group-sm">
                                 <button class="btn btn-primary" data-bind="click: $parent.saveitem, disable: saved"><span class="glyphicon glyphicon-save"></span></button>
                                 <button class="btn btn-danger" data-bind="click: $parent.removeitem, enable: saved"><span class="glyphicon glyphicon-trash"></span></button>
@@ -142,34 +138,31 @@
         </div>
     </div>
 
-</div>
-
 <script>
 var viewModel = viewModel || {};
 var co_name = viewModel.co_name = '<%= cogroup.name %>';
 var _csrf = viewModel._csrf = '<%= _csrf %>';
-    
-    
-    
+
+
+
 var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>),
     order = new KO_PurchaseOrder(<%- JSON.stringify(order.MPN) %>,
                                  <%- JSON.stringify(order) %>),
     po_ID = <%= id %>;
-addCompanyNavButtons(co_name);
-    
+
 function PageModel() {
     var self = this;
-    
-    
+
+
     /**
      * SHIPMENTITEM section controls
-     * 
-     * 
+     *
+     *
      */
     self.items = ko.observableArray();
     self.toggleShipped = function(item) {
         item.shipped(!item.shipped());
-        
+
         var index = self.items().indexOf(item);
         self.itemsUpdate(self.items.slice(index, index+1));
     }
@@ -181,8 +174,8 @@ function PageModel() {
     };
     self.removeitem= function(item) {
         var params = {
-            _csrf: _csrf, 
-            co_name: co_name, 
+            _csrf: _csrf,
+            co_name: co_name,
             id: item.id,
             order_id: po_ID,
         };
@@ -202,12 +195,12 @@ function PageModel() {
             }
         );
     };
-    
+
     self.saveitem = function(item) {
         item.saved(true);
         var params = {
-            _csrf: _csrf, 
-            co_name: co_name, 
+            _csrf: _csrf,
+            co_name: co_name,
             item: item
         };
         post(
@@ -228,10 +221,10 @@ function PageModel() {
             }
         );
     };
-    
+
     self.itemsGet = function () {
         var params = {
-                _csrf: _csrf, 
+                _csrf: _csrf,
                 po_id: po_ID,
         };
         post(
@@ -249,14 +242,14 @@ function PageModel() {
             }
         );
     };
-    
+
     self.itemsGet();
-    
-    
-    
+
+
+
     self.itemsGet22 = function () {
         var params = {
-                _csrf: _csrf, 
+                _csrf: _csrf,
                 id: po_ID,
         };
         post(
@@ -267,11 +260,9 @@ function PageModel() {
             }
         );
     };
-    
+
     self.itemsGet22();
 }
-    
+
 viewModel.pageVM = new PageModel();
-console.dir(viewModel);
-ko.applyBindings(viewModel, document.getElementById('this body'));
 </script>

@@ -1,6 +1,6 @@
 /**
  * Database/getController
- * 
+ *
  * "find" always returns a list
  *
  * @description :: Server-side logic for managing database/gets
@@ -8,7 +8,7 @@
  */
 
 module.exports = {
-	
+
 
 
     /**
@@ -65,7 +65,7 @@ module.exports = {
         } else if(req.param('filter') != '') {
             var term = req.param('filter');
             Product
-            .find().where({or:[{product_label: {'contains': term}}, 
+            .find().where({or:[{product_label: {'contains': term}},
                                {inventory_name: {'contains': term}},
                                {english_name: {'contains': term}},
                               ]})
@@ -106,7 +106,7 @@ module.exports = {
         var group = req.param('group'),
             page = req.param('page') || 1,
             limit = req.param('limit') || 20;
-        
+
         Order
         .find({group: group})
         .sort('orderdate DESC')
@@ -129,7 +129,7 @@ module.exports = {
         var group = req.param('id'),
             page = req.param('page') || 1,
             limit = req.param('limit') || 50;
-        
+
         Shipment
         .find({group: group})
         .sort('shipmentdate DESC')
@@ -139,10 +139,10 @@ module.exports = {
             if (err) { res.send(err); return; }
             res.send(records);
         });
-        
-        
-        
-        
+
+
+
+
         // TEMP PROCESSING OF SHIPMENTS
         /***************************
         Shipment.find({group: null}).limit(1200).exec(function (err, records) {
@@ -150,7 +150,7 @@ module.exports = {
                 console.log(JSON.stringify(err, null, '   '));
             }
             console.log(records);
-            
+
             records.forEach(function (rec) {
                 if (rec.group === null) {
                     Shipmentitem.findOne({shipment_id: rec.id})
@@ -172,7 +172,7 @@ module.exports = {
             res.send({res:'done'});
         });
         ********************************/
-        
+
         // TEMP PROCESSING OF SHIPMENT ITEMS
         /***************************
         Shipmentitem.find({shipped: false}).limit(4200).exec(function (err, records) {
@@ -181,7 +181,7 @@ module.exports = {
                 return;
             }
             console.log(records.length, records);
-            
+
             records.forEach(function (si) {
                 console.log('Before:', si.shipped);
                 si.shipped = true;
@@ -210,19 +210,18 @@ module.exports = {
             });
             return;
         }
-        
         // Gets recent shipments for a company. "SHIPMENT/SHOWALL"
         Shipmentitem.query(
-            "SELECT shipi.*, sh.shipmentdate, sh.shipment_no, po.price, po.orderID, invi.id as invoiceitem_id, inv.id as invoice_id, inv.paid, inv.invoice_no, prod.* "
+            "SELECT shipi.*, sh.shipmentdate, sh.shipment_no, po.price, po.orderID, invi.id as invoiceitem_id, inv.id as invoice_id, inv.invoicedate, inv.paid, inv.invoice_no, prod.* "
             + " FROM shipmentitem shipi "
             + " LEFT JOIN invoiceitem invi ON shipi.id = invi.shipmentitem_id "
             + " LEFT JOIN invoice inv ON invi.invoice_id = inv.id "
             + " JOIN shipment sh ON sh.id = shipi.shipment_id "
             + " JOIN `order` po ON po.id = shipi.order_id "
             + " JOIN product prod ON prod.MPN = po.MPN "
-            + " WHERE po.group LIKE ? "
-            + " ORDER BY shipmentdate DESC, sh.id DESC"
-            + " LIMIT ?;", [req.param('id'), req.param('limit')],
+            + " WHERE po.group LIKE ? AND sh.shipmentdate >= ?"
+            + " ORDER BY shipmentdate DESC, sh.id DESC;"
+            , [req.param('id'), req.param('startDate')],
         function(err, recs) {
             if (err) console.log(err);
             res.send(recs);
@@ -247,7 +246,7 @@ module.exports = {
         // Request with specific order enters here. "ORDER/SHOW"
         if ('po_id' in req.params.all()) {
             Shipmentitem
-            .find({order_id: req.param('po_id')}) 
+            .find({order_id: req.param('po_id')})
     //        .populate('order_id')
             .populate('shipment_id')
             .exec(function (err, records) {
@@ -256,7 +255,7 @@ module.exports = {
             });
             return;
         }
-        
+
         // Gets recent shipments for a company. "SHIPMENT/SHOWALL"
         Shipmentitem.query(
             "SELECT shipi.*, sh.shipmentdate, inv.invoicedate, inv.buyer, "
