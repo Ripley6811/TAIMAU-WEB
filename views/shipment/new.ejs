@@ -103,13 +103,18 @@
                 <!--        Product Manifest selection    -->
                             <td>
                                 <input style="margin: 0px; width:26px; height:26px; vertical-align: top;" type="checkbox" name="product" data-bind="checked: selected">
-                                <button style="padding: 3px 6px; vertical-align: top;" class="btn btn-sm btn-custom" data-bind="click: $parent.showMEModal"><span class="glyphicon glyphicon-th-list"></span></button>
+                                <button style="padding: 3px 6px; vertical-align: top;" class="btn btn-sm btn-custom" data-bind="click: $parent.showMEModal">
+<!--                                    <i class="fa fa-truck fa-flip-horizontal"></i><i class="fa fa-truck fa-flip-horizontal"></i>-->
+
+                                    <i class="fa fa-ambulance" data-bind="visible: is_supply"></i>
+                                    <i class="fa fa-ambulance" data-bind="visible: is_supply"></i>
+                                    <i class="fa fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
+                                    <i class="fa fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
+                                </button>
                             </td>
 
                 <!--        Product inventory name    -->
                             <td>
-                                <i class="fa fa-fw fa-lg fa-ambulance" data-bind="visible: is_supply"></i>
-                                <i class="fa fa-fw fa-lg fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
                                 <span data-bind="text: inventory_name"></span>
                             </td>
                             <td class="text-center">

@@ -47,11 +47,11 @@
                             <td style="padding: 3px 3px" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + order_id}"><strong data-bind="text: orderID"></strong> <span class="badge" data-bind="visible: !orderID || $parent.debug, text: order_id"></span></a></td>
                             <td style="padding: 3px 3px"><span data-bind="text: inventory_name"></span></td>
 
-                            <td style="padding: 3px 3px; border-left: solid 2px #f00;" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '#'}"><strong data-bind="text: shipment_no"></strong> <span class="badge" data-bind="visible: !shipment_no || $parent.debug, text: shipmentitem_id"></span></a></td>
+                            <td style="padding: 3px 3px; border-left: solid 2px #532929;" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '#'}"><strong data-bind="text: shipment_no"></strong> <span class="badge" data-bind="visible: !shipment_no || $parent.debug, text: shipmentitem_id"></span></a></td>
                             <td style="padding: 3px 3px" class="text-center"><span data-bind="text: date"></span></td>
                             <td style="padding: 3px 3px" class="text-right"><span data-bind="text: qty"></span> <span data-bind="text: countUnit"></span></td>
 
-                            <td style="padding: 3px 3px; border-left: solid 2px #f00;" class="text-center">
+                            <td style="padding: 3px 3px; border-left: solid 2px #532929;" class="text-center">
                                 <input style="margin: 0px; width:26px; height:26px; vertical-align: top;" type="checkbox" data-bind="visible: invoice_id == undefined, checked: selected;">
                                 <button style="padding: 2px 10px" class="btn btn-custom" data-bind="visible: invoice_id != undefined, click: $parent.view_invoice"><strong data-bind="text: invoice_no"></strong> <span class="badge" data-bind="visible: !invoice_no || $parent.debug, text: invoice_id"></span></button>
                             </td>

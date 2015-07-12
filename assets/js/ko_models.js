@@ -385,6 +385,7 @@ function KO_ShipmentListRow(item) {
         }
     })();
 
+    // Value is pre-tax total
     self.value = (function () {
         var val = self.price * self.qty;
         if (self.unitpriced) {

@@ -50,7 +50,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    
+
                     <div style="border: 2px solid blue; padding: 4px; letter-spacing: 2px">
                         <div class="row">
                             <div class="col-md-10">
@@ -62,7 +62,7 @@
                                         統 一 發 票 ( 三 聯 式 )
                                     </label>
                                 </div>
-                                
+
                                 <div class="row" style="padding-top: 8px;">
                                     <div class="col-md-6">
                                         <div class="row">
@@ -85,8 +85,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    
+
+
                                     <!-- Date entry -->
                                     <div class="col-md-6 text-center" style="font-size: 14px">
                                         <label class="text-center" style="color: blue;">
@@ -105,19 +105,19 @@
                                             日
                                         </label>
                                         <br>
-                                        
+
                                         <label class="text-center" data-bind="text: '( ' + invoicedate() + ' )'" disabled></label>
-                                        
+
                                     </div>
                                 </div>
-                                
-                                
-                                
+
+
+
                             </div>
-                            
+
                         </div>
-                        
-                        
+
+
                         <div class="row">
                             <div class="col-md-9">
                                 <!-- Products aggregated table -->
@@ -160,7 +160,7 @@
                                     <tbody data-bind="">
                                         <tr>
                                             <td class="text-center">
-                                                
+
                                             </td>
                                         </tr>
                                     </tbody>
@@ -245,13 +245,13 @@
 var viewModel = viewModel || {};
 var _csrf = viewModel._csrf = '<%= _csrf %>';
 var tax_rate = 0.05;
-    
+
 var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
 var branches = <%- JSON.stringify(cogroup.branches) %>
-    
+
 function InvoiceModalVM() {
     var self = this;
-    
+
     /**
      * Visibility of this modal div.
      */
@@ -259,7 +259,7 @@ function InvoiceModalVM() {
     self.edit_mode = ko.observable(false);
     self.invoice_id = ko.observable();
     self.invoice_item_ids = [];
-    
+
     self.aggregateItems = ko.observableArray();
     self.invoiceItems = ko.observableArray();
     self.invoicenote = ko.observable();
@@ -271,7 +271,7 @@ function InvoiceModalVM() {
     self.inv_year = ko.observable(date_today.getFullYear()-1911);
     self.inv_month = ko.observable(date_today.getMonth()+1);
     self.inv_day = ko.observable(date_today.getDate());
-    
+
     /**
      * Process a list of shipments for creating an invoice and show this modal.
      * @param {Array} items Array of shipment items.
@@ -319,14 +319,14 @@ function InvoiceModalVM() {
         self.inv_month(date_today.getMonth()+1);
         self.inv_day(date_today.getDate());
     };
-    
+
     self.invoicedate = ko.computed(function () {
         var text = [parseInt(self.inv_year())+1911,
                     self.inv_month().length == 1 ? '0' + self.inv_month() : self.inv_month(),
                     self.inv_day().length == 1 ? '0' + self.inv_day() : self.inv_day()].join('-');
         return text;
     });
-    
+
     self.aggregateItems = ko.observableArray();
     ko.computed(function () {
         var aggregator = {};
@@ -350,22 +350,22 @@ function InvoiceModalVM() {
             self.aggregateItems.push(aggregator[key]);
         }
     });
-    
+
     // Check invoice number is all caps
-    ko.computed(function () { 
-        self.invoice_no(self.invoice_no().toUpperCase()); 
+    ko.computed(function () {
+        self.invoice_no(self.invoice_no().toUpperCase());
     });
     // Check month is in range
-    ko.computed(function () { 
+    ko.computed(function () {
         if (parseInt(self.inv_month()) > 12)
-            self.inv_month(self.inv_month().substring(0,1)); 
+            self.inv_month(self.inv_month().substring(0,1));
     });
     // Check day is reasonable
-    ko.computed(function () { 
+    ko.computed(function () {
         if (parseInt(self.inv_day()) > 32)
-            self.inv_day(self.inv_day().substring(0,1)); 
+            self.inv_day(self.inv_day().substring(0,1));
     });
-    
+
     // Before tax total
     self.subtotal = function() {
         var val = 0;
@@ -383,13 +383,12 @@ function InvoiceModalVM() {
     self.grandtotal = function() {
         return self.subtotal() + self.taxtotal();
     }
-    
+
     self.invoice = new KO_Invoice();
-    self.isNewEntry = ko.observable(true); // True for new entry, false for edit mode.
     self.onModalClose = null; // Callback to execute when modal closes.
-        
-    
-    
+
+
+
     self.doSubmit = function() {
         if (!self.edit_mode() && self.invoice_id() == undefined) {
             var is_purchase = self.invoiceItems()[0].is_supply;
@@ -423,12 +422,12 @@ function InvoiceModalVM() {
             });
         }
     };
-    
+
     self.delete_invoice = function() {
         if (self.edit_mode() && self.invoice_id() != undefined) {
             var c = confirm('Are you sure you want to delete this invoice?');
             if (c == false) return;
-            
+
             var item_ids = []
             for (var i=0; i<self.invoice_item_ids.length; i++) {
                 item_ids.push(self.invoice_item_ids[i]);
@@ -445,13 +444,13 @@ function InvoiceModalVM() {
             });
         }
     };
-    
+
     self.lastInvoiceNumber = ko.observable('');
     // Update last invoice number when branch is selected.
     ko.computed(function () {
         if (!self.edit_mode() && self.invoice_id() == undefined) {
             var params = {
-                _csrf: _csrf, 
+                _csrf: _csrf,
                 co_name: viewModel.co_name,
                 br_name: self.them()
             };
@@ -462,6 +461,6 @@ function InvoiceModalVM() {
         }
     });
 }
-    
+
 viewModel.invoiceModalVM = new InvoiceModalVM();
 </script>

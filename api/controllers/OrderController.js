@@ -141,7 +141,7 @@ module.exports = {
     },
     // Get all shipments for an order and order by duedate or id.
     show: function (req, res) {
-        console.log('SHOW\n', req.params.all());
+//        console.log('SHOW\n', req.params.all());
 
         Shipmentitem.find()
         .where({order_id: req.param('id')})
@@ -154,6 +154,7 @@ module.exports = {
 
             Order.findOne(req.param('id'))
             .populate('group')
+//            .populate('branches')  // NOT POSSIBLE
             .populate('MPN')
             .populate('shipments')
             .exec(function (err, order) {
