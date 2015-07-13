@@ -49,28 +49,32 @@
                     <tbody data-bind="foreach: orders">
                         <tr>
                 <!--        Product Manifest selection    -->
-                            <td style="width: 30px">
-                                <input style="margin: 0px; width:26px; height:26px; vertical-align: top;" type="checkbox" name="purchaseorder" data-bind="checked: selected">
+                            <td style="width: 30px" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply ? null : '#b0b0b0'}">
+                                <input style="margin: 0px; width:26px; height:26px; vertical-align: top;"
+                                       type="checkbox"
+                                       name="purchaseorder"
+                                       data-bind="checked: selected,
+                                                  enable: $parent.isPurchase() === null || $parent.isPurchase() === is_supply">
                             </td>
 
                 <!--        Product inventory name    -->
-                            <td style="padding: 3px 3px" class="text-left">
+                            <td style="padding: 3px 3px" class="text-left" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply ? null : '#b0b0b0'}">
                                 <a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + id}">
                                     <strong data-bind="text: orderID"></strong>
                                     <span class="badge" data-bind="text: id"></span>
                                     <i class="fa fa-truck fa-flip-horizontal"></i><i class="fa fa-truck fa-flip-horizontal"></i>
                                 </a>
                             </td>
-                            <td>
+                            <td data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply ? null : '#b0b0b0'}">
                                 <span data-bind="text: label"></span> <span class="label label-primary" data-bind="text: id_note"></span>
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply ? null : '#b0b0b0'}">
                                 $ <span data-bind="text: price"></span> <span data-bind="text: pricing"></span>
                             </td>
-                            <td class="text-center" style="width: 40%">
+                            <td class="text-center" style="width: 40%" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply ? null : '#b0b0b0'}">
                                 <span data-bind="text: qty"></span> <span data-bind="text: sku"></span>
                             </td>
-                            <td>
+                            <td data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply ? null : '#b0b0b0'}">
                                 <span class="label label-primary" data-bind="text: ordernote"></span>
                             </td>
                         </tr>
@@ -101,8 +105,11 @@
                     <tbody data-bind="foreach: products">
                         <tr>
                 <!--        Product Manifest selection    -->
-                            <td>
-                                <input style="margin: 0px; width:26px; height:26px; vertical-align: top;" type="checkbox" name="product" data-bind="checked: selected">
+                            <td data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
+                                <input style="margin: 0px; width:26px; height:26px; vertical-align: top;"
+                                       type="checkbox"
+                                       name="product"
+                                       data-bind="checked: selected, enable: $parent.isPurchase() === null || $parent.isPurchase() === is_supply()">
                                 <button style="padding: 3px 6px; vertical-align: top;" class="btn btn-sm btn-custom" data-bind="click: $parent.showMEModal">
 <!--                                    <i class="fa fa-truck fa-flip-horizontal"></i><i class="fa fa-truck fa-flip-horizontal"></i>-->
 
@@ -114,16 +121,16 @@
                             </td>
 
                 <!--        Product inventory name    -->
-                            <td>
+                            <td data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
                                 <span data-bind="text: inventory_name"></span>
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
                                 $ <span data-bind="text: curr_price"></span> <span data-bind="text: pricing"></span>
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
                                 <span data-bind="text: units() + ' ' + UM()"></span> / <span data-bind="text: SKU"></span>
                             </td>
-                            <td>
+                            <td data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
                                 <span class="label label-primary" data-bind="text: note"></span>
                                 <label class="badge" data-bind="text: product_label"></label>
                                 <span style="white-space: normal;" class="label label-success" data-bind="text: english_name"></span>
@@ -406,23 +413,28 @@ function ItemsModel() {
 
     self.isPO = ko.observable(true);
     self.rows = ko.observableArray([]);
+    self.isPurchase = ko.observable(null);
 
     var selectCompute = ko.computed(function () {
-        self.rows.removeAll()
+        self.isPurchase(null);
+        self.rows.removeAll();
         for (var i=0; i<self.orders().length; i++) {
             if (self.orders()[i].selected()) {
-                var item = new ShipmentItemRow(ko.toJS(self.orders()[i]));
+                var item = new ShipmentItemRow(ko.toJS(self.orders.peek()[i]));
+                self.isPurchase(item.is_supply);
                 self.rows.push(item);
                 self.isPO(true);
             }
         }
         for (var i=0; i<self.products().length; i++) {
             if (self.products()[i].selected()) {
-                var item = new ShipmentItemRow(ko.toJS(self.products()[i]));
+                var item = new ShipmentItemRow(ko.toJS(self.products.peek()[i]));
+                self.isPurchase(item.is_supply);
                 self.rows.push(item);
                 self.isPO(false);
             }
         }
+        console.log('ENDING', self.isPurchase.peek());
     });
 
 }

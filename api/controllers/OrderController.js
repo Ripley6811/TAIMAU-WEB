@@ -210,14 +210,39 @@ module.exports = {
     update: function (req, res) {
 //        var order = req.param('order');
         console.log(req.params.all());
-        Order.update({id: req.param('id')}, req.params.all())
-        .exec( function (err, orders) {
-            if (err) { res.send(err); return; }
+        Invoiceitem.count({order_id: req.param('id')})
+        .exec(function (err, nrecs) {
+            var allowPriceChange = nrecs === 0 ? true : false;
 
-//            req.flash('message', 'Record Updated!');
-//            res.send(orders[0]);
-            res.redirect('/order/show/'+orders[0].id);
+            if (allowPriceChange) {
+                Order.update({id: req.param('id')}, req.params.all())
+                .exec( function (err, orders) {
+                    if (err) { res.send(err); return; }
+
+                    req.flash('message', 'Record Updated!');
+                    res.redirect('/order/show/'+orders[0].id);
+                });
+            } else {
+                Order.findOne({id: req.param('id')})
+                .exec( function (err, order) {
+                    if (err) { res.send(err); return; }
+                    var params = req.params.all();
+                    if (order.price != params.price) {
+                        req.flash('message', 'Cannot change price with existing invoices!');
+                    }
+                    // Update QTY and NOTE only
+                    order.qty = params.qty;
+                    order.ordernote = params.ordernote;
+                    order.save();
+                    req.flash('message', 'Record Updated!');
+                    res.redirect('/order/show/'+order.id);
+                });
+            }
+
+//
+
         });
+
     },
     // Retrieve all order for a company.
     getOpen: function (req, res, next) {

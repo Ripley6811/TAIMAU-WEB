@@ -53,7 +53,7 @@ Requires: "cogroup" object.
                 </tr>
             </thead>
             <tbody data-bind="foreach: products">
-                <tr data-bind="style: {'background-color': discontinued() ? 'pink' : null}">
+                <tr>
                     <td class="hidden-xs" style="width: 36px" data-bind="visible: $parent.verbose_product_info">
                         <div class="btn-group-vertical btn-group-sm" data-bind="visible: locked()">
                             <button class="btn btn-custom" data-bind="click: $parent.productUpOne"><i class="glyphicon glyphicon-triangle-top"></i>
@@ -63,7 +63,7 @@ Requires: "cogroup" object.
                         </div>
                     </td>
                     <!--        Product inventory name    -->
-                    <td style="width: 84%">
+                    <td style="width: 84%" data-bind="style: {backgroundColor: discontinued() ? '#b0b0b0' : null}">
                         <div class="row-fluid">
                             <div class="col-md-6" style="padding: 0px 2px">
                                 <div class="row-fluid">
@@ -71,16 +71,20 @@ Requires: "cogroup" object.
                                         <button class="btn btn-custom" style="width: 100%; padding: 2px 10px; font-size: 16px" data-bind="click: $parent.editProduct">
                                             <div class="row-fluid">
                                                 <div class="col-xs-7 text-left" style="padding: 0px">
-                                                    <i class="fa fa-fw fa-lg fa-ambulance" data-bind="visible: is_supply"></i>
-                                                    <i class="fa fa-fw fa-lg fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
+                                                    <span class="fa"
+                                                          data-bind="css: {'fa-plus-square': is_supply, 'fa-minus-square': !is_supply()}">
+                                                    </span>&nbsp;
                                                     <strong data-bind="text: inventory_name"></strong>
                                                 </div>
-                                                <div class="col-xs-5 text-center" style="padding: 0px">
+                                                <div class="col-xs-5 text-right" style="padding: 0px; height: 22px">
 
                                                     <strong data-bind="text: units, visible: SKU() != '槽車'"></strong>
                                                     <strong data-bind="text: UM, visible: SKU() != '槽車'"></strong>
                                                     <strong data-bind="visible: SKU() != '槽車'">/</strong>
-                                                    <strong data-bind="text: SKU"></strong>
+                                                    <strong data-bind="text: SKU, visible: ['槽車','包','桶'].indexOf(SKU()) === -1"></strong>
+                                                    <img alt="sack" src="/fonts/sack.svg" height="20" style="position: relative; top:0px" data-bind="visible: SKU() == '包'">
+                                                    <img alt="tanker" src="/fonts/jerrycan.svg" height="20" style="position: relative; top:0px" data-bind="visible: SKU() == '桶'">
+                                                    <img class="fa-flip-horizontal" alt="tanker" src="/fonts/tanker.svg" height="40" style="position: relative; top:-10px" data-bind="visible: SKU() == '槽車'">
                                                 </div>
                                             </div>
                                         </button>
@@ -98,18 +102,6 @@ Requires: "cogroup" object.
                                                 <span data-bind="visible: !unitpriced()">1 <span data-bind="text: SKU"></span> = <span class="glyphicon glyphicon-usd"></span></span>
                                             </div>
                                             <input class="form-control" size="4" placeholder="目前價格" data-bind="textInput: curr_price">
-                                        </div>
-                                        <div data-bind="visible: !locked()">
-                                            <label>
-                                                <input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: true">用<strong data-bind="text: UM"></strong>價格</label>
-                                            <label>
-                                                <input type="radio" name="b" data-bind="checked: unitpriced, checkedValue: false">用<strong data-bind="text: SKU"></strong>價格</label>
-                                        </div>
-                                        <div data-bind="visible: !locked()">
-                                            <label>
-                                                <input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: true">用<strong data-bind="text: UM"></strong>件數</label>
-                                            <label>
-                                                <input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: false">用<strong data-bind="text: SKU"></strong>件數</label>
                                         </div>
                                     </div>
                                 </div>
@@ -139,17 +131,12 @@ Requires: "cogroup" object.
                     </td>
 
                     <!--        Product Manifest Availability    -->
-                    <td style="width: 4%">
+                    <td style="width: 4%" data-bind="style: {backgroundColor: discontinued() ? '#b0b0b0' : null}">
                         <button class="btn btn-custom btn-sm" data-bind="click: $parent.toggleActive, html: toggleMessage, visible: locked()"></button>
-                        <div data-bind="visible: !locked()">
-                            <label>
-                                <input type="radio" name="a" data-bind="checked: is_supply, checkedValue: true">進貨</label>
-                            <label>
-                                <input type="radio" name="a" data-bind="checked: is_supply, checkedValue: false">出貨</label>
-                        </div>
                     </td>
 
-                    <td class="hidden-xs">
+                    <td class="hidden-xs"
+                        data-bind="style: {backgroundColor: discontinued() ? '#b0b0b0' : null}">
                         <div class="btn-group btn-group-sm">
                             <button class="btn btn-primary" data-bind="click: $parent.saveProduct, disable: saved"><span class="glyphicon glyphicon-save"></span>
                             </button>
