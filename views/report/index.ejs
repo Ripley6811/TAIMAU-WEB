@@ -1,0 +1,48 @@
+
+<div class="panel panel-success" data-bind="with: ReportsVM">
+    <div class="panel-heading">
+        <div class="panel-title">
+            <h2><strong>PDF 報告</strong></h2>
+        </div>
+    </div>
+    <div class="panel-body" style="padding: 0px">
+        <h4>Activity Report</h4>
+        <div class="row">
+            <div class="col-sm-4 col-md-3 form-group">
+                <label for="arStartDate">Start Date</label>
+                <input type="date" class="form-control" id="arStartDate" data-bind="value: ar_start_date">
+            </div>
+            <div class="col-sm-4 col-md-3 form-group">
+                <label for="arEndDate">End Date</label>
+                <input type="date" class="form-control" id="arEndDate" data-bind="value: ar_end_date">
+            </div>
+        </div>
+        <button class="btn btn-success" data-bind="disable: !ar_start_date() || ! ar_end_date(), click: ar_create">創造報告</button>
+
+    </div>
+    <div class="panel-footer lightorange-blend text-center">
+
+
+    </div>
+</div>
+<script>
+    var viewModel = viewModel || {};
+
+    function ReportsVM() {
+        var self = this;
+
+        self.ar_start_date = ko.observable();
+        self.ar_end_date = ko.observable();
+        self.ar_create = function () {
+            console.log("Create report button clicked", self.ar_start_date(), self.ar_end_date());
+            var doc = new jsPDF();
+            doc.text(20, 20, 'Hello world!');
+            doc.text(20, 30, 'This is client-side Javascript, pumping out a PDF.');
+            doc.addPage();
+            doc.text(20, 20, 'Do you like that?');
+            doc.save('Test.pdf');
+        };
+    }
+
+    viewModel.ReportsVM = new ReportsVM();
+</script>
