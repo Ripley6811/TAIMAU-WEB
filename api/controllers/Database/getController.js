@@ -230,6 +230,41 @@ module.exports = {
 
 
     /**
+    * `Database/getController.activityreport()`
+    */
+    activityreport: function (req, res) {
+        // Request with specific order enters here. "ORDER/SHOW"
+        if ('po_id' in req.params.all()) {
+            Shipmentitem
+            .find({order_id: req.param('po_id')})
+    //        .populate('order_id')
+            .populate('shipment_id')
+            .exec(function (err, records) {
+                if (err) { res.send(err); return; }
+                res.send(records);
+            });
+            return;
+        }
+        // Gets recent shipments for a company. "SHIPMENT/SHOWALL"
+        Shipmentitem.query(
+            "SELECT shipi.*, sh.shipmentdate, sh.shipment_no, po.price, po.orderID, invi.id as invoiceitem_id, inv.id as invoice_id, inv.invoicedate, inv.paid, inv.invoice_no, prod.* "
+            + " FROM shipmentitem shipi "
+            + " LEFT JOIN invoiceitem invi ON shipi.id = invi.shipmentitem_id "
+            + " LEFT JOIN invoice inv ON invi.invoice_id = inv.id "
+            + " JOIN shipment sh ON sh.id = shipi.shipment_id "
+            + " JOIN `order` po ON po.id = shipi.order_id "
+            + " JOIN product prod ON prod.MPN = po.MPN "
+            + " WHERE po.group LIKE ? AND sh.shipmentdate >= ? AND sh.shipmentdate <= ?"
+            + " ORDER BY shipmentdate, sh.id;"
+            , [req.param('id'), req.param('startDate'), req.param('endDate')],
+        function(err, recs) {
+            if (err) console.log(err);
+            res.send(recs);
+        });
+    },
+
+
+    /**
     * `Database/getController.invoices()`
     */
     invoices: function (req, res) {
