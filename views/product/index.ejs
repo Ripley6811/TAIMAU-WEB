@@ -17,6 +17,7 @@
     <thead class="text-uppercase">
         <tr>
             <th>內用品名 <span class="badge">標籤品名</span><span class="label label-default">English</span></th>
+            <th>價格</th>
             <th><abbr title="桶, 包, 瓶, 等...">容器</abbr></th>
     <!--
             <th><abbr title="# of kg, L, gal per container">容量</abbr></th>
@@ -34,6 +35,9 @@
                 <br>
                 <span class="badge" data-bind="text: product_label"></span>
                 <span class="label label-default" data-bind="text: english_name"></span>
+            </td>
+            <td>
+                <strong data-bind="text: '$' + curr_price() + pricing"></strong>
             </td>
             <td>
                 <div class="text-center" style="padding: 0px">
