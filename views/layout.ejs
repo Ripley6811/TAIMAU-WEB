@@ -35,6 +35,7 @@
     <script src="/js/dependencies/sails.io.js"></script>
     <script src="/js/jsPDF/jspdf.js"></script>
     <script src="/js/jsPDF/plugins/addimage.js"></script>
+    <script src="/js/jsPDF/plugins/alttext.js"></script>
     <script src="/js/knockout-3.2.0.js"></script>
     <script src="/js/ko_ajax.js"></script>
     <script src="/js/ko_extenders.js"></script>
@@ -45,17 +46,17 @@
     <!--vvv START: Navigation sidebar_v2 and buttons vvv-->
     <div id="sidebar-wrapper">
         <%- partial ('sidebar_v2.ejs') %>
-    </div>
-    <!--^^^ END: Navigation sidebar_v2 and buttons ^^^-->
-
-    <div id="page-content-wrapper">
-        <%- body %>
         <div>
             <hr>
-            <footer class="footer pull-right">
+            <footer class="footer text-center">
                 <div>Written by Jay W. Johnson (2015)</div>
             </footer>
         </div>
+    </div>
+    <!--^^^ END: Navigation sidebar_v2 and buttons ^^^-->
+
+    <div id="page-content-wrapper" style="height: 100%">
+        <%- body %>
     </div>
 
 
@@ -81,7 +82,7 @@
 -->
 
     <!--TEMPLATES-->
-
+    
     <!--TEMPLATES END-->
     <script>
         // Adds the KnockoutJS viewmodel to page
