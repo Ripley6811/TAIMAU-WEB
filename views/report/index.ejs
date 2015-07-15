@@ -17,7 +17,7 @@
                 <input type="date" class="form-control" id="arEndDate" data-bind="value: ar_end_date">
             </div>
             <div class="col-sm-4 col-md-3 form-group">
-                <div data-bind="visible: show_working">
+                <div data-bind="visible: show_working" style="padding-top: 28px">
                     <i class="fa fa-2x fa-cog fa-spin"></i>
                     <span class="h3">Updating PDF</span>
                 </div>
@@ -47,16 +47,32 @@
                         <input type="radio" name="optionsRadios"
                                value="永茂企業行"
                                data-bind="checked: taimao">
-                        泳帽化工永茂企業行
+                        永茂企業行
                     </label>
                 </div>
+                <h4>
+                    <strong data-bind="visible: availableProducts().length > 0">
+                        包括產品:
+                    </strong>
+                </h4>
+                <div data-bind="foreach: availableProducts">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox"
+                                   data-bind="value: name, checked: selected">
+                            <span data-bind="text: name"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8 col-md-9">
+                <iframe id="preview-pane" type="application/pdf"
+                        width="100%" height="500" frameborder="0"
+                        style="position:relative;z-index:999">
+                </iframe>
             </div>
         </div>
-        <iframe id="preview-pane" type="application/pdf"
-                width="100%" height="500" frameborder="0"
-                style="position:relative;z-index:999">
-        </iframe>
-<!--        <button class="btn btn-success" data-bind="disable: !ar_start_date() || ! ar_end_date(), click: ar_create">創造報告</button>-->
+<!--        <button class="btn btn-success" data-bind="enable: download_ready, click: ar_create">創造報告</button>-->
 
     </div>
     <div class="panel-footer lightorange-blend text-center">
@@ -78,25 +94,35 @@
         //EMBED HELP: http://stackoverflow.com/a/14958357/1172891
         self.ar_start_date = ko.observable();
         self.ar_end_date = ko.observable();
+        self.download_ready = ko.observable();
         self.shipmentsItems = [];
+        self.availableProducts = ko.observableArray();
 
+        /**
+         * Load data when both start and end dates are selected
+         * Then create PDF
+         */
         ko.computed(function () {
             if (self.ar_start_date() && self.ar_end_date()) {
                 self.show_working(true);
                 params = {
                     _csrf: '<%= _csrf %>',
                     id: '<%= cogroup.name %>',
-                    startDate: self.ar_start_date(),
-                    endDate: self.ar_end_date(),
+                    startDate: (new Date(self.ar_start_date())).toISOString(),
+                    endDate: (new Date(self.ar_end_date())).toISOString(),
                 };
                 post('/database/get/activityreport', params, function(response) {
-                    console.log(response);
                     self.shipmentsItems = [];
+                    var pname_set = [];
                     for (var i=0; i<response.length; i++) {
                         self.shipmentsItems.push(new KO_ShipmentListRow(response[i]));
+                        pname_set.push(self.shipmentsItems[i].product_label);
                     }
-
-                    console.log(self.shipmentsItems.length);
+                    self.availableProducts.removeAll();
+                    pname_set = new Set(pname_set);
+                    pname_set.forEach(function(each) {
+                        self.availableProducts.push({name: each, selected: ko.observable(true)});
+                    });
                     self.create_activity_report_pdf();
                 });
             }
@@ -108,12 +134,28 @@
          */
         self.create_activity_report_pdf = function () {
             self.show_working(true);
-            self.taimao();  // Listen for option change
             if (self.ar_start_date.peek() && self.ar_end_date.peek()) {
                 var doc = new jsPDF();
                 doc.setFont('Times', 'Roman');
 
-                // Display a light grey grid for designing layout
+                // Make list of selected products.
+                var show_products_list = [];
+                self.availableProducts().forEach(function (each) {
+                    if (each.selected()) {
+                        show_products_list.push(each.name);
+                    }
+                });
+                // Make new list of shipmentitems for processing
+                var selectedItems = [];
+                self.shipmentsItems.forEach(function (each) {
+                    if (show_products_list.indexOf(each.product_label) >= 0) {
+                        selectedItems.push(each);
+                    }
+                });
+
+                /**
+                 * Display a light grey grid for designing layout
+                 */
                 if (false) {
                     doc.setDrawColor(200);
                     doc.setTextColor(200,200,200);
@@ -169,6 +211,7 @@
                     var ctx = doc.chsetup.ctx,
                         char = null,
                         xi = x,
+                        width = 150,
                         size = 150,
                         scale = (fontsize || doc.chsetup.fontsize) / 450;
                     // Make image for each character and add to document
@@ -198,31 +241,61 @@
 
                 // Table header
                 var headers = ['日期','出貨單號','品名','數量','單位','包裝','單價','總價','發票號碼'];
-                var spacing = [ 14,    40,      60,   100,  114,   125,  140,  160,   180];
+                var spacing = [ 12,    36,      60,   100,  114,   125,  140,  160,   176];
 
-
-                for (var i=0; i<headers.length; i++) {
-                    doc.alttext(spacing[i], 30, headers[i], 11);
+                function drawTableHead(ypos) {
+                    for (var i=0; i<headers.length; i++) {
+                        doc.alttext(spacing[i], ypos, headers[i], 11);
+                    }
+                    doc.rect(10, ypos+1, 190, 0.2, 'F');
                 }
-                doc.rect(10, 31, 190, 0.2, 'F');
+                drawTableHead(30);
 
-                for (var j=0; j<self.shipmentsItems.length; j++) {
-                    doc.alttext(spacing[0], 40+j*5, self.shipmentsItems[j]['shipmentdate'].toISOString().substring(0,10), 11);
-                    doc.alttext(spacing[1], 40+j*5, self.shipmentsItems[j]['shipment_no'], 11);
-                    doc.alttext(spacing[2], 40+j*5, self.shipmentsItems[j]['product_label'], 11);
-                    doc.alttext(spacing[3], 40+j*5, self.shipmentsItems[j]['qty'].toString(), 11);
-                    doc.alttext(spacing[4], 40+j*5, self.shipmentsItems[j]['UM'], 11);
-                    doc.alttext(spacing[5], 40+j*5, self.shipmentsItems[j]['SKU'], 11);
-                    doc.alttext(spacing[6], 40+j*5, self.shipmentsItems[j]['price'].toString(), 11);
-                    doc.alttext(spacing[7], 40+j*5, self.shipmentsItems[j]['value'].toString(), 11);
-                    doc.alttext(spacing[8], 40+j*5, self.shipmentsItems[j]['invoice_no'], 11);
+                var page_adjust = 0;
+                for (var j=0; j<selectedItems.length; j++) {
+                    var si = selectedItems[j],
+                        ypos = 35+j*5-page_adjust,
+                        date = si['shipmentdate'];
+                    date = [date.getFullYear(),date.getMonth()+1,date.getDate()].join('-');
+
+                    doc.alttext(spacing[0], ypos, date, 11);
+                    doc.alttext(spacing[1], ypos, si['shipment_no'], 11);
+                    doc.alttext(spacing[2], ypos, si['product_label'], 11);
+                    doc.alttext(spacing[3], ypos, (si['qty']*si['units']).toString(), 11);
+                    doc.alttext(spacing[4], ypos, si['UM'], 11);
+                    var skusText = si['SKU'] == '槽車' ? '槽車' : [si['qty'], si['SKU']].join(' ');
+                    doc.alttext(spacing[5], ypos, skusText, 11);
+                    doc.alttext(spacing[6], ypos, si['price'].toString(), 11);
+                    doc.alttext(spacing[7], ypos, si['value'].toString(), 11);
+                    doc.alttext(spacing[8], ypos, si['invoice_no'], 11);
+                    if (ypos > 280) {
+                        doc.addPage();
+                        drawTableHead(15);
+                        page_adjust = j*5+20;
+                    }
                 }
-                doc.save('asdf.pdf');
-//                var pp = document.getElementById('preview-pane');
-//                pp.src = doc.output('datauristring');
+                var pp = document.getElementById('preview-pane');
+                pp.src = doc.output('bloburi');
+
             }
             self.show_working(false);
         };
+
+        /**
+         * Listen for option changes and reload PDF
+         */
+        ko.computed(function () {
+            // Listen for product selected toggle
+            for (var i=0; i<self.availableProducts().length; i++) {
+                self.availableProducts()[i].selected();
+            }
+            // Listen for branch change toggle
+            self.taimao();
+            // Reload PDF if not currently working
+            if (!self.show_working.peek()) {
+                self.create_activity_report_pdf();
+            }
+        });
     }
 
     viewModel.ReportsVM = new ReportsVM();
