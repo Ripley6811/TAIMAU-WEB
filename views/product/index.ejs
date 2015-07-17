@@ -1,5 +1,5 @@
 <!--Table view of all products ordered by product names-->
-<div class="row-fluid" data-bind="with: productsVM">
+<div class="row-fluid" data-bind="with: ProductsVM">
     <div class="col-md-4 h2">
         <strong>產品和服務</strong>
     </div>
@@ -13,7 +13,7 @@
     </div>
 </div>
 
-<table class="table table-condensed table-striped table-bordered" data-bind="with: productsVM">
+<table class="table table-condensed table-striped table-bordered" data-bind="with: ProductsVM">
     <thead class="text-uppercase">
         <tr>
             <th>內用品名 <span class="badge">標籤品名</span><span class="label label-default">English</span></th>
@@ -69,6 +69,7 @@ var viewModel = viewModel || {};
 var _csrf = viewModel._csrf = '<%= _csrf %>';
 
 function ProductsVM() {
+    'use strict';
     var self = this;
 
     self.products = ko.observableArray([]);
@@ -79,11 +80,11 @@ function ProductsVM() {
      * @param {String} filterWord Return results containing filter text.
      */
     self.loadProducts = function(filterWord) {
-        params = {
+        var params = {
             _csrf: _csrf,
             filter: filterWord || '',
         };
-        callback = function(products) {
+        var callback = function(products) {
             self.products.removeAll();
             for (var i=0; i<products.length; i++) {
                 self.products.push(new KO_Product(products[i]));
@@ -100,5 +101,5 @@ function ProductsVM() {
     });
 }
 
-viewModel.productsVM = new ProductsVM();
+viewModel.ProductsVM = new ProductsVM();
 </script>

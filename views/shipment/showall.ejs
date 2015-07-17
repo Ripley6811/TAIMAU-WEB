@@ -1,7 +1,7 @@
 <!--List view of all shipments-->
 <div>
 <!--START: List view of shipments-->
-<div data-bind="with: pageVM">
+<div data-bind="with: ShowAllShipmentsVM">
     <div>
         <div class="panel panel-success">
             <div id="showall-p-head" class="panel-heading" style="padding: 0px; position: fixed; z-index: 10;">
@@ -91,7 +91,8 @@ var key = {
     PLUS: 43
 };
 
-function PageModel() {
+viewModel.ShowAllShipmentsVM = new (function () {
+    'use strict';
     var self = this;
 
     self.debug = false;  // Show database ID numbers in all cases if true
@@ -125,7 +126,7 @@ function PageModel() {
 
     self.view_invoice = function(invoice_btn_data) {
 //        console.log(invoice_btn_data.invoice_no);
-        params = {
+        var params = {
             _csrf: _csrf,
             id: co_name,
             invoice_no: invoice_btn_data.invoice_no,
@@ -157,7 +158,7 @@ function PageModel() {
 
 
     self.getShipmentsArray = function() {
-        params = {
+        var params = {
             _csrf: _csrf,
             id: co_name,
             startDate: self.dateStart(),
@@ -193,7 +194,7 @@ function PageModel() {
             panel_body.style.marginTop = panel_head.offsetHeight + 'px';
         }
     });
-}
+});
 
-viewModel.pageVM = new PageModel();
+//viewModel.ShowAllShipmentsVM = new ShowAllShipmentsVM();
 </script>
