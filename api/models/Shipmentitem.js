@@ -36,17 +36,16 @@ module.exports = {
         shipped: {
             type: 'boolean',
             defaultsTo: true
+        },
+        duedate_string: function () {
+            if (this.duedate === null) {
+                return '';
+            } else {
+                return this.duedate.getFullYear() +
+                    ' / ' + (this.duedate.getMonth() + 1) +
+                    ' / ' + this.duedate.getDate();
+            }
         }
-      ,
-      duedate_string: function () {
-          if (this.duedate === null) {
-              return '';
-          } else {
-              return this.duedate.getFullYear() + 
-                  ' / ' + (this.duedate.getMonth()+1) +
-                  ' / ' + this.duedate.getDate();
-          }
-      }
 
     }
 };

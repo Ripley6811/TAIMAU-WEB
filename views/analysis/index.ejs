@@ -5,6 +5,38 @@
         </div>
     </div>
     <div class="panel-body">
+        <div class="row">
+            <!-- SELECTION AREA -->
+            <div class="col-md-4">
+                <h3><strong>保存區</strong></h3>
+                <div data-bind="foreach: saved_processes_koa">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox"
+                                   data-bind="checked: selected_ko">
+                            <span data-bind="text: name"></span>
+                        </label>
+                    </div>
+                </div>
+
+
+
+
+                <h3><strong>新項目</strong></h3>
+                <h4><strong>原料 <small>多選</small></strong></h4>
+
+
+
+                <h4><strong>產成品 <small>選一個</small></strong></h4>
+
+
+            </div>
+            <!-- GRAPH AREA -->
+            <div class="col-md-9">
+
+
+            </div>
+        </div>
 
 
     </div>
@@ -14,13 +46,23 @@
     </div>
 </div>
 <script>
-    var viewModel = viewModel || {};
+var viewModel = viewModel || {};
 
-    function AnalysisVM() {
-        var self = this;
+viewModel.AnalysisVM = new (function () {
+    'use strict';
+    var self = this;
 
+    self.saved_processes_koa = ko.observableArray();
 
-    }
+    self.raw_materials_koa = ko.observableArray();
+    self.finished_good_koa = ko.observableArray();
 
-    viewModel.AnalysisVM = new AnalysisVM();
+    /**
+     * Load all products and add to raw or finished goods arrays
+     */
+    self.populate_goods_lists = function () {
+        self.raw_materials_koa.removeAll();
+        self.finished_good_koa.removeAll();
+    };
+});
 </script>
