@@ -7,9 +7,26 @@
     <div class="panel-body">
         <div class="row">
             <!-- SELECTION AREA -->
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <h3><strong>保存區</strong></h3>
-                <div data-bind="foreach: saved_processes_koa">
+                <ul data-bind="foreach: saved_processes_koa"
+                    style="list-style-type: none;">
+                    <li>
+                        <div class="input-group" data-bind="event: {mouseover: $parent.load_data_in_graph}">
+                            <input type="number" min="1"
+                                   class="form-control" size="3"
+                                   data-bind="textInput: multiplier">
+                            <span class="input-group-addon" data-bind="text: SKU"></span>
+                            <span class="input-group-addon" style="width: 40%" data-bind="text: name"></span>
+                            <span class="input-group-addon" style="width: 20%" data-bind="text: Math.round(profit * multiplier()), style: {background: profit >= 0 ? 'lightgreen' : 'pink'}"></span>
+
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-danger"
+                                        data-bind="click: $parent.delete_item">刪除</button>
+                            </span>
+                        </div>
+                    </li>
+<!--
                     <div class="checkbox">
                         <label>
                             <input type="checkbox"
@@ -18,7 +35,8 @@
                         </label>
                     </div>
                     <button type="button" class="btn btn-danger" data-bind="click: $parent.delete_item">刪除</button>
-                </div>
+-->
+                </ul>
                 <div data-bind="visible: saved_processes_koa().length == 0">
                     沒有保存的產品過程
                 </div>
@@ -78,9 +96,10 @@
                 <button class="btn btn-success" data-bind="enable: isAllFilled, click: save_process">保存項目</button>
             </div>
             <!-- GRAPH AREA -->
-            <div class="col-md-8">
-                <svg class="chart"></svg>
-
+            <div class="col-md-6">
+                <div style="position: fixed; top: 190px">
+                    <svg class="chart"></svg>
+                </div>
             </div>
         </div>
 
@@ -98,6 +117,7 @@ viewModel.AnalysisVM = new (function () {
     'use strict';
     var self = this;
     var product_dict = {};
+    var chart_data = [];
 
     self.saved_processes_koa = ko.observableArray();
 
@@ -107,8 +127,7 @@ viewModel.AnalysisVM = new (function () {
      * Listen for additions to saved processes and add
      * product info
      */
-    self.update_graph = ko.computed(function () {
-        var chart_data = [];
+    ko.computed(function () {
         var spk = self.saved_processes_koa();
         for (var i=0; i<self.saved_processes_koa().length; i++) {
 
@@ -116,113 +135,126 @@ viewModel.AnalysisVM = new (function () {
                 var prod = product_dict[spk[i].product];
                 if (prod === undefined) return;
 
-                spk[i].name = prod.group + ' — ' + prod.inventory_name;
+                spk[i].name = prod.group + ' : ' + prod.inventory_name;
+                spk[i].SKU = prod.SKU;
+                spk[i].multiplier = ko.observable(spk[i].finished_qty);
                 spk[i].product = {
                     inventory_name: prod.inventory_name,
                     price_per_sku: (prod.unitpriced === (prod.units == 1)) ? prod.curr_price : prod.curr_price * prod.units,
-                    total_cost: ((prod.unitpriced === (prod.units == 1)) ? prod.curr_price : prod.curr_price * prod.units) * spk[i].finished_qty,
+                    total_per_finished_sku: ((prod.unitpriced === (prod.units == 1)) ? prod.curr_price : prod.curr_price * prod.units),
                 }
-                // First item for each rec is product followed by materials
-                chart_data.push({
-                    rec: i,
-                    prod_name: prod.inventory_name,
-                    price_per_sku: (prod.unitpriced === (prod.units == 1)) ? prod.curr_price : prod.curr_price * prod.units,
-                    qty: spk[i].finished_qty
-                });
                 var spk_mats = spk[i].materials;
                 for (var j=0; j<spk_mats.length; j++) {
                     var prod = product_dict[spk_mats[j].product];
                     spk_mats[j].product = {
                         inventory_name: prod.inventory_name,
                         price_per_sku: (prod.unitpriced === (prod.units == 1)) ? prod.curr_price : prod.curr_price * prod.units,
-                        total_cost: ((prod.unitpriced === (prod.units == 1)) ? prod.curr_price : prod.curr_price * prod.units) * spk_mats[j].raw_qty,
+                        total_per_finished_sku: ((prod.unitpriced === (prod.units == 1)) ? prod.curr_price : prod.curr_price * prod.units) * spk_mats[j].raw_qty / spk[i].finished_qty,
                     }
-                    chart_data.push({
-                        rec: i,
-                        prod_name: prod.inventory_name,
-                        price_per_sku: (prod.unitpriced === (prod.units == 1)) ? prod.curr_price : prod.curr_price * prod.units,
-                        qty: spk_mats[j].raw_qty
-                    });
                 }
+                var subtotal = 0;
+                for (var j=0; j<spk_mats.length; j++) {
+                    console.log(spk_mats[j].product.total_per_finished_sku);
+                    subtotal += (spk_mats[j].product.total_per_finished_sku);
+                }
+                console.log(subtotal);
+                spk[i].profit = spk[i].product.total_per_finished_sku - subtotal;
             }
         }
         console.log(self.saved_processes_koa());
+    });
+
+
+    var width = 400,
+        barHeight = 28;
+    var chart = d3.select(".chart")
+        .attr("width", 500)
+        .attr("height", 600);
+
+    var last_used_cf = undefined;
+    self.load_data_in_graph = function (cf) {
+        if (!cf) return;
+        last_used_cf = cf;
+        // Add finished product as first element
+        chart_data = [{
+            prod_name: cf.product.inventory_name,
+            total: cf.product.total_per_finished_sku * cf.multiplier()
+        }];
+        // Add total of materials as second element
+        // TODO: Add other expenses
+        var subtotal = 0;
+        for (var i=0; i<cf.materials.length; i++) {
+            subtotal += (cf.materials[i].product.total_per_finished_sku * cf.multiplier());
+        }
+        subtotal += (cf.other_cost || 0) * cf.multiplier() / cf.finished_qty;
+        chart_data.push({
+            prod_name: '材料',
+            total: subtotal
+        });
+        chart_data.push({
+            prod_name: 'Profit',
+            total: chart_data[0].total - subtotal
+        });
+
         console.log(chart_data);
 
-
-//        var margin = {top: 20, right: 40, bottom: 30, left: 20},
-//            width = 500 - margin.left - margin.right,
-//            height = 500 - margin.top - margin.bottom,
-//            barWidth = Math.floor(width / 19) - 1;
-//
-//        var x = d3.scale.linear()
-//            .range([barWidth / 2, width - barWidth / 2]);
-//
-//        var y = d3.scale.linear()
-//            .range([height, 0]);
-//
-//        var yAxis = d3.svg.axis()
-//            .scale(y)
-//            .orient("right")
-//            .tickSize(-width)
-//            .tickFormat(function(d) { return Math.round(d / 1e6) + "M"; });
-
-
         var x = d3.scale.linear()
-            .domain([0, 1000])
+            .domain([0, Math.max(chart_data[0].total, chart_data[1].total)])
             .range([0, 420]);
 
-        var width = 500,
-            barHeight = 28;
-
-        var chart = d3.select(".chart")
-            .attr("width", 600)
-            .attr("height", 1000)
+        var transX = Math.min(x(chart_data[0].total),x(chart_data[1].total));
 
         var bar = chart.selectAll("g")
-            .data(self.saved_processes_koa())
+            .data(chart_data)
             .enter().append("g")
             // Shift each bar
-            .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
+            .attr("transform", function(d, i) {
+                return "translate(" + (i==2?transX:0) + "," + i * barHeight + ")";
+            });
+
 
         bar.append("rect")
-            .attr("width", function(d) { return width; })
-            .attr("height", barHeight - 1)
-        bar.append("rect")
+            .attr("width", function(d) { return x(Math.abs(Math.round(d.total))) - 3; })
+            .attr("height", barHeight - 1);
+
+        bar.append("text")
+            .attr("x", function(d) {
+                console.log(d.prod_name, x(Math.round(d.total)) - 3);
+                    return 3;
+            })
+            .attr("y", barHeight / 2)
+            .attr("dy", ".50em")
+            .text(function (d) {
+                return d.prod_name + '  $' + Math.round(d.total).toString();
+            });
+
+        var bar = chart.selectAll("g")
+            .data(chart_data)
+            .transition().duration(500)
+            // Shift each bar
+            .attr("transform", function(d, i) {
+                return "translate(" + (i==2?transX:0) + "," + i * barHeight + ")";
+            })
+
+        bar.select("rect")
+//            .transition().duration(500)
             .attr("width", function(d) {
-                var total = 0;
-                for (var i=0; i<d.materials.length; i++) {
-                    total += (d.materials[i].product.total_cost);
-                }
-                return (total / (d.product.total_cost)) * width;
-            })
-            .attr("height", barHeight - 1)
+                return x(Math.abs(Math.round(d.total))) - 3;
+            });
 
-        bar.append("text")
-            .attr("x", function(d) {
-                console.log(d.product.price_per_sku, x(d.product.price_per_sku) - 3);
-                    return width/2;
-            })
-            .attr("y", barHeight / 2)
-            .attr("dy", ".50em")
+        bar.select("text")
             .text(function (d) {
-                return d.product.inventory_name;
-            })
-        bar.append("text")
-            .attr("x", function(d) {
-                console.log(d.product.price_per_sku, x(d.product.price_per_sku) - 3);
-                    return width - 3;
-            })
-            .attr("y", barHeight / 2)
-            .attr("dy", ".50em")
-            .text(function (d) {
-                var subtotal = 0;
-                for (var i=0; i<d.materials.length; i++) {
-                    subtotal += (d.materials[i].product.total_cost);
-                }
-                var total = d.product.total_cost - subtotal;
-                return (total > 0 ? 'Profit $' : 'Loss $') + total.toString();
-            })
+                return d.prod_name + '  $' + Math.round(d.total).toString();
+            });
+
+    };
+
+    ko.computed(function () {
+        var spk = self.saved_processes_koa();
+        for (var i=0; i<spk.length; i++) {
+            if (spk[i].multiplier) spk[i].multiplier();
+        }
+        self.load_data_in_graph(last_used_cf);
     });
 
 
@@ -308,6 +340,35 @@ viewModel.AnalysisVM = new (function () {
 
 
     /**
+     * Load all costflow records and add to saved_processes_koa
+     */
+    function populate_processes_lists() {
+        self.saved_processes_koa.removeAll();
+
+        // AJAJ request for all costflow records
+        // Send GET request
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState !== 4) return;
+
+            var res = JSON.parse(xmlhttp.response);
+            if (res.status == 500) {
+                alert(res.summary +
+                      '\nPossibly no internet access. Check connection.' +
+                      '\nSee console for response object.');
+                console.log(res);
+            }
+            console.log(JSON.parse(xmlhttp.response));
+            for (var i=0; i<res.length; i++) {
+                res[i].selected_ko = ko.observable(true);
+                self.saved_processes_koa.push(res[i]);
+            }
+        };
+        xmlhttp.open('GET', '/costflow', true);
+        xmlhttp.send();
+    };
+
+    /**
      * Load all products and add to raw or finished goods arrays
      * This is also the source of current prices
      */
@@ -340,6 +401,9 @@ viewModel.AnalysisVM = new (function () {
                 }
                 product_dict[product.id] = product;
             });
+
+            // Load processes from database.
+            populate_processes_lists();
         };
         xmlhttp.open('GET', '/database/get/products', true);
         xmlhttp.send();
@@ -364,59 +428,13 @@ viewModel.AnalysisVM = new (function () {
                 console.log(res);
             }
             self.saved_processes_koa.remove(record);
-            self.update_graph();
         };
         xmlhttp.open('DELETE', '/costflow' , true);
         xmlhttp.setRequestHeader('Content-type', 'application/json');
         xmlhttp.send(ko.toJSON(params));
     };
 
-    /**
-     * Load all costflow records and add to saved_processes_koa
-     */
-    (function populate_goods_lists() {
-        self.saved_processes_koa.removeAll();
-
-        // AJAJ request for all costflow records
-        // Send GET request
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState !== 4) return;
-
-            var res = JSON.parse(xmlhttp.response);
-            if (res.status == 500) {
-                alert(res.summary +
-                      '\nPossibly no internet access. Check connection.' +
-                      '\nSee console for response object.');
-                console.log(res);
-            }
-            console.log(JSON.parse(xmlhttp.response));
-            for (var i=0; i<res.length; i++) {
-                res[i].selected_ko = ko.observable(true);
-                self.saved_processes_koa.push(res[i]);
-            }
-        };
-        xmlhttp.open('GET', '/costflow', true);
-        xmlhttp.send();
-    })();
-
 });
 
-
-
-
-
-
-
-
-
-
-
-//// An SVG element with a bottom-right origin.
-//var svg = d3.select("#D3div").append("svg")
-//    .attr("width", width + margin.left + margin.right)
-//    .attr("height", height + margin.top + margin.bottom)
-//  .append("g")
-//    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 </script>

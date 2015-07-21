@@ -11,7 +11,7 @@ g text {
   fill: white;
 */
   font: 12px sans-serif;
-  text-anchor: end;
+/*  text-anchor: end;*/
 }
 
 g text:first-child {
@@ -27,6 +27,18 @@ g rect {
   fill: rgb(227, 119, 194);
 }
 
-g rect:first-child {
+g:first-child > rect {
   fill: rgb(31, 119, 180);
+}
+
+g:nth-child(3) > rect {
+  fill: rgb(31, 180, 37);
+}
+
+.panel-body ul {
+    list-style-type: none;
+}
+
+.input-group:hover > span {
+    background: lightyellow;
 }
