@@ -85,6 +85,8 @@
         // Adds the KnockoutJS viewmodel to page
         // Add sub-models to the `viewModel` namespace
         var viewModel = viewModel || {};
+        viewModel._csrf = '<%= _csrf %>';
+        viewModel.co_name = '<%= res.locals.cogroup ? cogroup.name : "" %>';
         console.dir(viewModel);
         ko.applyBindings(viewModel, document.getElementById('body'));
     </script>

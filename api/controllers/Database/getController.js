@@ -62,7 +62,7 @@ module.exports = {
                 if (err) { res.send(err); return; }
                 res.send(records);
             });
-        } else if(req.param('filter') != '') {
+        } else if(req.param('filter') != '' && req.param('filter') != undefined) {
             var term = req.param('filter');
             Product
             .find().where({or:[{product_label: {'contains': term}},
@@ -80,6 +80,9 @@ module.exports = {
             .sort('inventory_name')
             .exec(function (err, records) {
                 if (err) { res.send(err); return; }
+                records.forEach(function (rec) {
+                    rec.optionsText = rec.optionsText();
+                });
                 res.send(records);
             });
         }

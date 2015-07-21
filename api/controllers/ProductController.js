@@ -281,6 +281,7 @@ module.exports = {
     },
 
     showall: function (req, res) {
+        // Return cogroup info for side panel
         Cogroup.findOne(req.param('id'))
         .populate('branches')
         .exec(function (err, cogroup) {

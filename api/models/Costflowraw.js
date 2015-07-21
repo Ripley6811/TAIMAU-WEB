@@ -22,6 +22,7 @@ module.exports = {
         },
         product: {
             model: 'product',
+            via: 'id',
             required: true
         },
         raw_qty: {

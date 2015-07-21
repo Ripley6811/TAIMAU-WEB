@@ -12,6 +12,11 @@ module.exports = {
     autoCreatedAt: false,
     autoUpdatedAt: false,
     attributes: {
+        id: {
+            type: 'int',
+            unique: true,
+            required: true
+        },
         MPN: {
             type: 'string',
             unique: true,
@@ -87,9 +92,16 @@ module.exports = {
         json: {
             type: 'json',
             defaultsTo: {}
+        },
+        optionsText: function () {
+            var text = this.group + ': ' + this.inventory_name;
+            text += ' — ' + this.units + this.UM + ' ' + this.SKU;
+            text += ' — $' + this.curr_price + '/';
+            text += this.unitpriced ? this.UM : this.SKU;
+            return text;
         }
     },
-    
+
 //    beforeValidate: function (values, cb) {
 //        //calling cb() with an argument returns an error. Useful for canceling the entire operation if some criteria fails.
 //        cb();
