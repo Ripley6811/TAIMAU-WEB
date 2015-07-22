@@ -164,7 +164,7 @@ viewModel.AnalysisVM = new (function () {
                     subtotal += (spk_mats[j].product.total_per_finished_sku);
                 }
                 console.log(subtotal);
-                spk[i].profit = spk[i].product.total_per_finished_sku - subtotal;
+                spk[i].profit = spk[i].product.total_per_finished_sku - subtotal - (spk[i].other_cost || 0) * spk[i].multiplier() / spk[i].finished_qty;
             }
         }
         console.log(self.saved_processes_koa());
@@ -215,8 +215,8 @@ viewModel.AnalysisVM = new (function () {
             .enter().append("g")
             // Shift each bar
             .attr("transform", function(d, i) {
-                if (i==2) return "translate(" + transX + "," + barHeight/2 + ")";
-                return "translate(0," + i * barHeight + ")";
+                if (i==2) return "translate(" + transX + "," + barHeight * .75 + ")";
+                return "translate(0," + i * barHeight * 1.5 + ")";
             })
             .attr("id", function(d, i) {
                 return i==2? "profit-bar" : "";
@@ -247,7 +247,8 @@ viewModel.AnalysisVM = new (function () {
             .transition().duration(500)
             // Shift each bar
             .attr("transform", function(d, i) {
-                return "translate(" + (i==2?transX:0) + "," + i * barHeight + ")";
+                if (i==2) return "translate(" + transX + "," + barHeight * .75 + ")";
+                return "translate(0," + i * barHeight * 1.5 + ")";
             })
 
         bar.select("rect")

@@ -28,10 +28,11 @@ g:nth-child(2) > rect {
 }
 
 g:first-child > rect {
-  fill: rgb(31, 119, 180);
+  fill: rgb(36, 148, 226);
 }
 
 .positive-color {
+  fill-opacity: .7;
   fill: rgb(31, 180, 37);
 }
 
@@ -44,5 +45,6 @@ g:first-child > rect {
 }
 
 .negative-color {
+  fill-opacity: .7;
     fill: red;
 }
