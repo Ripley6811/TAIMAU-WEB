@@ -22,7 +22,7 @@ g text:first-child {
 /*  text-anchor: end;*/
 }
 
-g rect {
+g:nth-child(2) > rect {
   fill-opacity: .7;
   fill: rgb(227, 119, 194);
 }
@@ -31,7 +31,7 @@ g:first-child > rect {
   fill: rgb(31, 119, 180);
 }
 
-g:nth-child(3) > rect {
+.positive-color {
   fill: rgb(31, 180, 37);
 }
 
@@ -41,4 +41,8 @@ g:nth-child(3) > rect {
 
 .input-group:hover > span {
     background: lightyellow;
+}
+
+.negative-color {
+    fill: red;
 }

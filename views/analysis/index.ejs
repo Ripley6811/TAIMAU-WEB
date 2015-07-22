@@ -8,7 +8,7 @@
         <div class="row">
             <!-- SELECTION AREA -->
             <div class="col-md-6">
-                <h3><strong>保存區</strong></h3>
+                <h3><strong>儲存區</strong></h3>
                 <ul data-bind="foreach: saved_processes_koa"
                     style="list-style-type: none;">
                     <li>
@@ -37,8 +37,12 @@
                     <button type="button" class="btn btn-danger" data-bind="click: $parent.delete_item">刪除</button>
 -->
                 </ul>
-                <div data-bind="visible: saved_processes_koa().length == 0">
-                    沒有保存的產品過程
+                <div data-bind="visible: saved_processes_koa().length == 0 && !show_loading()">
+                    沒有儲存的產品過程
+                </div>
+                <div data-bind="visible: show_loading" style="padding-top: 28px">
+                    <i class="fa fa-2x fa-cog fa-spin"></i>
+                    <span class="h3">Please wait. Loading data...</span>
                 </div>
 
 
@@ -93,12 +97,13 @@
                     <input type="text" class="form-control " data-bind="textInput: other_costs_ko">
                 </div>
                 <div>&nbsp;</div>
-                <button class="btn btn-success" data-bind="enable: isAllFilled, click: save_process">保存項目</button>
+                <button class="btn btn-success" data-bind="enable: isAllFilled, click: save_process">儲存項目</button>
             </div>
             <!-- GRAPH AREA -->
             <div class="col-md-6">
                 <div style="position: fixed; top: 190px">
-                    <svg class="chart"></svg>
+                    <svg class="barchart"></svg>
+                    <svg class="piechart"></svg>
                 </div>
             </div>
         </div>
@@ -117,7 +122,8 @@ viewModel.AnalysisVM = new (function () {
     'use strict';
     var self = this;
     var product_dict = {};
-    var chart_data = [];
+    var barchart_data = [];
+    self.show_loading = ko.observable(true);
 
     self.saved_processes_koa = ko.observableArray();
 
@@ -167,7 +173,7 @@ viewModel.AnalysisVM = new (function () {
 
     var width = 400,
         barHeight = 28;
-    var chart = d3.select(".chart")
+    var barchart = d3.select(".barchart")
         .attr("width", 500)
         .attr("height", 600);
 
@@ -176,7 +182,7 @@ viewModel.AnalysisVM = new (function () {
         if (!cf) return;
         last_used_cf = cf;
         // Add finished product as first element
-        chart_data = [{
+        barchart_data = [{
             prod_name: cf.product.inventory_name,
             total: cf.product.total_per_finished_sku * cf.multiplier()
         }];
@@ -187,35 +193,43 @@ viewModel.AnalysisVM = new (function () {
             subtotal += (cf.materials[i].product.total_per_finished_sku * cf.multiplier());
         }
         subtotal += (cf.other_cost || 0) * cf.multiplier() / cf.finished_qty;
-        chart_data.push({
+        barchart_data.push({
             prod_name: '材料',
             total: subtotal
         });
-        chart_data.push({
-            prod_name: 'Profit',
-            total: chart_data[0].total - subtotal
+        barchart_data.push({
+            prod_name: '',
+            total: barchart_data[0].total - subtotal
         });
 
-        console.log(chart_data);
+        console.log(barchart_data);
 
         var x = d3.scale.linear()
-            .domain([0, Math.max(chart_data[0].total, chart_data[1].total)])
+            .domain([0, Math.max(barchart_data[0].total, barchart_data[1].total)])
             .range([0, 420]);
 
-        var transX = Math.min(x(chart_data[0].total),x(chart_data[1].total));
+        var transX = Math.min(x(barchart_data[0].total),x(barchart_data[1].total));
 
-        var bar = chart.selectAll("g")
-            .data(chart_data)
+        var bar = barchart.selectAll("g")
+            .data(barchart_data)
             .enter().append("g")
             // Shift each bar
             .attr("transform", function(d, i) {
-                return "translate(" + (i==2?transX:0) + "," + i * barHeight + ")";
-            });
+                if (i==2) return "translate(" + transX + "," + barHeight/2 + ")";
+                return "translate(0," + i * barHeight + ")";
+            })
+            .attr("id", function(d, i) {
+                return i==2? "profit-bar" : "";
+            })
+
 
 
         bar.append("rect")
             .attr("width", function(d) { return x(Math.abs(Math.round(d.total))) - 3; })
-            .attr("height", barHeight - 1);
+            .attr("height", function(d, i) {
+                if (i==2) barHeight*2;
+                return barHeight - 1;
+            });
 
         bar.append("text")
             .attr("x", function(d) {
@@ -223,13 +237,13 @@ viewModel.AnalysisVM = new (function () {
                     return 3;
             })
             .attr("y", barHeight / 2)
-            .attr("dy", ".50em")
+            .attr("dy", ".40em")
             .text(function (d) {
                 return d.prod_name + '  $' + Math.round(d.total).toString();
             });
 
-        var bar = chart.selectAll("g")
-            .data(chart_data)
+        var bar = barchart.selectAll("g")
+            .data(barchart_data)
             .transition().duration(500)
             // Shift each bar
             .attr("transform", function(d, i) {
@@ -239,6 +253,13 @@ viewModel.AnalysisVM = new (function () {
         bar.select("rect")
 //            .transition().duration(500)
             .attr("width", function(d) {
+                if (Math.round(d.total) < 0) {
+                    d3.select(this).classed("negative-color", true);
+                    d3.select(this).classed("positive-color", false);
+                } else {
+                    d3.select(this).classed("negative-color", false);
+                    d3.select(this).classed("positive-color", true);
+                }
                 return x(Math.abs(Math.round(d.total))) - 3;
             });
 
@@ -363,6 +384,7 @@ viewModel.AnalysisVM = new (function () {
                 res[i].selected_ko = ko.observable(true);
                 self.saved_processes_koa.push(res[i]);
             }
+            self.show_loading(false);
         };
         xmlhttp.open('GET', '/costflow', true);
         xmlhttp.send();
