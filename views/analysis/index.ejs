@@ -17,7 +17,7 @@
                                    class="form-control" size="3"
                                    data-bind="textInput: multiplier">
                             <span class="input-group-addon" data-bind="text: SKU"></span>
-                            <span class="input-group-addon" style="width: 40%" data-bind="text: name"></span>
+                            <span class="input-group-addon" style="width: 40%; font-weight: bold;" data-bind="text: name"></span>
                             <span class="input-group-addon" style="width: 20%" data-bind="text: Math.round(profit * multiplier()), style: {background: profit >= 0 ? 'lightgreen' : 'pink'}"></span>
 
                             <span class="input-group-btn">
@@ -68,7 +68,7 @@
                 </div>
 
 
-                <h4><strong>產成品 <small>選一個</small></strong></h4>
+                <h4><strong>產成品</strong> <small>選一個</small></h4>
                 <select class="form-control"
                         data-bind="options: finished_good_koa,
                                    optionsText: 'optionsText',
@@ -84,14 +84,14 @@
                 </div>
 
 
-                <h4><strong>工作時間 <small>小時</small></strong></h4>
+                <h4><strong>工作時間</strong> <small>小時</small></h4>
                 <div class="input-group">
                     <input type="text" class="form-control" data-bind="textInput: work_hours_ko">
                     <span class="input-group-addon lightorange-blend">小時</span>
                 </div>
 
 
-                <h4><strong>另外的工作費</strong></h4>
+                <h4><strong>另外的工作費</strong> <small>每一次產成品數量</small></h4>
                 <div class="input-group">
                     <span class="input-group-addon lightorange-blend">$</span>
                     <input type="text" class="form-control " data-bind="textInput: other_costs_ko">
@@ -100,8 +100,8 @@
                 <button class="btn btn-success" data-bind="enable: isAllFilled, click: save_process">儲存項目</button>
             </div>
             <!-- GRAPH AREA -->
-            <div class="col-md-6">
-                <div style="position: fixed; top: 190px">
+            <div id="graph-div" class="col-md-6">
+                <div class="row" style="position: fixed; top: 190px">
                     <svg class="barchart"></svg>
                     <svg class="piechart"></svg>
                 </div>
@@ -164,23 +164,22 @@ viewModel.AnalysisVM = new (function () {
                     subtotal += (spk_mats[j].product.total_per_finished_sku);
                 }
                 console.log(subtotal);
-                spk[i].profit = spk[i].product.total_per_finished_sku - subtotal - (spk[i].other_cost || 0) * spk[i].multiplier() / spk[i].finished_qty;
+                spk[i].profit = spk[i].product.total_per_finished_sku - subtotal - (spk[i].other_cost || 0) / spk[i].finished_qty;
             }
         }
         console.log(self.saved_processes_koa());
     });
 
 
-    var width = 400,
-        barHeight = 28;
-    var barchart = d3.select(".barchart")
-        .attr("width", 500)
-        .attr("height", 600);
 
     var last_used_cf = undefined;
     self.load_data_in_graph = function (cf) {
         if (!cf) return;
         last_used_cf = cf;
+
+        /**
+         * Create summary data for graphing
+         */
         // Add finished product as first element
         barchart_data = [{
             prod_name: cf.product.inventory_name,
@@ -204,72 +203,13 @@ viewModel.AnalysisVM = new (function () {
 
         console.log(barchart_data);
 
-        var x = d3.scale.linear()
-            .domain([0, Math.max(barchart_data[0].total, barchart_data[1].total)])
-            .range([0, 420]);
-
-        var transX = Math.min(x(barchart_data[0].total),x(barchart_data[1].total));
-
-        var bar = barchart.selectAll("g")
-            .data(barchart_data)
-            .enter().append("g")
-            // Shift each bar
-            .attr("transform", function(d, i) {
-                if (i==2) return "translate(" + transX + "," + barHeight * .75 + ")";
-                return "translate(0," + i * barHeight * 1.5 + ")";
-            })
-            .attr("id", function(d, i) {
-                return i==2? "profit-bar" : "";
-            })
-
-
-
-        bar.append("rect")
-            .attr("width", function(d) { return x(Math.abs(Math.round(d.total))) - 3; })
-            .attr("height", function(d, i) {
-                if (i==2) barHeight*2;
-                return barHeight - 1;
-            });
-
-        bar.append("text")
-            .attr("x", function(d) {
-                console.log(d.prod_name, x(Math.round(d.total)) - 3);
-                    return 3;
-            })
-            .attr("y", barHeight / 2)
-            .attr("dy", ".40em")
-            .text(function (d) {
-                return d.prod_name + '  $' + Math.round(d.total).toString();
-            });
-
-        var bar = barchart.selectAll("g")
-            .data(barchart_data)
-            .transition().duration(500)
-            // Shift each bar
-            .attr("transform", function(d, i) {
-                if (i==2) return "translate(" + transX + "," + barHeight * .75 + ")";
-                return "translate(0," + i * barHeight * 1.5 + ")";
-            })
-
-        bar.select("rect")
-//            .transition().duration(500)
-            .attr("width", function(d) {
-                if (Math.round(d.total) < 0) {
-                    d3.select(this).classed("negative-color", true);
-                    d3.select(this).classed("positive-color", false);
-                } else {
-                    d3.select(this).classed("negative-color", false);
-                    d3.select(this).classed("positive-color", true);
-                }
-                return x(Math.abs(Math.round(d.total))) - 3;
-            });
-
-        bar.select("text")
-            .text(function (d) {
-                return d.prod_name + '  $' + Math.round(d.total).toString();
-            });
+        /**
+         * Begin D3.js graphing
+         */
+        draw_bar_graph(barchart_data);
 
     };
+
 
     ko.computed(function () {
         var spk = self.saved_processes_koa();
