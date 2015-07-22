@@ -82,9 +82,14 @@ Requires: "cogroup" object.
                                                     <strong data-bind="text: UM, visible: SKU() != '槽車'"></strong>
                                                     <strong data-bind="visible: SKU() != '槽車'">/</strong>
                                                     <strong data-bind="text: SKU, visible: ['槽車','包','桶'].indexOf(SKU()) === -1"></strong>
-                                                    <img alt="sack" src="/fonts/sack.svg" height="20" style="position: relative; top:0px" data-bind="visible: SKU() == '包'">
-                                                    <img alt="tanker" src="/fonts/jerrycan.svg" height="20" style="position: relative; top:0px" data-bind="visible: SKU() == '桶'">
-                                                    <img class="fa-flip-horizontal" alt="tanker" src="/fonts/tanker.svg" height="40" style="position: relative; top:-10px" data-bind="visible: SKU() == '槽車'">
+                                                    <img alt="sack" src="/fonts/sack.svg" height="20" style="position: relative; top:0px"
+                                                         data-bind="visible: SKU() == '包'">
+                                                    <img alt="jerrycan" src="/fonts/jerrycan.svg" height="20" style="position: relative; top:0px"
+                                                         data-bind="visible: SKU() == '桶' && units() < 100">
+                                                    <img alt="barrel" src="/fonts/barrel.svg" height="22" style="position: relative; top:-1px"
+                                                         data-bind="visible: SKU() == '桶' && units() >= 100">
+                                                    <img class="fa-flip-horizontal" alt="tanker" src="/fonts/tanker.svg" height="40" style="position: relative; top:-10px"
+                                                         data-bind="visible: SKU() == '槽車'">
                                                 </div>
                                             </div>
                                         </button>
