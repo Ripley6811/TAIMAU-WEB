@@ -13,9 +13,7 @@ module.exports = {
     autoUpdatedAt: false,
     attributes: {
         id: {
-            type: 'int',
-            unique: true,
-            required: true
+            type: 'int'
         },
         MPN: {
             type: 'string',
