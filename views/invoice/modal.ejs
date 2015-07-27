@@ -416,7 +416,7 @@ function InvoiceModalVM() {
                 items: items
             };
             post('/database/save/invoice', params, function(res) {
-                //console.log(res);
+//                console.log(res);
                 if ('error' in res) alert(res.error);
                 else window.location = '../showall/'+viewModel.co_name;
             });

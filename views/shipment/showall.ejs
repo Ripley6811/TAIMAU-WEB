@@ -44,10 +44,21 @@
                 <table id="showall-td" class="table table-striped table-bordered">
                     <tbody data-bind="foreach: shipmentsItems">
                         <tr>
-                            <td style="padding: 3px 3px" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + order_id}"><strong data-bind="text: orderID"></strong> <span class="badge" data-bind="visible: !orderID || $parent.debug, text: order_id"></span></a></td>
-                            <td style="padding: 3px 3px"><span data-bind="text: inventory_name"></span></td>
+                            <td style="padding: 3px 3px"
+                                class="text-center">
+                                <a style="padding: 2px 10px"
+                                   class="btn btn-custom"
+                                   data-bind="attr: {href: '/order/show/' + order_id}">
+                                    <strong data-bind="text: orderID"></strong>
+                                    <span class="badge"
+                                          data-bind="visible: !orderID || $parent.debug, text: order_id"></span>
+                                </a>
+                            </td>
+                            <td style="padding: 3px 3px">
+                                <span data-bind="text: inventory_name"></span>
+                            </td>
 
-                            <td style="padding: 3px 3px; border-left: solid 2px #532929;" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '#'}"><strong data-bind="text: shipment_no"></strong> <span class="badge" data-bind="visible: !shipment_no || $parent.debug, text: shipmentitem_id"></span></a></td>
+                            <td style="padding: 3px 3px; border-left: solid 2px #532929;" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '#'}"><strong data-bind="text: shipment_no"></strong> <span class="badge" data-bind="visible: !shipment_no || $parent.debug, text: shipment_id"></span></a></td>
                             <td style="padding: 3px 3px" class="text-center"><span data-bind="text: date"></span></td>
                             <td style="padding: 3px 3px" class="text-right"><span data-bind="text: qty"></span> <span data-bind="text: countUnit"></span></td>
 
@@ -157,7 +168,7 @@ viewModel.ShowAllShipmentsVM = new (function () {
 
 
 
-    self.getShipmentsArray = function() {
+    self.getShipmentsArray = ko.computed(function() {
         var params = {
             _csrf: _csrf,
             id: co_name,
@@ -168,15 +179,16 @@ viewModel.ShowAllShipmentsVM = new (function () {
 
             self.shipmentsItems.removeAll();
             for (var i=0; i<response.length; i++) {
+                console.log(response);
                 self.shipmentsItems.push(new KO_ShipmentListRow(response[i]));
             }
         });
-    };
+    });
 //    self.getShipmentsArray();
 
-    ko.computed(function () {
-        self.getShipmentsArray();
-    });
+//    ko.computed(function () {
+//        self.getShipmentsArray();
+//    });
 
     // Set the header cell widths to match the body cell widths
     ko.computed(function () {

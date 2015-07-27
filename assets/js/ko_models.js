@@ -345,7 +345,7 @@ function KO_ShipmentListRow(item) {
     var self = this;
 
     self.order_id = item.order_id;
-    self.shipmentitem_id = item.id;
+    self.shipmentitem_id = item.shipmentitem_id;
     self.invoiceitem_id = item.invoiceitem_id;
     self.invoice_id = item.invoice_id;
 
@@ -365,6 +365,7 @@ function KO_ShipmentListRow(item) {
     self.shipmentdate = new Date(item.shipmentdate);
     self.shipped = item.shipped ? true : false;
     self.shipment_no = item.shipment_no;
+    self.shipment_id = item.shipment_id;
 
     self.invoice_no = item.invoice_no;
     self.invoicedate = item.invoicedate ? item.invoicedate.substring(0,10) : '';
