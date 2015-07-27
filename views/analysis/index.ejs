@@ -7,110 +7,127 @@
     <div class="panel-body">
         <div class="row">
             <!-- SELECTION AREA -->
-            <div class="col-md-6">
-                <h3><strong>儲存區</strong></h3>
-                <ul data-bind="foreach: saved_processes_koa"
-                    style="list-style-type: none;">
-                    <li>
-                        <div class="input-group" data-bind="event: {mouseover: $parent.load_data_in_graph}">
-                            <input type="number" min="1"
-                                   class="form-control" size="3"
-                                   data-bind="textInput: multiplier">
-                            <span class="input-group-addon" data-bind="text: SKU"></span>
-                            <span class="input-group-addon" style="width: 40%; font-weight: bold;" data-bind="text: name"></span>
-                            <span class="input-group-addon" style="width: 20%" data-bind="text: Math.round(profit * multiplier()), style: {background: profit >= 0 ? 'lightgreen' : 'pink'}"></span>
+            <div class="col-md-5" style="height: 600px">
+                <label>新分析項目</label>
+                <div class="input-group">
+                    <select class="form-control"
+                            style="background-color: #eef"
+                            data-bind="options: product_options_koa,
+                                       optionsText: 'optionsText',
+                                       value: product_list_selection">
+                    </select>
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary"
+                                data-bind="click: addProcess">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </span>
+                </div>
 
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-danger"
-                                        data-bind="click: $parent.delete_item">刪除</button>
-                            </span>
-                        </div>
-                    </li>
+                <label>產成品分析</label>
+                <div data-bind="foreach: processes_koa">
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-custom"
+                                data-bind="click: $parent.showProcess">
+                            <strong data-bind="text: process_title"></strong>
+                        </button>
+                        <button type="button" class="btn"
+                                data-bind="css: total_gain() >= 0 ? 'btn-success' : 'btn-danger', click: $parent.showProcess">
+                            <strong data-bind="text: (total_gain() > 0 ? '+' : '') + total_gain()"></strong>
+                        </button>
+                        <button type="button" class="btn btn-danger"
+                                data-bind="click: $parent.removeProcess">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
 <!--
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox"
-                                   data-bind="checked: selected_ko">
-                            <span data-bind="text: name"></span>
-                        </label>
-                    </div>
-                    <button type="button" class="btn btn-danger" data-bind="click: $parent.delete_item">刪除</button>
+                    <tbody data-bind="foreach: processes_koa">
+                        <tr data-bind="click: $parent.selectProcess">
+                            <td>
+                                <div data-bind="foreach: materials_koa">
+                                    <select class="form-control"
+                                            style="background-color: #fdd"
+                                            data-bind="options: $root.AnalysisVM.material_options_koa,
+                                                       optionsText: 'optionsText',
+                                                       value: selected_product">
+                                    </select>
+
+
+                                </div>
+                                <div><a href='#' data-bind='click: $parent.removeProcess'>Delete All</a></div>
+                                <div><a href='#' data-bind='click: $parent.addMaterial'>Add</a></div>
+                                <div><a href='#' data-bind='click: $parent.removeMaterial'>Remove</a></div>
+                            </td>
+                            <td>
+                                <div class="input-group" data-bind="with: product">
+                                    <span class="input-group-addon">$</span>
+                                    <input data-bind="textInput: SKU_price">
+                                </div>
+                                <div data-bind="foreach: materials_koa">
+
+
+                                </div>
+                                <div><a href='#' data-bind='click: $parent.removeProcess'>Delete All</a></div>
+                                <div><a href='#' data-bind='click: $parent.addMaterial'>Add</a></div>
+                                <div><a href='#' data-bind='click: $parent.removeMaterial'>Remove</a></div>
+                            </td>
+                            <td data-bind="text: total_gain"></td>
+                        </tr>
+                    </tbody>
+                </table>
 -->
-                </ul>
-                <div data-bind="visible: saved_processes_koa().length == 0 && !show_loading()">
-                    沒有儲存的產品過程
-                </div>
-                <div data-bind="visible: show_loading" style="padding-top: 28px">
-                    <i class="fa fa-2x fa-cog fa-spin"></i>
-                    <span class="h3">Please wait. Loading data...</span>
-                </div>
 
-
-
-
-                <h3><strong>新項目</strong> <small>( * = 停產)</small></h3>
-                <h4><strong>原料 <small>多選</small></strong></h4>
-                <select class="form-control"
-                        size="8" multiple="true"
-                        data-bind="options: raw_materials_koa,
-                                   optionsText: 'optionsText',
-                                   selectedOptions: selected_materials_koa">
-                </select>
-                <div data-bind="foreach: selected_materials_koa">
-                    <div class="input-group">
-                        <span class="input-group-addon lightgreen-blend"
-                              data-bind="text: inventory_name"></span>
-                        <input type="text" class="form-control text-right"
-                               data-bind="textInput: qty_ko">
-                        <span class="input-group-addon lightorange-blend"
-                              data-bind="text: units > 1 ? SKU : UM"></span>
-                    </div>
-                </div>
-
-
-                <h4><strong>產成品</strong> <small>選一個</small></h4>
-                <select class="form-control"
-                        data-bind="options: finished_good_koa,
-                                   optionsText: 'optionsText',
-                                   value: selected_good_ko">
-                </select>
-                <div class="input-group" data-bind="with: selected_good_ko">
-                    <span class="input-group-addon lightgreen-blend"
-                          data-bind="text: inventory_name"></span>
-                    <input type="text" class="form-control text-right"
-                           data-bind="textInput: qty_ko">
-                    <span class="input-group-addon lightorange-blend"
-                          data-bind="text: units > 1 ? SKU : UM"></span>
-                </div>
-
-
-                <h4><strong>工作時間</strong> <small>小時</small></h4>
-                <div class="input-group">
-                    <input type="text" class="form-control" data-bind="textInput: work_hours_ko">
-                    <span class="input-group-addon lightorange-blend">小時</span>
-                </div>
-
-
-                <h4><strong>另外的工作費</strong> <small>每一次產成品數量</small></h4>
-                <div class="input-group">
-                    <span class="input-group-addon lightorange-blend">$</span>
-                    <input type="text" class="form-control " data-bind="textInput: other_costs_ko">
-                </div>
-                <div>&nbsp;</div>
-                <button class="btn btn-success" data-bind="enable: isAllFilled, click: save_process">儲存項目</button>
             </div>
-            <!-- GRAPH AREA -->
-            <div id="graph-div" class="col-md-6">
-                <div class="row" style="position: fixed; top: 190px">
-                    <svg class="barchart"></svg>
-                    <svg class="piechart"></svg>
+
+            <div class="col-md-7">
+                <!-- GRAPH AREA -->
+                <div id="graph-div" style="position: fixed; top: 100px">
+
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <h3 data-bind="text: selectedProcessRecord().process_title"></h3>
+                        </div>
+                        <div class="panel-body">
+                            <label>原料選擇</label>
+                            <div class="input-group">
+                                <select class="form-control"
+                                        style="background-color: #fee"
+                                        data-bind="options: material_options_koa,
+                                                   optionsText: 'optionsText',
+                                                   value: material_list_selection">
+                                </select>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary"
+                                            data-bind="click: addMaterial">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <label>需要的原料</label>
+                            <div data-bind="with: selectedProcessRecord">
+                                <div data-bind="foreach: materials_koa">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"
+                                              data-bind="text: name">
+                                        </span>
+                                        <input type="text" data-bind="textInput: SKU_price">
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <svg class="barchart"></svg>
+                                <svg class="piechart"></svg>
+                            </div>
+                        </div>
+
+
+                    </div>
                 </div>
             </div>
         </div>
-
-
-    </div>
-    <div class="panel-footer lightorange-blend text-center" style="position: relative; bottom: 0px">
 
 
     </div>
@@ -118,227 +135,138 @@
 <script>
 var viewModel = viewModel || {};
 
+
+/**
+ * KnockoutJS Model for a Product data used in a Process.
+ * @param   {Object}   obj [[Description]]
+ * @returns {[[Type]]} [[Description]]
+ */
+function ProcessProductVM(obj) {
+    'use strict';
+    var self = this,
+        obj = obj || {};
+
+    /**
+     * KO OBSERVABLES
+     */
+    self.id = ko.observable(obj.id || null);
+    self.SKU_qty = ko.observable(obj.qty || 1);  // SKU (*units)
+
+    self.name = ko.observable(null);
+    self.isRaw = null;  //ko.observable(null);
+    self.units = ko.observable(null);
+    self.UM = ko.observable(null);
+    self.SKU = ko.observable(null);
+    self.SKU_price = ko.observable(null);  // Per SKU
+
+//    self.selected_product = ko.observable();
+//    ko.computed(function () {
+//        if (self.selected_product()) {
+//            self.id(self.selected_product().id);
+//        }
+//    });
+
+    /**
+     * KO COMPUTED
+     */
+    self.qty_units = ko.computed(function () {return self.SKU_qty() * self.units()});
+    // Return negative total for supply and positive total for final product
+    self.cost = ko.computed(function () {
+        return self.SKU_price() * self.SKU_qty() * (self.isRaw ? -1 : 1);
+    });
+
+    // Retrieve current price and data for product id.
+    ko.computed(function () {
+        if (self.id() !== null) {
+            // AJAJ request for product record
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState !== 4) return;
+                console.log(xmlhttp);
+                if (!xmlhttp.response) {
+                    alert("Response is empty");
+                    return;
+                }
+
+                var res = JSON.parse(xmlhttp.response);
+
+                self.name(res.inventory_name);
+                self.isRaw = res.is_supply;
+                self.units(res.units);
+                self.UM(res.UM);
+                self.SKU(res.SKU);
+                self.SKU_price(res.curr_price * (res.unitpriced ? res.units : 1));
+                console.log(self);
+            };
+            xmlhttp.open('GET', '/product/getId/'+self.id(), true);
+            xmlhttp.send();
+        }
+    });
+}
+
+
+/**
+ * KnockoutJS Model for a process (raw material to final product data).
+ * @param   {Object}   obj Optional preset data.
+ */
+function ProcessVM(obj) {
+    'use strict';
+    if (!obj) return null;
+
+    var self = this;
+
+    self.process_title = obj.title || null;
+    self.product = new ProcessProductVM({id: obj.product_id});
+
+    /**
+     * KO OBSERVABLES
+     */
+    self.materials_koa = ko.observableArray();
+//    self.buyer = ko.observable(obj.buyer || null);
+    self.batches = ko.observable(1);
+    self.hours_per_finished_qty = ko.observable(null);
+    self.other_cost_per_prod_sku = ko.observable(null);
+
+    /**
+     * KO COMPUTED
+     */
+    self.finished_qty = ko.computed(function () {
+        self.product.SKU_qty();
+    });
+
+    self.total_gain = ko.computed(function () {
+        console.log(self.product.cost());
+        var total = self.product.cost(),
+            pkoa = self.materials_koa();
+
+        for (var i=0; i<pkoa.length; i++) {
+            total += pkoa[i].cost;
+        }
+        if (self.other_cost_per_prod_sku() !== null) {
+            total -= self.other_cost_per_prod_sku() * self.finished_qty;
+        }
+        return Math.round(total * self.batches());
+    });
+
+    self.finished_batches_qty = ko.computed(function () {
+        return self.finished_qty * self.batches();
+    });
+}
+
+
+/**
+ * View Model for this page
+ */
 viewModel.AnalysisVM = new (function () {
     'use strict';
     var self = this;
-    var product_dict = {};
-    var barchart_data = [];
-    self.show_loading = ko.observable(true);
 
-    self.saved_processes_koa = ko.observableArray();
-
-
-
-    /**
-     * Listen for additions to saved processes and add
-     * product info
-     */
-    ko.computed(function () {
-        var spk = self.saved_processes_koa();
-        for (var i=0; i<self.saved_processes_koa().length; i++) {
-
-            if (spk[i].name === undefined) {
-                var prod = product_dict[spk[i].product];
-                if (prod === undefined) return;
-
-                spk[i].name = prod.group + ' : ' + prod.inventory_name;
-                spk[i].SKU = prod.SKU;
-                spk[i].multiplier = ko.observable(spk[i].finished_qty);
-                spk[i].product = {
-                    inventory_name: prod.inventory_name,
-                    price_per_sku: (prod.unitpriced === (prod.units == 1)) ? prod.curr_price : prod.curr_price * prod.units,
-                    total_per_finished_sku: ((prod.unitpriced === (prod.units == 1)) ? prod.curr_price : prod.curr_price * prod.units),
-                }
-                var spk_mats = spk[i].materials;
-                for (var j=0; j<spk_mats.length; j++) {
-                    var prod = product_dict[spk_mats[j].product];
-                    spk_mats[j].product = {
-                        inventory_name: prod.inventory_name,
-                        price_per_sku: (prod.unitpriced === (prod.units == 1)) ? prod.curr_price : prod.curr_price * prod.units,
-                        total_per_finished_sku: ((prod.unitpriced === (prod.units == 1)) ? prod.curr_price : prod.curr_price * prod.units) * spk_mats[j].raw_qty / spk[i].finished_qty,
-                    }
-                }
-                var subtotal = 0;
-                for (var j=0; j<spk_mats.length; j++) {
-                    console.log(spk_mats[j].product.total_per_finished_sku);
-                    subtotal += (spk_mats[j].product.total_per_finished_sku);
-                }
-                console.log(subtotal);
-                spk[i].profit = spk[i].product.total_per_finished_sku - subtotal - (spk[i].other_cost || 0) / spk[i].finished_qty;
-            }
-        }
-        console.log(self.saved_processes_koa());
-    });
-
-
-
-    var last_used_cf = undefined;
-    self.load_data_in_graph = function (cf) {
-        if (!cf) return;
-        last_used_cf = cf;
-
-        /**
-         * Create summary data for graphing
-         */
-        // Add finished product as first element
-        barchart_data = [{
-            prod_name: cf.product.inventory_name,
-            total: cf.product.total_per_finished_sku * cf.multiplier()
-        }];
-        // Add total of materials as second element
-        // TODO: Add other expenses
-        var subtotal = 0;
-        for (var i=0; i<cf.materials.length; i++) {
-            subtotal += (cf.materials[i].product.total_per_finished_sku * cf.multiplier());
-        }
-        subtotal += (cf.other_cost || 0) * cf.multiplier() / cf.finished_qty;
-        barchart_data.push({
-            prod_name: '材料',
-            total: subtotal
-        });
-        barchart_data.push({
-            prod_name: '',
-            total: barchart_data[0].total - subtotal
-        });
-
-        console.log(barchart_data);
-
-        /**
-         * Begin D3.js graphing
-         */
-        draw_bar_graph(barchart_data);
-
-    };
-
-
-    ko.computed(function () {
-        var spk = self.saved_processes_koa();
-        for (var i=0; i<spk.length; i++) {
-            if (spk[i].multiplier) spk[i].multiplier();
-        }
-        self.load_data_in_graph(last_used_cf);
-    });
-
-
-    /**************************
-     * NEW COST FLOW CREATION *
-     **************************/
-    self.isAllFilled = ko.observable();
-    self.raw_materials_koa = ko.observableArray();
-    self.selected_materials_koa = ko.observableArray();
-
-    self.finished_good_koa = ko.observableArray();
-    self.selected_good_ko = ko.observable();
-    self.work_hours_ko = ko.observable();
-    self.other_costs_ko = ko.observable();
-
-
-    /**
-     * Listen for all quantities filled
-     * Then validate and activate button
-     * Also add temp bar to graph
-     */
-    ko.computed(function () {
-        self.isAllFilled(true);
-        // Finished product qty filled in?
-        var sgko = self.selected_good_ko();
-        if (sgko != undefined) {
-            if (isNaN(sgko.qty_ko()) || Number(sgko.qty_ko()) == 0) {
-                self.isAllFilled(false);
-            }
-        }
-        // Material quantities all filled in?
-        if (self.selected_materials_koa().length == 0) {
-            self.isAllFilled(false);
-        }
-        self.selected_materials_koa().forEach(function (each) {
-            if (isNaN(each.qty_ko()) || Number(each.qty_ko()) == 0) {
-                self.isAllFilled(false);
-            }
-        });
-
-    });
-
-    /**
-     * Save the new costflow record then add it to
-     * the saved processes list for display.
-     */
-    self.save_process = function () {
-        // AJAJ request for all product records
-        var xmlhttp = new XMLHttpRequest(),
-            params = {
-                _csrf: viewModel._csrf,
-                costflow: {
-                    product: self.selected_good_ko().id,
-                    finished_qty: self.selected_good_ko().qty_ko(),
-                    work_hours: self.work_hours_ko(),
-                    other_cost: self.other_costs_ko()
-                },
-                materials: []
-            };
-        // Add raw material products to params list
-        self.selected_materials_koa().forEach(function (each) {
-            params.materials.push({product: each.id, raw_qty: each.qty_ko()});
-        });
-        // Send POST request
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState !== 4) return;
-
-            var res = JSON.parse(xmlhttp.response);
-            if (res.status == 500) {
-                alert(res.summary +
-                      '\nPossibly no internet access. Check connection.' +
-                      '\nSee console for response object.');
-                console.log(res);
-            }
-            console.log(JSON.parse(xmlhttp.response));
-            res.selected_ko = ko.observable(true);
-            self.saved_processes_koa.push(res);
-        };
-        xmlhttp.open('POST', '/costflow', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON(params));
-    };
-
-
-    /**
-     * Load all costflow records and add to saved_processes_koa
-     */
-    function populate_processes_lists() {
-        self.saved_processes_koa.removeAll();
-
-        // AJAJ request for all costflow records
-        // Send GET request
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState !== 4) return;
-
-            var res = JSON.parse(xmlhttp.response);
-            if (res.status == 500) {
-                alert(res.summary +
-                      '\nPossibly no internet access. Check connection.' +
-                      '\nSee console for response object.');
-                console.log(res);
-            }
-            console.log(JSON.parse(xmlhttp.response));
-            for (var i=0; i<res.length; i++) {
-                res[i].selected_ko = ko.observable(true);
-                self.saved_processes_koa.push(res[i]);
-            }
-            self.show_loading(false);
-        };
-        xmlhttp.open('GET', '/costflow', true);
-        xmlhttp.send();
-    };
-
-    /**
-     * Load all products and add to raw or finished goods arrays
-     * This is also the source of current prices
-     */
-    (function populate_goods_lists() {
-        self.raw_materials_koa.removeAll();
-        self.finished_good_koa.removeAll();
-
+    // List of finished goods (id, optionsText, isRaw)
+    self.product_options_koa = ko.observableArray();
+    // List of raw goods (id, optionsText, isRaw)
+    self.material_options_koa = ko.observableArray();
+    //Load product options into product and material lists.
+    (function () {
         // AJAJ request for all product records
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
@@ -346,58 +274,78 @@ viewModel.AnalysisVM = new (function () {
 
             var res = JSON.parse(xmlhttp.response);
             if (res.status == 500) {
-                alert(res.summary +
-                      '\nPossibly no internet access. Check connection.' +
-                      '\nSee console for response object.');
+                alert(res.summary);
                 console.log(res);
             }
-            // Place into supply or finished goods list
+
             res.forEach(function(product) {
-                if (product.discontinued) {
-                    product.optionsText = '* ' + product.optionsText;
-                }
-                product.qty_ko = ko.observable();
-                if (product.is_supply) {
-                    self.raw_materials_koa.push(product);
+                if (product.isRaw) {
+                    self.material_options_koa.push(product);
                 } else {
-                    self.finished_good_koa.push(product);
+                    self.product_options_koa.push(product);
                 }
-                product_dict[product.id] = product;
             });
-
-            // Load processes from database.
-            populate_processes_lists();
         };
-        xmlhttp.open('GET', '/database/get/products', true);
+        xmlhttp.open('GET', '/product/options', true);
         xmlhttp.send();
     })();
 
-    self.delete_item = function (record) {
-        // AJAJ request for all costflow records
-        // Send DELETE request
-        var xmlhttp = new XMLHttpRequest(),
-            params = {
-                _csrf: viewModel._csrf,
-                id: record.id
-            };
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState !== 4) return;
 
-            var res = JSON.parse(xmlhttp.response);
-            if (res.status == 500) {
-                alert(res.summary +
-                      '\nPossibly no internet access. Check connection.' +
-                      '\nSee console for response object.');
-                console.log(res);
-            }
-            self.saved_processes_koa.remove(record);
-        };
-        xmlhttp.open('DELETE', '/costflow' , true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON(params));
+
+    // Store saved processes
+    self.processes_koa = ko.observableArray();
+
+    // Selected option in finished goods list
+    self.product_list_selection = ko.observable();
+
+    // Selected option in raw goods list
+    self.material_list_selection = ko.observable();
+
+
+    self.addProcess = function () {
+        var s_prod = self.product_list_selection()
+        self.processes_koa.push(
+            new ProcessVM({
+                title: s_prod.optionsText,
+                product_id: s_prod.id
+            })
+        );
     };
 
+    self.removeProcess = function (item) {
+        self.processes_koa.remove(item);
+    };
+
+    self.addMaterial = function (item) {
+        console.log(item);
+        self.selectedProcessRecord().materials_koa.push(
+            new ProcessProductVM({id: item.id})
+        );
+    };
+
+    self.removeMaterial = function (item) {
+        self.selectedProcessRecord().materials_koa.remove(item);
+    };
+
+
+    self.save = function() {
+        JSON.stringify(ko.toJS(self.contacts), null, 2);
+    };
+
+    // Reference to the currently selected process
+    self.selectedProcessRecord = ko.observable(new ProcessVM());
+
+    /**
+     * Show the selected process in the right pane.
+     * @param {Object} item Selected item.
+     */
+    self.showProcess = function (item) {
+        console.log('showProcess', item);
+        self.selectedProcessRecord(item);
+    };
+
+
+
+
 });
-
-
 </script>

@@ -294,5 +294,38 @@ module.exports = {
             });
         });
     },
+
+    options: function (req, res) {
+        Product.find()
+        .exec(function (err, recs) {
+            if (err) res.json({
+                error: err.message
+            }, 400);
+
+            var ret_list = [];
+            for (var i=0; i<recs.length; i++) {
+                ret_list.push({
+                    id: recs[i].id,
+                    isRaw: recs[i].is_supply,
+                    optionsText: recs[i].optionsText()
+                });
+            }
+            res.json(ret_list);
+        });
+    },
+
+
+    /**
+    * `Database/ProductController.getId()`
+    */
+    getId: function (req, res) {
+        console.log(req.allParams());
+        Product
+        .findOne({id: req.param('id')})
+        .exec(function (err, record) {
+            if (err) { res.send(err); return; }
+            res.json(record);
+        });
+    },
 };
 

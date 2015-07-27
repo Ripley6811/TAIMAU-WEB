@@ -38,9 +38,9 @@ module.exports = {
                 res.send(err);
                 return false;
             }
-            
+
             console.log('BRANCH FINDorCREATE:', typeof rec, rec);
-            
+
             Branch.update({name: branch.name, group: co_name}, branch)
             .exec(function (err, recs) {
                 if (err) {
@@ -70,13 +70,13 @@ module.exports = {
      */
     product: function (req, res) {
         var newRecord = req.param('product');
-        
+
         // Blank name IDs are not allowed.
         newRecord.MPN = String(Math.round(Math.random()*100000000)+100);
-        
+
         Product.create(newRecord, function(err, rec) {
             if (err) { res.send(err); return; }
-            
+
             res.send(rec);
         });
     },
@@ -98,7 +98,7 @@ module.exports = {
     multipleshipments: function (req, res) {
         var items = req.param('items');
         console.log(items);
-        
+
         //Ensure quantity is an integer and not string.
         //Ensure date is a Date object and sortable.
         for (var i=0; i<items.length; i++) {
@@ -106,7 +106,7 @@ module.exports = {
             items[i].orderdate = new Date(items[i].orderdate);
             items[i].shipmentdate = new Date(items[i].shipmentdate);
         }
-        
+
         var POsort = function(array) {
             array.sort(function(a, b){return a.qty-b.qty});
             array.sort(function(a, b){return a.orderdate-b.orderdate});
@@ -122,7 +122,7 @@ module.exports = {
 
             // NOTE: Returned records are not in the same order as 'items'!
             // Sort Orders and original Items in same way to match up IDs.
-            POsort(orders);     
+            POsort(orders);
             POsort(items);
             // Add `order` ID to the item record.
             for (var i=0; i<items.length; i++) {
@@ -160,13 +160,13 @@ module.exports = {
         console.log('SAVE/SHIPMENTITEM/', req.params.all());
         var co_name = req.param('co_name'),
             item = req.param('item');
-        
+
         var shipmentRecord = {
             shipmentdate: new Date(item.shipdate ? item.shipdate : item.duedate),
             shipment_no: item.shipment_no,
             group: co_name,
         };
-        
+
         var itemRecord = {
             order_id: item.order_id,
             qty: item.qty,
@@ -187,12 +187,12 @@ module.exports = {
                 Shipmentitem.update({id: item.id}, itemRecord)
                 .exec(function (err, rec2) {
                     if (err) { res.json(err); return; }
-                    
+
                     res.send({updated: true, shipment: rec, shipmentitem: rec2});
                 });
             });
         };
-        
+
         var create = function () {
             console.log('CREATE', item);
             // Create shipment.
@@ -204,12 +204,12 @@ module.exports = {
                 Shipmentitem.create(itemRecord)
                 .exec(function (err, rec2) {
                     if (err) { res.json(err); return; }
-                    
+
                     res.send({created: true, shipment: rec, shipmentitem: rec2});
                 });
             });
         };
-        
+
         if ('id' in item) update();
         else create();
     },
@@ -219,20 +219,23 @@ module.exports = {
      * `Database/saveController.invoice()`
      */
     invoice: function (req, res) {
+        console.log(req.allParams());
         var co_name = req.param('co_name');
         var invoice_data = req.param('invoice_data');
         var items = req.param('items');
-        
+
         Invoice.create(invoice_data, function(err, inv) {
             if (err) { res.send(err); return; }
 
             // Add `invoice` ID to the item records.
             for (var i=0; i<items.length; i++) {
+                console.log(inv);
                 items[i].invoice_id = inv.id;
             }
             Invoiceitem.create(items, function(err, inv_items) {
                 if (err) { res.send(err); return; }
 
+                console.log(inv_items);
                 res.send({inv_items: inv_items, inv: inv});
             });
         });
