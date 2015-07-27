@@ -200,7 +200,7 @@ function KO_PurchaseOrder(product, order) {
     self.guige = product.SKU;
     self.qty = ko.observable(order.qty ? order.qty : '');
 //    self.price = ko.observable(product.curr_price); // Why did i do this?
-    self.price = ko.observable(order.price);
+    self.price = ko.observable(order.price || null);
     self.applytax = ko.observable(order.applytax);
     self.um = product.UM;
     self.jianshu = self.sku !== '槽車' ? self.sku : self.um;
@@ -239,6 +239,28 @@ function KO_PurchaseOrder(product, order) {
     });
 
     self.selected = ko.observable(false);
+
+    // Fill in the most recent price if blank.
+    (function set_recent_price() {
+        if (self.price() === null) {
+            // AJAJ request for product record
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState !== 4) return;
+
+                if (!xmlhttp.response) {
+                    console.log("Get recent price response is empty");
+                    return;
+                }
+
+                var recent_price = JSON.parse(xmlhttp.response);
+
+                self.price(recent_price);
+            };
+            xmlhttp.open('GET', '/product/price/'+self.MPN, true);
+            xmlhttp.send();
+        }
+    })();
 }
 
 function KO_Shipment(data) {

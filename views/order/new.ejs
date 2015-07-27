@@ -74,7 +74,8 @@
 
 <!--START: PO entry form-->
 <div data-bind="with: itemsVM">
-    <div id="form modal" class="modal" data-bind="style: {display: modalVisible() ? 'block' : 'none'}">
+    <div id="form modal" class="modal"
+         data-bind="style: {display: modalVisible() ? 'block' : 'none'}">
         <div class="panel panel-success">
             <div class="panel-heading">
 
@@ -141,8 +142,11 @@
                                             <div class="col-xs-6" style="padding: 0px 2px">
                                                 <div class="input-group has-success">
                                                     <div class="input-group-addon">$</div>
-        <!--Price-->                                <input style="font-size: 18px;" type="number" min=1 step="0.001" class="form-control text-right" name="price" data-bind="textInput: price" required />
-                                                    <div class="input-group-addon" data-bind="text: pricing"></div>
+        <!--Price-->                                <input style="font-size: 18px;" type="number" min=1 step="0.001"
+                                                           class="form-control text-right" name="price"
+                                                           data-bind="textInput: price" required />
+                                                    <div class="input-group-addon"
+                                                         data-bind="text: pricing"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -291,12 +295,25 @@ function ItemsModel() {
         self.rows.push(new KO_PurchaseOrder(self.products[i], self.orderID));
     }
 
+    var rows_length = null;
     var selectCompute = ko.computed(function () {
-        self.rows.removeAll()
-        for (var i=0; i<self.products().length; i++) {
-            if (self.products()[i].selected()) {
-                self.rows.push(new KO_PurchaseOrder(ko.toJS(self.products()[i]), self.orderID));
+        var save_products_length = self.products().length;
+
+        var count_selected = 0;
+        for (var i=0; i<save_products_length; i++) {
+            if (self.products.peek()[i].selected()) {
+                count_selected += 1;
             }
+        }
+
+        if (count_selected !== rows_length) {
+            self.rows.removeAll()
+            for (var i=0; i<save_products_length; i++) {
+                if (self.products.peek()[i].selected()) {
+                    self.rows.push(new KO_PurchaseOrder(ko.toJS(self.products.peek()[i]), self.orderID));
+                }
+            }
+            rows_length = self.rows.peek().length;
         }
     });
 }

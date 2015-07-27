@@ -319,12 +319,26 @@ module.exports = {
     * `Database/ProductController.getId()`
     */
     getId: function (req, res) {
-        console.log(req.allParams());
         Product
         .findOne({id: req.param('id')})
         .exec(function (err, record) {
             if (err) { res.send(err); return; }
             res.json(record);
+        });
+    },
+
+
+    /**
+    * `Database/ProductController.price()`
+    */
+    price: function (req, res) {
+        Order
+        .find({MPN: req.param('id')})
+        .sort('orderdate DESC')
+        .limit(1)
+        .exec(function (err, records) {
+            if (err) { res.send(err); return; }
+            res.json(records[0] ? records[0].price : null);
         });
     },
 };
