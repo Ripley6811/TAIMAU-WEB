@@ -8,7 +8,7 @@
 module.exports = {
 	new: function (req, res) {
         var params = req.params.all();
-        
+
         Cogroup.findOne({name: params.id})
         .populate('branches')
         .populate('contacts')
@@ -18,11 +18,11 @@ module.exports = {
             });
         });
     },
-    
+
 	create: function (req, res) {
         console.log('shipments/create/', req.params.all());
         var params = req.params.all();
-        
+
         if (!(params.PO instanceof Array)) {
             params.PO = [params.PO];
             params.MPN = [params.MPN];
@@ -30,10 +30,10 @@ module.exports = {
             params.price = [params.price];
             params.is_supply = [params.is_supply];
         }
-        
+
         var orderIDs = params.PO,
             qty = params.qty;
-        
+
         var newShipment = {
             shipmentdate: params['shipmentdate'],
             shipment_no: params['shipment_no'],
@@ -41,7 +41,7 @@ module.exports = {
             shipmentdest: params['shipmentdest'],
             group: params.group,
         };
-        
+
         // Create default order records for non-PO shipments
         defaultOrders = [];
         for (var i=0; i<orderIDs.length; i++) {
@@ -63,25 +63,25 @@ module.exports = {
             }
             defaultOrders.push(record);
         }
-        
+
         // Update prices in the product records
-        
-        
-        
+
+
+
         // Create shipment
         Shipment.create(newShipment)
         .exec( function (err, shipment) {
             if (err) { res.json(err); return; }
 
             console.log('SHIPMENT:', shipment);
-        
+
             defaultOrders.forEach( function (defOrder) {
                 console.log('DEF ORDER:', defOrder);
                 Order.findOrCreate({id: defOrder.id}, defOrder, function (err, order) {
                     if (err) {
                         res.json({
                             error: err
-                        }, 400); 
+                        }, 400);
                         return;
                     }
                     console.log('ORDER CREATE or FOUND:', order);
@@ -106,43 +106,82 @@ module.exports = {
             200
         );
     },
-    
+
     showall: function (req, res) {
         var params = req.params.all();
-        
+
         Cogroup.findOne({name: params.id})
         .populate('branches')
         .exec( function (err, cogroup) {
             if (err) {
                 res.json({
                     error: err
-                }, 400); 
+                }, 400);
                 return;
             }
-            
+
             res.view({
                 cogroup: cogroup,
             });
         });
     },
-    
+
     get: function (req, res) {
         var params = req.params.all();
-        
+
         Shipment.findOne({name: params.id}, function (err, cogroup) {
             if (err) {
                 res.json({
                     error: err
-                }, 400); 
+                }, 400);
                 return;
             }
-            
+
             res.view({
                 cogroup: cogroup,
             });
         });
+    },
+
+    pdf: function (req, res) {
+        var sid = req.param('id');
+//
+//        Shipmentitem.find({shipment_id: sid})
+//        .populateAll('items')
+//        .exec(function (err, recs) {
+////            Shipmentitem.find({shipment_id: sid})
+//            // Render pdf display window without layout.ejs (sidebar).
+//            res.view({
+//                shipment: recs[0].shipment_id,
+//                items: recs,
+//                layout: null
+//            });
+//        })
+
+
+
+        // Gets recent shipments for a company. "SHIPMENT/SHOWALL"
+        Shipmentitem.query(
+            "SELECT shipi.qty, sh.shipmentdate, sh.shipment_no, br.fullname as buyer, po.orderID, po.seller, prod.inventory_name, prod.product_label, prod.UM, prod.units, prod.SKU, prod.unitcounted"
+            + " FROM shipmentitem shipi "
+            + " JOIN shipment sh ON sh.id = shipi.shipment_id "
+            + " JOIN `order` po ON po.id = shipi.order_id "
+            + " JOIN product prod ON prod.MPN = po.MPN "
+            + " JOIN branch br ON po.buyer = br.name "
+            + " WHERE shipment_id LIKE ?"
+            + " ;"
+            , [req.param('id')],
+        function(err, recs) {
+            if (err) console.log(err);
+            res.view({
+                shipment_no: recs[0].shipment_no,
+                items: recs,
+                layout: null
+            });
+        });
+
     }
-    
-    
+
+
 };
 

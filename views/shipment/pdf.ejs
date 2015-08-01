@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<!--Show a PDF for shipment in a separate window-->
+<head>
+    <title>單據號碼: <%= shipment_no %></title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <script src="/js/imageUri.js"></script>
+    <script src="/js/jsPDF/jspdf.js"></script>
+    <script src="/js/jsPDF/plugins/addimage.js"></script>
+    <script src="/js/jsPDF/plugins/alttext.js"></script>
+    <iframe id="shipment-pdf-frame" type="application/pdf"
+            width="100%" height="550px" frameborder="1"
+            style="position:relative; z-index:999">
+    </iframe>
+</body>
+</html>
+
+
+<script>
+(function () {
+    // Can we set height 140mm?
+    var doc = new jsPDF('p', 'mm');
+    var items = <%- JSON.stringify(items) %>;
+    console.log(items);
+
+    doc.setFont('Times', 'Roman');
+    /**
+     * Add non-ASCII printing function
+     */
+    doc.alttext = nonASCIItext;
+
+
+    /**
+     * Display a light grey grid for designing layout
+     */
+    if (false) {
+        doc.setDrawColor(200);
+        doc.setTextColor(200,200,200);
+        for (var i=0; i<50; i++) {
+            doc.rect(0,i*10,300,10);
+            doc.text(0,i*10, (i*10).toString());
+            doc.rect(i*10,0,10,300);
+            doc.text(i*10,5, (i*10).toString());
+        }
+        doc.setDrawColor(0);
+        doc.setTextColor(0,0,0);
+    }
+
+    var tm = {
+        '台茂':'台茂化工儀器原料行',
+        '富茂':'富茂工業原料行',
+        '永茂':'永茂企業行'
+    }
+
+
+    var scale = 0.30,
+        fsize = 13;
+    doc.addImage(taimauLogoSmallURI, 'JPEG', 125, 6, 43*scale, 43*scale);
+    doc.alttext(137, 12, tm[items[0].seller], fsize+3);
+    doc.alttext(138, 18, '電話: 07-3517110', fsize);
+    doc.alttext(10, 15, '出 貨 單', fsize+4);
+
+    doc.alttext(10, 26, '客戶名稱: ' + items[0].buyer, fsize);
+    doc.alttext(10, 32, '聯  絡  人: ', fsize);
+    doc.alttext(10, 38, '連絡電話: ', fsize);
+
+    doc.alttext(130, 32, '單據號碼: <%= shipment_no %>', fsize);
+    doc.alttext(130, 38, '單據日期: ' + items[0].shipmentdate.substring(0,10), fsize);
+
+    var head_yoffset = 48;
+    doc.alttext(15, head_yoffset, '序號', fsize);
+    doc.alttext(30, head_yoffset, '訂單號碼', fsize);
+    doc.alttext(60, head_yoffset, '品名', fsize);
+    doc.alttext(150, head_yoffset, '數量', fsize);
+    doc.alttext(170, head_yoffset, '單位', fsize);
+
+    var list_yoffset = 55;
+    for (var i=0; i<items.length; i++) {
+        var item = items[i],
+            y = list_yoffset+6*i;
+        doc.alttext(15, y, (i+1).toString(), fsize);
+        doc.alttext(30, y, item.orderID, fsize);
+        doc.alttext(60, y, item.product_label ? item.product_label : item.inventory_name, fsize);
+        doc.alttext(150, y, item.qty.toString(), fsize);
+        doc.alttext(170, y, item.units == 1 ? item.UM : item.SKU, fsize);
+    }
+
+    // Signature area for receiver, driver and office bookkeeping
+    doc.alttext(12, 105, '客戶簽收', fsize);
+    doc.alttext(72, 105, '司機', fsize);
+    doc.alttext(132, 105, '備註', fsize);
+
+    // Page lines and borders
+    doc.setFillColor(200);
+    doc.rect(10, head_yoffset+1, 190, 0.2, 'F');
+    doc.rect(10, 100, 190, 0.2, 'F');
+    doc.rect(70, 100, 0.2, 15, 'F');
+    doc.rect(130, 100, 0.2, 15, 'F');
+
+
+    var pp = document.getElementById('shipment-pdf-frame');
+    pp.src = doc.output('bloburi');
+})();
+</script>

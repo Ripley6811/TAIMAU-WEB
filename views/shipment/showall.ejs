@@ -58,7 +58,15 @@
                                 <span data-bind="text: inventory_name"></span>
                             </td>
 
-                            <td style="padding: 3px 3px; border-left: solid 2px #532929;" class="text-center"><a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '#'}"><strong data-bind="text: shipment_no"></strong> <span class="badge" data-bind="visible: !shipment_no || $parent.debug, text: shipment_id"></span></a></td>
+                            <td style="padding: 3px 3px; border-left: solid 2px #532929;"
+                                class="text-center">
+                                <button style="padding: 2px 10px" class="btn btn-custom"
+                                   data-bind="click: $parent.open_shipment_pdf">
+                                    <strong data-bind="text: shipment_no"></strong>
+                                    <span class="badge"
+                                          data-bind="visible: !shipment_no || $parent.debug, text: shipment_id"></span>
+                                </button>
+                            </td>
                             <td style="padding: 3px 3px" class="text-center"><span data-bind="text: date"></span></td>
                             <td style="padding: 3px 3px" class="text-right"><span data-bind="text: qty"></span> <span data-bind="text: countUnit"></span></td>
 
@@ -206,6 +214,10 @@ viewModel.ShowAllShipmentsVM = new (function () {
             panel_body.style.marginTop = panel_head.offsetHeight + 'px';
         }
     });
+
+    self.open_shipment_pdf = function (item) {
+        window.open('/shipment/pdf/' + item.shipment_id, '', "width=1000, height=600");
+    }
 });
 
 //viewModel.ShowAllShipmentsVM = new ShowAllShipmentsVM();
