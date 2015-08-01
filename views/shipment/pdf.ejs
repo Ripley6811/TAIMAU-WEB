@@ -56,7 +56,7 @@
 
 
     var scale = 0.30,
-        fsize = 13;
+        fsize = 16;
     doc.addImage(taimauLogoSmallURI, 'JPEG', 125, 6, 43*scale, 43*scale);
     doc.alttext(137, 12, tm[items[0].seller], fsize+3);
     doc.alttext(138, 18, '電話: 07-3517110', fsize);
@@ -71,26 +71,27 @@
 
     var head_yoffset = 48;
     doc.alttext(15, head_yoffset, '序號', fsize);
-    doc.alttext(30, head_yoffset, '訂單號碼', fsize);
-    doc.alttext(60, head_yoffset, '品名', fsize);
-    doc.alttext(150, head_yoffset, '數量', fsize);
-    doc.alttext(170, head_yoffset, '單位', fsize);
+    doc.alttext(32, head_yoffset, '訂單號碼', fsize);
+    doc.alttext(70, head_yoffset, '品名', fsize);
+    doc.alttext(160, head_yoffset, '數量', fsize);
+    doc.alttext(180, head_yoffset, '單位', fsize);
 
     var list_yoffset = 55;
     for (var i=0; i<items.length; i++) {
         var item = items[i],
             y = list_yoffset+6*i;
         doc.alttext(15, y, (i+1).toString(), fsize);
-        doc.alttext(30, y, item.orderID, fsize);
-        doc.alttext(60, y, item.product_label ? item.product_label : item.inventory_name, fsize);
-        doc.alttext(150, y, item.qty.toString(), fsize);
-        doc.alttext(170, y, item.units == 1 ? item.UM : item.SKU, fsize);
+        doc.alttext(32, y, item.orderID, fsize);
+        doc.alttext(70, y, item.product_label ? item.product_label : item.inventory_name, fsize);
+        doc.alttext(160, y, item.qty.toString(), fsize);
+        doc.alttext(180, y, item.units == 1 ? item.UM : item.SKU, fsize);
     }
 
     // Signature area for receiver, driver and office bookkeeping
-    doc.alttext(12, 105, '客戶簽收', fsize);
-    doc.alttext(72, 105, '司機', fsize);
-    doc.alttext(132, 105, '備註', fsize);
+    var sig_offset = 106;
+    doc.alttext(12, sig_offset, '客戶簽收', fsize);
+    doc.alttext(72, sig_offset, '司機', fsize);
+    doc.alttext(132, sig_offset, '備註', fsize);
 
     // Page lines and borders
     doc.setFillColor(200);
