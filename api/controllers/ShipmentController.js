@@ -191,9 +191,9 @@ module.exports = {
                 counter += 1;
                 var test_no = [
                     d.getFullYear(),
-                    ('00' + (1 + d.getMonth())).substr(-2,2),
-                    ('00' + d.getDate()).substr(-2,2),
-                    ('000' + counter).substr(-3,3)
+                    ('00' + (1 + d.getMonth())).slice(-2),
+                    ('00' + d.getDate()).slice(-2),
+                    ('000' + counter).slice(-3)
                 ].join('');
                 if (used_nos.indexOf(test_no) < 0) {
                     new_number = test_no;

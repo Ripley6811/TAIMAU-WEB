@@ -1,36 +1,31 @@
-<!DOCTYPE html>
-<html>
-<!--Show a PDF for shipment in a separate window-->
-<head>
-    <title>單據號碼: <%= shipment_no %></title>
-    <meta charset="UTF-8">
-</head>
-<body>
-    <script src="/js/imageUri.js"></script>
-    <script src="/js/jsPDF/jspdf.js"></script>
-    <script src="/js/jsPDF/plugins/addimage.js"></script>
-    <script src="/js/jsPDF/plugins/alttext.js"></script>
-    <label>台茂分公司:</label>
-    <select data-bind="value: tm_branch">
-        <option value="台茂">台茂化工儀器原料行</option>
-        <option value="富茂">富茂工業原料行</option>
-        <option value="永茂">永茂企業行</option>
-    </select>
-    <label>買主分公司:</label>
-    <select data-bind="foreach: branchesArray, value: buyer_branch">
-        <option data-bind="attr: {value: fullname}, text: fullname"></option>
-    </select>
-    <label>聯絡人:</label>
-    <select data-bind="options: contactsArray, optionsText: 'name', value: contact_selection"></select>
-    (<input type="checkbox" data-bind="checked: include_position">表示職位)
-    <iframe id="shipment-pdf-frame" type="application/pdf"
-            width="100%" height="550px" frameborder="10">
-    </iframe>
-    <label>Font size:</label>
-    <input type="number" size="3" data-bind="value: font_size">
-</body>
-</html>
-
+<div class="panel panel-success" style="height: 100%; margin: 0px">
+    <div class="panel-heading">
+        <div class="panel-title">
+            <label>台茂分公司:</label>
+            <select data-bind="value: tm_branch">
+                <option value="台茂">台茂化工儀器原料行</option>
+                <option value="富茂">富茂工業原料行</option>
+                <option value="永茂">永茂企業行</option>
+            </select>
+            <label>買主分公司:</label>
+            <select data-bind="foreach: branchesArray, value: buyer_branch">
+                <option data-bind="attr: {value: fullname}, text: fullname"></option>
+            </select>
+            <label>聯絡人:</label>
+            <select data-bind="options: contactsArray, optionsText: 'name', value: contact_selection"></select>
+            (<input type="checkbox" data-bind="checked: include_position">表示職位)
+        </div>
+    </div>
+    <div class="panel-body">
+        <iframe id="shipment-pdf-frame" type="application/pdf"
+                width="100%" height="550px" frameborder="10">
+        </iframe>
+    </div>
+    <div class="panel-footer lightorange-blend">
+        <label>Font size:</label>
+        <input type="number" size="3" data-bind="value: font_size">
+    </div>
+</div>
 
 <script>
 
@@ -57,6 +52,7 @@ ko.computed(function () {
 });
 
 function draw_PDF() {
+    'use strict';
     // Can we set height 140mm?
     var doc = new jsPDF('p', 'mm');
     var items = <%- JSON.stringify(items) %>;
@@ -99,7 +95,7 @@ function draw_PDF() {
 
     doc.alttext(10, 26, '客戶名稱: ' + buyer_branch(), font_size());
     var contact_str = contact_selection().name;
-    if (include_position()) {
+    if (include_position() && contact_selection().position) {
         contact_str = contact_str + ' (' + contact_selection().position + ')';
     }
     doc.alttext(10, 32, '聯  絡  人: ' + contact_str, font_size());
