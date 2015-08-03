@@ -205,7 +205,7 @@
                         <div class="form-group">
                             <label class="col-md-4 control-label">貨單編號</label>
                             <div class="col-md-8 has-success">
-                                <input type="text" class="form-control" maxlength="8" placeholder="" name="shipment_no">
+                                <input type="text" class="form-control" maxlength="15" placeholder="" name="shipment_no" data-bind="textInput: shipment_no">
                             </div>
                         </div>
                     </div>
@@ -380,7 +380,25 @@ function ItemsModel() {
     };
     self.productsGet();
 
+    self.shipment_no = ko.observable();
 
+    // Retrieve a new shipment number from database.
+    // AJAJ request for product record
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState !== 4) return;
+        console.log(xmlhttp);
+        if (!xmlhttp.response) {
+            alert("Response is empty");
+            return;
+        }
+
+        var res = JSON.parse(xmlhttp.response);
+
+        self.shipment_no(res.newnumber);
+    };
+    xmlhttp.open('GET', '/shipment/availableNumber', true);
+    xmlhttp.send();
 
 
     self.orders = ko.observableArray();

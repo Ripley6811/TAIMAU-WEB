@@ -145,20 +145,6 @@ module.exports = {
 
     pdf: function (req, res) {
         var sid = req.param('id');
-//
-//        Shipmentitem.find({shipment_id: sid})
-//        .populateAll('items')
-//        .exec(function (err, recs) {
-////            Shipmentitem.find({shipment_id: sid})
-//            // Render pdf display window without layout.ejs (sidebar).
-//            res.view({
-//                shipment: recs[0].shipment_id,
-//                items: recs,
-//                layout: null
-//            });
-//        })
-
-
 
         // Gets recent shipments for a company. "SHIPMENT/SHOWALL"
         Shipmentitem.query(
@@ -189,6 +175,32 @@ module.exports = {
             })
         });
 
+    },
+
+    availableNumber: function (req, res) {
+        var d = new Date();
+        d = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        Shipment.find({shipmentdate: { '>=': d}})
+        .exec(function (err, recs) {
+            var used_nos = [];
+            recs.forEach(function (each) {used_nos.push(each.shipment_no)})
+            console.log(used_nos);
+            var new_number = null;
+            var counter = 0;
+            while (new_number === null) {
+                counter += 1;
+                var test_no = [
+                    d.getFullYear(),
+                    ('00' + (1 + d.getMonth())).substr(-2,2),
+                    ('00' + d.getDate()).substr(-2,2),
+                    ('000' + counter).substr(-3,3)
+                ].join('');
+                if (used_nos.indexOf(test_no) < 0) {
+                    new_number = test_no;
+                }
+            }
+            res.json({newnumber: new_number});
+        });
     }
 
 
