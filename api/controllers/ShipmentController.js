@@ -162,7 +162,7 @@ module.exports = {
 
         // Gets recent shipments for a company. "SHIPMENT/SHOWALL"
         Shipmentitem.query(
-            "SELECT shipi.qty, sh.shipmentdate, sh.shipment_no, br.fullname as buyer, po.orderID, po.seller, prod.inventory_name, prod.product_label, prod.UM, prod.units, prod.SKU, prod.unitcounted"
+            "SELECT shipi.qty, sh.shipmentdate, sh.shipment_no, br.fullname as buyer, po.orderID, po.group, po.seller, prod.inventory_name, prod.product_label, prod.UM, prod.units, prod.SKU, prod.unitcounted"
             + " FROM shipmentitem shipi "
             + " JOIN shipment sh ON sh.id = shipi.shipment_id "
             + " JOIN `order` po ON po.id = shipi.order_id "
@@ -173,11 +173,20 @@ module.exports = {
             , [req.param('id')],
         function(err, recs) {
             if (err) console.log(err);
-            res.view({
-                shipment_no: recs[0].shipment_no,
-                items: recs,
-                layout: null
-            });
+
+            Cogroup.findOne(recs[0].group)
+            .populate('branches')
+            .populate('contacts')
+            .exec(function (err, group) {
+
+                res.view({
+                    cogroup: group,
+                    shipment_no: recs[0].shipment_no,
+                    items: recs,
+    //                layout: null
+                });
+
+            })
         });
 
     }

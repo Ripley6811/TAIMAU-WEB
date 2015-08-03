@@ -192,11 +192,6 @@ viewModel.ShowAllShipmentsVM = new (function () {
             }
         });
     });
-//    self.getShipmentsArray();
-
-//    ko.computed(function () {
-//        self.getShipmentsArray();
-//    });
 
     // Set the header cell widths to match the body cell widths
     ko.computed(function () {
@@ -216,9 +211,7 @@ viewModel.ShowAllShipmentsVM = new (function () {
     });
 
     self.open_shipment_pdf = function (item) {
-        window.open('/shipment/pdf/' + item.shipment_id, '', "width=1000, height=600");
+        window.location = '/shipment/pdf/' + item.shipment_id;
     }
 });
-
-//viewModel.ShowAllShipmentsVM = new ShowAllShipmentsVM();
 </script>

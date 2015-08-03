@@ -10,20 +10,56 @@
     <script src="/js/jsPDF/jspdf.js"></script>
     <script src="/js/jsPDF/plugins/addimage.js"></script>
     <script src="/js/jsPDF/plugins/alttext.js"></script>
+    <label>台茂分公司:</label>
+    <select data-bind="value: tm_branch">
+        <option value="台茂">台茂化工儀器原料行</option>
+        <option value="富茂">富茂工業原料行</option>
+        <option value="永茂">永茂企業行</option>
+    </select>
+    <label>買主分公司:</label>
+    <select data-bind="foreach: branchesArray, value: buyer_branch">
+        <option data-bind="attr: {value: fullname}, text: fullname"></option>
+    </select>
+    <label>聯絡人:</label>
+    <select data-bind="options: contactsArray, optionsText: 'name', value: contact_selection"></select>
+    (<input type="checkbox" data-bind="checked: include_position">表示職位)
     <iframe id="shipment-pdf-frame" type="application/pdf"
-            width="100%" height="550px" frameborder="1"
-            style="position:relative; z-index:999">
+            width="100%" height="550px" frameborder="10">
     </iframe>
+    <label>Font size:</label>
+    <input type="number" size="3" data-bind="value: font_size">
 </body>
 </html>
 
 
 <script>
-(function () {
+
+var tm_branch = ko.observable(<%- JSON.stringify(items) %>[0].seller);
+var font_size = ko.observable(14);
+
+var branchesArray = ko.observableArray(
+    <%- res.locals.cogroup ? JSON.stringify(cogroup.branches) : "[]" %>
+);
+var buyer_branch = ko.observable(<%- JSON.stringify(items) %>[0].buyer);
+
+var contactsArray = ko.observableArray(
+    <%- res.locals.cogroup ? JSON.stringify(cogroup.contacts) : "[]" %>
+);
+contactsArray.unshift({name:'', position:'', phone:'', cell:''});
+var contact_selection = ko.observable({name:'', position:'', phone:'', cell:''});
+var include_position = ko.observable(true);
+
+var shipment_no = ko.observable("<%= shipment_no %>");
+
+
+ko.computed(function () {
+    draw_PDF();
+});
+
+function draw_PDF() {
     // Can we set height 140mm?
     var doc = new jsPDF('p', 'mm');
     var items = <%- JSON.stringify(items) %>;
-    console.log(items);
 
     doc.setFont('Times', 'Roman');
     /**
@@ -55,43 +91,47 @@
     }
 
 
-    var scale = 0.30,
-        fsize = 16;
+    var scale = 0.30;
     doc.addImage(taimauLogoSmallURI, 'JPEG', 125, 6, 43*scale, 43*scale);
-    doc.alttext(137, 12, tm[items[0].seller], fsize+3);
-    doc.alttext(138, 18, '電話: 07-3517110', fsize);
-    doc.alttext(10, 15, '出 貨 單', fsize+4);
+    doc.alttext(137, 12, tm[tm_branch()], parseInt(font_size())+3);
+    doc.alttext(138, 18, '電話: 07-3517110', font_size());
+    doc.alttext(10, 15, '出 貨 單', parseInt(font_size())+4);
 
-    doc.alttext(10, 26, '客戶名稱: ' + items[0].buyer, fsize);
-    doc.alttext(10, 32, '聯  絡  人: ', fsize);
-    doc.alttext(10, 38, '連絡電話: ', fsize);
+    doc.alttext(10, 26, '客戶名稱: ' + buyer_branch(), font_size());
+    var contact_str = contact_selection().name;
+    if (include_position()) {
+        contact_str = contact_str + ' (' + contact_selection().position + ')';
+    }
+    doc.alttext(10, 32, '聯  絡  人: ' + contact_str, font_size());
+    var phone_str = contact_selection().cell || contact_selection().phone;
+    doc.alttext(10, 38, '連絡電話: ' + phone_str, font_size());
 
-    doc.alttext(130, 32, '單據號碼: <%= shipment_no %>', fsize);
-    doc.alttext(130, 38, '單據日期: ' + items[0].shipmentdate.substring(0,10), fsize);
+    doc.alttext(130, 32, '單據日期: ' + items[0].shipmentdate.substring(0,10), font_size());
+    doc.alttext(130, 38, '單據號碼: ' + shipment_no(), font_size());
 
     var head_yoffset = 48;
-    doc.alttext(15, head_yoffset, '序號', fsize);
-    doc.alttext(32, head_yoffset, '訂單號碼', fsize);
-    doc.alttext(70, head_yoffset, '品名', fsize);
-    doc.alttext(160, head_yoffset, '數量', fsize);
-    doc.alttext(180, head_yoffset, '單位', fsize);
+    doc.alttext(15, head_yoffset, '序號', font_size());
+    doc.alttext(32, head_yoffset, '訂單號碼', font_size());
+    doc.alttext(70, head_yoffset, '品名', font_size());
+    doc.alttext(160, head_yoffset, '數量', font_size());
+    doc.alttext(180, head_yoffset, '單位', font_size());
 
     var list_yoffset = 55;
     for (var i=0; i<items.length; i++) {
         var item = items[i],
             y = list_yoffset+6*i;
-        doc.alttext(15, y, (i+1).toString(), fsize);
-        doc.alttext(32, y, item.orderID, fsize);
-        doc.alttext(70, y, item.product_label ? item.product_label : item.inventory_name, fsize);
-        doc.alttext(160, y, item.qty.toString(), fsize);
-        doc.alttext(180, y, item.units == 1 ? item.UM : item.SKU, fsize);
+        doc.alttext(15, y, (i+1).toString(), font_size());
+        doc.alttext(32, y, item.orderID, font_size());
+        doc.alttext(70, y, item.product_label ? item.product_label : item.inventory_name, font_size());
+        doc.alttext(160, y, item.qty.toString(), font_size());
+        doc.alttext(180, y, item.units == 1 ? item.UM : item.SKU, font_size());
     }
 
     // Signature area for receiver, driver and office bookkeeping
     var sig_offset = 106;
-    doc.alttext(12, sig_offset, '客戶簽收', fsize);
-    doc.alttext(72, sig_offset, '司機', fsize);
-    doc.alttext(132, sig_offset, '備註', fsize);
+    doc.alttext(12, sig_offset, '客戶簽收', font_size());
+    doc.alttext(72, sig_offset, '司機', font_size());
+    doc.alttext(132, sig_offset, '備註', font_size());
 
     // Page lines and borders
     doc.setFillColor(200);
@@ -103,5 +143,5 @@
 
     var pp = document.getElementById('shipment-pdf-frame');
     pp.src = doc.output('bloburi');
-})();
+};
 </script>

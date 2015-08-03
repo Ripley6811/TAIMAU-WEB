@@ -36,6 +36,10 @@ module.exports = {
             model: 'cogroup',
             required: true
         },
+        checked: {
+            type: 'boolean',
+            defaultsTo: false
+        },
 
         shipmentdate_string: function () {
             if (this.shipmentdate === null) {
