@@ -1,4 +1,4 @@
-<div class="panel panel-success" style="margin: 0px" data-bind="with: itemsVM">
+<div class="panel panel-success" style="margin: 0px" data-bind="with: ShipmentsVM">
     <div class="panel-heading">
         <div class="row">
             <div class="col-sm-4 col-sm-push-4 text-center">
@@ -142,7 +142,7 @@
 
 
 <!--START: Shipment form-->
-<div data-bind="with: itemsVM">
+<div data-bind="with: ShipmentsVM">
     <div id="form modal" class="modal" data-bind="style: {display: modalVisible() ? 'block' : 'none'}">
         <div class="panel panel-success">
             <div class="panel-heading">
@@ -305,7 +305,7 @@ var key = {
     ENTER: 13
 };
 
-function ItemsModel() {
+viewModel.ShipmentsVM = new (function () {
     var self = this;
 
 
@@ -380,25 +380,7 @@ function ItemsModel() {
     };
     self.productsGet();
 
-    self.shipment_no = ko.observable();
 
-    // Retrieve a new shipment number from database.
-    // AJAJ request for product record
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function () {
-        if (xmlhttp.readyState !== 4) return;
-        console.log(xmlhttp);
-        if (!xmlhttp.response) {
-            alert("Response is empty");
-            return;
-        }
-
-        var res = JSON.parse(xmlhttp.response);
-
-        self.shipment_no(res.newnumber);
-    };
-    xmlhttp.open('GET', '/shipment/availableNumber', true);
-    xmlhttp.send();
 
 
     self.orders = ko.observableArray();
@@ -427,8 +409,35 @@ function ItemsModel() {
     self.isPO = ko.observable(true);
     self.rows = ko.observableArray([]);
     self.isPurchase = ko.observable(null);
+    self.shipment_no = ko.observable();
 
-    var selectCompute = ko.computed(function () {
+    // Retrieve a new shipment number from database.
+    // AJAJ request for product record
+    ko.computed(function () {
+        if (self.isPurchase() === false) {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState !== 4) return;
+                console.log(xmlhttp);
+                if (!xmlhttp.response) {
+                    alert("Response is empty");
+                    return;
+                }
+
+                self.shipment_no(xmlhttp.responseText);
+            };
+            xmlhttp.open('GET', '/shipment/availableNumber', true);
+            xmlhttp.send();
+        } else {
+            self.shipment_no('');
+        }
+    });
+
+    /**
+     * Evaluate selected items.
+     * This could alternatively be done when Enter is pressed.
+     */
+    ko.computed(function () {
         self.isPurchase(null);
         self.rows.removeAll();
         for (var i=0; i<self.orders().length; i++) {
@@ -450,7 +459,5 @@ function ItemsModel() {
         console.log('ENDING', self.isPurchase.peek());
     });
 
-}
-
-viewModel.itemsVM = new ItemsModel();
+});
 </script>

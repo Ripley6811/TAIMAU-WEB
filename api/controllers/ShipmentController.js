@@ -158,7 +158,10 @@ module.exports = {
             + " ;"
             , [req.param('id')],
         function(err, recs) {
-            if (err) console.log(err);
+            if (err) {
+                res.json(err);
+                return;
+            }
 
             Cogroup.findOne(recs[0].group)
             .populate('branches')
@@ -179,27 +182,42 @@ module.exports = {
 
     availableNumber: function (req, res) {
         var d = new Date();
-        d = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-        Shipment.find({shipmentdate: { '>=': d}})
+        var d_cutoff = new Date(d.getFullYear(), -1, 1);
+        Shipment.find({shipmentdate: { '>=': d_cutoff}})
         .exec(function (err, recs) {
             var used_nos = [];
             recs.forEach(function (each) {used_nos.push(each.shipment_no)})
-            console.log(used_nos);
+//            console.log(used_nos);
             var new_number = null;
             var counter = 0;
             while (new_number === null) {
                 counter += 1;
                 var test_no = [
-                    d.getFullYear(),
-                    ('00' + (1 + d.getMonth())).slice(-2),
-                    ('00' + d.getDate()).slice(-2),
-                    ('000' + counter).slice(-3)
+                    d.getYear()-11,
+                    ('0000' + counter).slice(-4)
                 ].join('');
                 if (used_nos.indexOf(test_no) < 0) {
                     new_number = test_no;
                 }
             }
-            res.json({newnumber: new_number});
+            res.send(new_number);
+        });
+    },
+
+    checkNumber: function (req, res) {
+        var no = req.param('id');
+        Shipment.find(no)
+        .exec(function (err, recs) {
+            if (err) {
+                res.json(err);
+                return;
+            }
+
+            if (recs.length === 0) {
+                res.send(true);
+            } else {
+                res.send(false);
+            }
         });
     }
 
