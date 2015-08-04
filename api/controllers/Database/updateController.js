@@ -93,11 +93,37 @@ module.exports = {
         Shipment.findOne(sid)
         .exec(function (err, rec) {
             if (err) res.send(err);
-            // Update checked status and group name if missing
+            // Update driver and group name if missing
             rec.driver = req.param('driver');
             if (rec.group === null) {
                 rec.group = req.param('group');
             }
+            // Save and return updated rec
+            rec.save(function (err, rec) {
+                if (err) res.send(err);
+                res.send(rec);
+            });
+        });
+    },
+
+
+
+
+    /**
+    * `Database/updateController.shipmentItemQty()`
+    * params:
+    *   id = shipment database ID
+    *   qty = int
+    */
+    shipmentItemQty: function (req, res) {
+        var sid = req.param('id');
+
+        Shipmentitem.findOne(sid)
+        .exec(function (err, rec) {
+            if (err) res.send(err);
+            // Update qty
+            rec.qty = req.param('qty');
+
             // Save and return updated rec
             rec.save(function (err, rec) {
                 if (err) res.send(err);

@@ -10,9 +10,9 @@
 
                     <div class="col-xs-3">
                         <div class="input-group">
-                            <div class="input-group-addon">從</div>
+                            <div class="input-group-addon">表示從</div>
                             <input class="form-control" type="date" data-bind="textInput: dateStart">
-                            <div class="input-group-addon">到現在</div>
+                            <div class="input-group-addon">到現在的紀錄</div>
                         </div>
 
                     </div>
@@ -58,7 +58,7 @@
                                           data-bind="visible: !shipment_no || $parent.debug, text: shipment_id"></span>
                                 </button>
                             </td>
-                            <td style="padding: 3px 3px; border-left: solid 2px #532929;" class="text-center">
+                            <td style="padding: 3px 3px; border-left: solid 2px #532929;" class="text-center has-success">
                                 <button class="btn btn-sm"
                                         data-bind="click: $parent.toggleChecked,
                                                    css: {'btn-success': checked(), 'btn-default': !checked()}">
@@ -70,9 +70,14 @@
                             </td>
                             <td data-bind="text: group"></td>
                             <td data-bind="text: inventory_name"></td>
-                            <td style="padding: 3px 3px" class="text-right"><span data-bind="text: qty"></span> <span data-bind="text: countUnit"></span></td>
+                            <td style="padding: 3px 3px; width: 120px">
+                                <div class="input-group has-success">
+                                    <input class="form-control text-right" size="40" data-bind="disable: invoice_no, value: qty_ko">
+                                    <div class="input-group-addon" data-bind="text: countUnit"></div>
+                                </div>
+                            </td>
                             <td style="padding: 3px 3px" class="text-center"><span data-bind="text: date"></span></td>
-                            <td style="padding: 3px 3px" class="text-center">
+                            <td style="padding: 3px 3px" class="text-center has-success">
                                 <input class="form-control" size="1" maxlength="4" data-bind="value: driver">
                             </td>
 
@@ -95,13 +100,6 @@
 
 <script>
 var _csrf = '<%= _csrf %>';
-
-
-var key = {
-    ESC: 27,
-    ENTER: 13,
-    PLUS: 43
-};
 
 viewModel.ShowAllShipmentsVM = new (function () {
     'use strict';
@@ -142,7 +140,7 @@ viewModel.ShowAllShipmentsVM = new (function () {
             invoice_no: invoice_btn_data.invoice_no,
         };
         post('/database/get/invoiceitems', params, function(response) {
-            console.log(response);
+
 
             var items = [];
             for (var i=0; i<response.length; i++) {
@@ -150,19 +148,6 @@ viewModel.ShowAllShipmentsVM = new (function () {
             }
             viewModel.invoiceModalVM.showModal(items);
         });
-    };
-
-    document.onkeydown = function(evt) {
-        // Exit any modal if displayed.
-        if (evt.keyCode == key.ESC) {
-            if (viewModel.invoiceModalVM.isVisible()) viewModel.invoiceModalVM.exitModal();
-            else self.clearSelections();
-        }
-        // Enter the normal shipment form.
-        if (evt.keyCode == key.ENTER) {
-            if (viewModel.invoiceModalVM.isVisible()) return true;
-            else self.openInvoiceModal();
-        }
     };
 
 
@@ -206,7 +191,7 @@ viewModel.ShowAllShipmentsVM = new (function () {
         var shipment_id = item.shipment_id,
             new_bool = !item.checked.peek();
 
-        console.log('Checked status update fired!');
+
         var params = {
             _csrf: _csrf,
             id: shipment_id,
@@ -214,7 +199,7 @@ viewModel.ShowAllShipmentsVM = new (function () {
             group: item.group
         };
         post('/database/update/shipmentChecked', params, function (response) {
-            console.log(response);
+
             if (response.id === shipment_id) {
                 var sitems = self.shipmentsItems.peek();
                 for (var i=0; i<sitems.length; i++) {

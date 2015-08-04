@@ -385,6 +385,7 @@ function KO_ShipmentListRow(item) {
     self.inventory_name = item.inventory_name;
     self.product_label = item.product_label || item.inventory_name;
     self.qty = item.qty;
+    self.qty_ko = ko.observable(item.qty);
     self.shipmentdate = new Date(item.shipmentdate);
     self.shipped = item.shipped ? true : false;
     self.shipment_no = item.shipment_no;
@@ -422,11 +423,12 @@ function KO_ShipmentListRow(item) {
         }
     })();
 
+    // Update driver in database
     ko.computed(function () {
         var shipment_id = self.shipment_id,
-            driver = self.driver();
+            driver = self.driver(),
+            qty = self.qty_ko();
 
-        console.log('Checked status update fired!');
         var params = {
             _csrf: _csrf,
             id: shipment_id,
@@ -434,8 +436,32 @@ function KO_ShipmentListRow(item) {
             group: self.group
         };
         post('/database/update/shipmentDriver', params, function (response) {
-            console.log(response);
+//            console.log(response);
+                alert("Driver change saved successfully.");
         });
+    });
+
+    // Capture qty before change
+    self.qty_ko.subscribe(function (old_val) {
+        self.qty = old_val;
+    }, this, "beforeChange");
+
+    // Update qty in database
+    ko.computed(function (old_val) {
+        var shipmentitem_id = self.shipmentitem_id,
+            qty = self.qty_ko();
+
+        if (self.qty !== self.qty_ko() && !isNaN(parseInt(self.qty_ko()))) {
+            var params = {
+                _csrf: _csrf,
+                id: shipmentitem_id,
+                qty: qty
+            };
+            post('/database/update/shipmentItemQty', params, function (response) {
+    //            console.log(response);
+                alert("Quantity change saved successfully.");
+            });
+        }
     });
 }
 
