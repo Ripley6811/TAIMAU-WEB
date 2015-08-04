@@ -423,22 +423,29 @@ function KO_ShipmentListRow(item) {
         }
     })();
 
+    self.old_driver = item.driver;
+    // Capture driver before change
+    self.driver.subscribe(function (old_val) {
+        self.old_driver = old_val;
+    }, this, "beforeChange");
+
     // Update driver in database
     ko.computed(function () {
         var shipment_id = self.shipment_id,
-            driver = self.driver(),
-            qty = self.qty_ko();
-
-        var params = {
-            _csrf: _csrf,
-            id: shipment_id,
-            driver: driver,
-            group: self.group
-        };
-        post('/database/update/shipmentDriver', params, function (response) {
-//            console.log(response);
-                alert("Driver change saved successfully.");
-        });
+            driver = self.driver();
+        console.log('<'+self.old_driver+'>', '<'+driver+'>');
+        if (self.driver() !== self.old_driver) {
+            var params = {
+                _csrf: _csrf,
+                id: shipment_id,
+                driver: driver,
+                group: self.group
+            };
+            post('/database/update/shipmentDriver', params, function (response) {
+    //            console.log(response);
+                    alert("Driver change saved successfully.");
+            });
+        }
     });
 
     // Capture qty before change
