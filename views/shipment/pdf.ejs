@@ -10,9 +10,11 @@
             <label>買主分公司:</label>
             <select data-bind="foreach: branchesArray, value: buyer_branch">
                 <option data-bind="attr: {value: fullname}, text: fullname"></option>
-            </select>
+            </select><br>
             <label>聯絡人:</label>
             <select data-bind="options: contactsArray, optionsText: 'name', value: contact_selection"></select>
+            <input type="checkbox" data-bind="checked: xiansheng">先生
+            <input type="checkbox" data-bind="checked: xiaojie">小姐
             (<input type="checkbox" data-bind="checked: include_position">表示職位)
         </div>
     </div>
@@ -32,6 +34,7 @@
 var tm_branch = ko.observable(<%- JSON.stringify(items) %>[0].seller);
 var font_size = ko.observable(14);
 
+
 var branchesArray = ko.observableArray(
     <%- res.locals.cogroup ? JSON.stringify(cogroup.branches) : "[]" %>
 );
@@ -43,6 +46,8 @@ var contactsArray = ko.observableArray(
 contactsArray.unshift({name:'', position:'', phone:'', cell:''});
 var contact_selection = ko.observable({name:'', position:'', phone:'', cell:''});
 var include_position = ko.observable(true);
+var xiansheng = ko.observable(false);
+var xiaojie = ko.observable(false);
 
 var shipment_no = ko.observable("<%= shipment_no %>");
 
@@ -95,6 +100,12 @@ function draw_PDF() {
 
     doc.alttext(10, 26, '客戶名稱: ' + buyer_branch(), font_size());
     var contact_str = contact_selection().name;
+    if (xiansheng()) {
+        contact_str = contact_str.slice(0,1) + '先生';
+    }
+    if (xiaojie()) {
+        contact_str = contact_str.slice(0,1) + '小姐';
+    }
     if (include_position() && contact_selection().position) {
         contact_str = contact_str + ' (' + contact_selection().position + ')';
     }
