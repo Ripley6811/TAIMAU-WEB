@@ -233,6 +233,29 @@ module.exports = {
 
 
     /**
+    * `Database/getController.shipmentitems()`
+    */
+    outgoingShipmentsStatus: function (req, res) {
+        // Gets recent shipments for a company. "SHIPMENT/SHOWALL"
+        Shipmentitem.query(
+            "SELECT shipi.*, sh.shipmentdate, sh.driver, sh.truck, sh.shipment_no, sh.id as shipment_id, sh.checked, po.price, po.orderID, invi.id as invoiceitem_id, inv.id as invoice_id, inv.invoicedate, inv.paid, inv.invoice_no, prod.*, shipi.id as shipmentitem_id "
+            + " FROM shipmentitem shipi "
+            + " LEFT JOIN invoiceitem invi ON shipi.id = invi.shipmentitem_id "
+            + " LEFT JOIN invoice inv ON invi.invoice_id = inv.id "
+            + " JOIN shipment sh ON sh.id = shipi.shipment_id "
+            + " JOIN `order` po ON po.id = shipi.order_id "
+            + " JOIN product prod ON prod.MPN = po.MPN "
+            + " WHERE sh.shipmentdate >= ? AND po.is_sale = 1"
+            + " ORDER BY shipmentdate DESC, sh.id DESC;"
+            , [req.param('startDate')],
+        function(err, recs) {
+            if (err) console.log(err);
+            res.send(recs);
+        });
+    },
+
+
+    /**
     * `Database/getController.activityreport()`
     */
     activityreport: function (req, res) {

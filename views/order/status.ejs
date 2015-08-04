@@ -1,0 +1,229 @@
+<!--START: List view of shipments-->
+<div data-bind="with: ShowAllShipmentsVM">
+    <div>
+        <div class="panel panel-success">
+            <div id="showall-p-head" class="panel-heading" style="padding: 5px 0px 0px 0px; position: fixed; z-index: 10;">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <span class="h4" style="margin: 0px">Shipments</span>
+                    </div>
+
+                    <div class="col-xs-3">
+                        <div class="input-group">
+                            <div class="input-group-addon">從</div>
+                            <input class="form-control" type="date" data-bind="textInput: dateStart">
+                            <div class="input-group-addon">到現在</div>
+                        </div>
+
+                    </div>
+                </div>
+                <table id="showall-th" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center">訂單編號</th>
+                            <th class="text-center">單據號碼</th>
+                            <th class="text-center">回</th>
+                            <th class="text-center">公司</th>
+                            <th class="text-center">產品/服務</th>
+                            <th class="text-center">QTY</th>
+                            <th class="text-center">出貨日期</th>
+                            <th class="text-center">司機</th>
+                            <th class="text-center">發票編號</th>
+                            <th class="text-center">付錢</th>
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>
+            <div id="showall-p-body" class="panel-body" style="padding: 0px">
+                <table id="showall-td" class="table table-striped table-bordered">
+                    <tbody data-bind="foreach: shipmentsItems">
+                        <tr>
+                            <td style="padding: 3px 3px"
+                                class="text-center">
+                                <a style="padding: 2px; width: 100%"
+                                   class="btn btn-custom"
+                                   data-bind="attr: {href: '/order/show/' + order_id}">
+                                    <strong data-bind="text: orderID"></strong>
+                                    <span class="badge"
+                                          data-bind="visible: !orderID || $parent.debug, text: order_id"></span>
+                                </a>
+                            </td>
+                            <td style="padding: 3px 3px"
+                                class="text-center">
+                                <button style="padding: 2px; width: 100%" class="btn btn-custom"
+                                   data-bind="click: $parent.open_shipment_pdf">
+                                    <strong data-bind="text: shipment_no"></strong>
+                                    <span class="badge"
+                                          data-bind="visible: !shipment_no || $parent.debug, text: shipment_id"></span>
+                                </button>
+                            </td>
+                            <td style="padding: 3px 3px; border-left: solid 2px #532929;" class="text-center">
+                                <button class="btn btn-sm"
+                                        data-bind="click: $parent.toggleChecked,
+                                                   css: {'btn-success': checked(), 'btn-default': !checked()}">
+                                    <span class="fa fa-question fa-fw fa-lg"
+                                          data-bind="visible: !checked()"></span>
+                                    <span class="fa fa-check fa-fw fa-lg"
+                                          data-bind="visible: checked"></span>
+                                </button>
+                            </td>
+                            <td data-bind="text: group"></td>
+                            <td data-bind="text: inventory_name"></td>
+                            <td style="padding: 3px 3px" class="text-right"><span data-bind="text: qty"></span> <span data-bind="text: countUnit"></span></td>
+                            <td style="padding: 3px 3px" class="text-center"><span data-bind="text: date"></span></td>
+                            <td style="padding: 3px 3px" class="text-center">
+                                <input class="form-control" size="1" maxlength="4" data-bind="value: driver">
+                            </td>
+
+                            <td style="padding: 3px 3px; border-left: solid 2px #532929;" class="text-center">
+                                <button disabled style="padding: 2px; width: 100%" class="btn btn-custom" data-bind="visible: invoice_no, click: $parent.view_invoice"><strong data-bind="text: invoice_no"></strong> <span class="badge" data-bind="visible: !invoice_no || $parent.debug, text: invoice_id"></span></button>
+                            </td>
+                            <td style="padding: 3px 3px" class="text-center" data-bind="style: {backgroundColor: paid ? null : 'pink'}">
+                                <font color="orange"><i class="fa fa-usd" data-bind="visible: paid"></i></font>
+                                <span data-bind="text: paid ? 'Yes' : 'No'"></span>
+                                <i class="fa fa-question fa-spin" data-bind="visible: !paid"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!--END: List view of shipments-->
+
+<script>
+var _csrf = '<%= _csrf %>';
+
+
+var key = {
+    ESC: 27,
+    ENTER: 13,
+    PLUS: 43
+};
+
+viewModel.ShowAllShipmentsVM = new (function () {
+    'use strict';
+    var self = this;
+
+    self.debug = false;  // Show database ID numbers in all cases if true
+    var d = new Date();
+    d.setMonth(d.getMonth() - 1);
+    self.dateStart = ko.observable(d.toISOString().substring(0, 10));
+
+    /**
+     * SHIPMENT methods
+     */
+    self.shipments = ko.observableArray();
+    self.shipmentsItems = ko.observableArray();
+
+    self.clearSelections = function() {
+        for (var i=0; i<self.shipmentsItems().length; i++) {
+            self.shipmentsItems()[i].selected(false);
+        }
+    };
+
+    self.openInvoiceModal = function() {
+        var items = [];
+        for (var i=0; i<self.shipmentsItems().length; i++) {
+            var si = self.shipmentsItems()[i];
+            if (si.selected() && si.invoiceitem_id == null) {
+                items.push(si);
+            }
+        }
+        viewModel.invoiceModalVM.showModal(items);
+    };
+
+    self.view_invoice = function(invoice_btn_data) {
+        var params = {
+            _csrf: _csrf,
+            id: invoice_btn_data.group, // TODO: check how this works
+            invoice_no: invoice_btn_data.invoice_no,
+        };
+        post('/database/get/invoiceitems', params, function(response) {
+            console.log(response);
+
+            var items = [];
+            for (var i=0; i<response.length; i++) {
+                items.push(response[i]);
+            }
+            viewModel.invoiceModalVM.showModal(items);
+        });
+    };
+
+    document.onkeydown = function(evt) {
+        // Exit any modal if displayed.
+        if (evt.keyCode == key.ESC) {
+            if (viewModel.invoiceModalVM.isVisible()) viewModel.invoiceModalVM.exitModal();
+            else self.clearSelections();
+        }
+        // Enter the normal shipment form.
+        if (evt.keyCode == key.ENTER) {
+            if (viewModel.invoiceModalVM.isVisible()) return true;
+            else self.openInvoiceModal();
+        }
+    };
+
+
+
+    self.getShipmentsArray = ko.computed(function() {
+        var params = {
+            _csrf: _csrf,
+            startDate: self.dateStart(),
+        };
+        post('/database/get/outgoingShipmentsStatus', params, function(response) {
+
+            self.shipmentsItems.removeAll();
+            for (var i=0; i<response.length; i++) {
+                self.shipmentsItems.push(new KO_ShipmentListRow(response[i]));
+            }
+        });
+    });
+
+    // Set the header cell widths to match the body cell widths
+    ko.computed(function () {
+        if (self.shipmentsItems().length > 0) {
+            var ths = document.getElementById('showall-th').getElementsByTagName('th');
+            var tds = document.getElementById('showall-td').getElementsByTagName('td');
+            if (tds.length >= ths.length) {
+                for (var i = 0; i < ths.length; i++) {
+                    ths[i].style.width = tds[i].offsetWidth + 'px';
+                }
+            }
+            // Edit body starting offset from header
+            var panel_head = document.getElementById("showall-p-head");
+            var panel_body = document.getElementById("showall-p-body");
+            panel_body.style.marginTop = panel_head.offsetHeight + 'px';
+        }
+    });
+
+    self.open_shipment_pdf = function (item) {
+        window.location = '/shipment/pdf/' + item.shipment_id;
+    }
+
+    self.toggleChecked = function (item) {
+        var shipment_id = item.shipment_id,
+            new_bool = !item.checked.peek();
+
+        console.log('Checked status update fired!');
+        var params = {
+            _csrf: _csrf,
+            id: shipment_id,
+            checked: new_bool,
+            group: item.group
+        };
+        post('/database/update/shipmentChecked', params, function (response) {
+            console.log(response);
+            if (response.id === shipment_id) {
+                var sitems = self.shipmentsItems.peek();
+                for (var i=0; i<sitems.length; i++) {
+                    if (sitems[i].shipment_id === shipment_id) {
+                        sitems[i].checked(new_bool);
+                    }
+                }
+            }
+        });
+    };
+});
+</script>

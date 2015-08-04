@@ -370,6 +370,7 @@ function KO_ShipmentListRow(item) {
     self.shipmentitem_id = item.shipmentitem_id;
     self.invoiceitem_id = item.invoiceitem_id;
     self.invoice_id = item.invoice_id;
+    self.group = item.group;
 
     self.orderID = item.orderID;
     self.price = item.price;
@@ -388,6 +389,8 @@ function KO_ShipmentListRow(item) {
     self.shipped = item.shipped ? true : false;
     self.shipment_no = item.shipment_no;
     self.shipment_id = item.shipment_id;
+    self.driver = ko.observable(item.driver || '');
+    self.truck = ko.observable(item.truck || '');
 
     self.invoice_no = item.invoice_no;
     self.invoicedate = item.invoicedate ? item.invoicedate.substring(0,10) : '';
@@ -398,6 +401,7 @@ function KO_ShipmentListRow(item) {
     self.countUnit = self.SKU == '槽車' ? self.UM : self.SKU;
 
     self.selected = ko.observable(false);
+    self.checked = ko.observable(item.checked || false);
 
     self.totalUnits = (function () {
         var val = parseInt(self.qty) * self.units;
@@ -417,6 +421,22 @@ function KO_ShipmentListRow(item) {
             return Math.round(val);
         }
     })();
+
+    ko.computed(function () {
+        var shipment_id = self.shipment_id,
+            driver = self.driver();
+
+        console.log('Checked status update fired!');
+        var params = {
+            _csrf: _csrf,
+            id: shipment_id,
+            driver: driver,
+            group: self.group
+        };
+        post('/database/update/shipmentDriver', params, function (response) {
+            console.log(response);
+        });
+    });
 }
 
 function KO_Invoice(item) {

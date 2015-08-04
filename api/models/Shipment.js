@@ -40,6 +40,12 @@ module.exports = {
             type: 'boolean',
             defaultsTo: false
         },
+        driver: {
+            type: 'string'
+        },
+        truck: {
+            type: 'string'
+        },
 
         shipmentdate_string: function () {
             if (this.shipmentdate === null) {

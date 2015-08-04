@@ -261,5 +261,25 @@ module.exports = {
             res.send(orders);
         });
     },
+
+
+    status: function (req, res) {
+        var params = req.params.all();
+
+        Cogroup.findOne({name: params.id})
+        .populate('branches')
+        .exec( function (err, cogroup) {
+            if (err) {
+                res.json({
+                    error: err
+                }, 400);
+                return;
+            }
+
+            res.view({
+                cogroup: cogroup,
+            });
+        });
+    }
 };
 
