@@ -46,7 +46,7 @@
                         <tr>
                             <td style="padding: 3px 3px"
                                 class="text-center">
-                                <a style="padding: 2px 10px"
+                                <a style="padding: 2px 10px; width: 100%"
                                    class="btn btn-custom"
                                    data-bind="attr: {href: '/order/show/' + order_id}">
                                     <strong data-bind="text: orderID"></strong>
@@ -60,7 +60,7 @@
 
                             <td style="padding: 3px 3px; border-left: solid 2px #532929;"
                                 class="text-center">
-                                <button style="padding: 2px 10px" class="btn btn-custom"
+                                <button style="padding: 2px 10px; width: 100%" class="btn btn-custom"
                                    data-bind="click: $parent.open_shipment_pdf">
                                     <strong data-bind="text: shipment_no"></strong>
                                     <span class="badge"
@@ -72,7 +72,7 @@
 
                             <td style="padding: 3px 3px; border-left: solid 2px #532929;" class="text-center">
                                 <input style="margin: 0px; width:26px; height:26px; vertical-align: top;" type="checkbox" data-bind="visible: invoice_id == undefined, checked: selected;">
-                                <button style="padding: 2px 10px" class="btn btn-custom" data-bind="visible: invoice_id != undefined, click: $parent.view_invoice"><strong data-bind="text: invoice_no"></strong> <span class="badge" data-bind="visible: !invoice_no || $parent.debug, text: invoice_id"></span></button>
+                                <button style="padding: 2px 10px; width: 100%" class="btn btn-custom" data-bind="visible: invoice_id != undefined, click: $parent.view_invoice"><strong data-bind="text: invoice_no"></strong> <span class="badge" data-bind="visible: !invoice_no || $parent.debug, text: invoice_id"></span></button>
                             </td>
                             <td style="padding: 3px 3px" class="text-center"><span data-bind="text: invoicedate"></span></td>
                             <td style="padding: 3px 3px" class="text-center"><span data-bind="text: '$ ' + price"></span></td>

@@ -317,3 +317,10 @@ hr {
         padding-left: 250px;
     }
 }
+
+.checkbox-lg {
+    margin: 0px !important;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+}
