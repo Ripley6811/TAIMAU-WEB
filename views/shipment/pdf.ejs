@@ -63,7 +63,7 @@ ko.computed(function () {
 function draw_PDF() {
     'use strict';
     // Can we set height 140mm?
-    var doc = new jsPDF('p', 'mm');
+    var doc = new jsPDF('landscape', 'mm', [210,140]);
     var items = <%- JSON.stringify(items) %>;
 
     doc.setFont('Times', 'Roman');
