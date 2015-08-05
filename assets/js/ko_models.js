@@ -374,6 +374,7 @@ function KO_ShipmentListRow(item) {
 
     self.orderID = item.orderID;
     self.price = item.price;
+    self.price_ko = ko.observable(item.price);
     self.is_supply = item.is_supply;
     self.MPN = item.MPN;
 
@@ -413,15 +414,29 @@ function KO_ShipmentListRow(item) {
         }
     })();
 
-    // Value is pre-tax total
-    self.value = (function () {
+    var calc_value = function () {
         var val = self.price * self.qty;
         if (self.unitpriced) {
             return Math.round(val * self.units);
         } else {
             return Math.round(val);
         }
-    })();
+    };
+
+    // Value is pre-tax total
+    self.value = calc_value();
+
+    self.value_ko = ko.observable(self.value);
+
+    ko.computed(function () {
+        var val = self.price_ko() * self.qty_ko();
+        if (self.unitpriced) {
+            self.value_ko(Math.round(val * self.units));
+        } else {
+            self.value_ko(Math.round(val));
+        }
+        self.value = self.value_ko();
+    });
 
     self.old_driver = item.driver || '';
     // Capture driver before change
@@ -467,6 +482,30 @@ function KO_ShipmentListRow(item) {
             post('/database/update/shipmentItemQty', params, function (response) {
     //            console.log(response);
                 alert("Quantity change saved successfully.");
+            });
+        }
+    });
+
+    // Capture qty before change
+    self.price_ko.subscribe(function (old_val) {
+        self.price = old_val;
+    }, this, "beforeChange");
+
+    // Update qty in database
+    ko.computed(function (old_val) {
+        var order_id = self.order_id,
+            price = self.price_ko();
+
+        if (self.price !== self.price_ko() && !isNaN(parseFloat(self.price_ko()))) {
+            var params = {
+                _csrf: _csrf,
+                id: order_id,
+                price: price
+            };
+            post('/database/update/orderPrice', params, function (response) {
+    //            console.log(response);
+                alert("Price change saved successfully.");
+                self.price = self.price_ko();
             });
         }
     });

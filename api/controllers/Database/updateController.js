@@ -131,5 +131,31 @@ module.exports = {
             });
         });
     },
+
+
+
+
+    /**
+    * `Database/updateController.orderPrice()`
+    * params:
+    *   id = shipment database ID
+    *   qty = int
+    */
+    orderPrice: function (req, res) {
+        var oid = req.param('id');
+
+        Order.findOne(oid)
+        .exec(function (err, rec) {
+            if (err) res.send(err);
+            // Update qty
+            rec.price = req.param('price');
+
+            // Save and return updated rec
+            rec.save(function (err, rec) {
+                if (err) res.send(err);
+                res.send(rec);
+            });
+        });
+    },
 };
 

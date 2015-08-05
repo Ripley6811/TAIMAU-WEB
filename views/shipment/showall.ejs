@@ -75,8 +75,16 @@
                                 <button style="padding: 2px 10px; width: 100%" class="btn btn-custom" data-bind="visible: invoice_id != undefined, click: $parent.view_invoice"><strong data-bind="text: invoice_no"></strong> <span class="badge" data-bind="visible: !invoice_no || $parent.debug, text: invoice_id"></span></button>
                             </td>
                             <td style="padding: 3px 3px" class="text-center"><span data-bind="text: invoicedate"></span></td>
-                            <td style="padding: 3px 3px" class="text-center"><span data-bind="text: '$ ' + price"></span></td>
-                            <td style="padding: 3px 3px" class="text-center"><span data-bind="text: '$ ' + value"></span></td>
+                            <td style="padding: 3px 3px; width: 120px" class="text-center">
+                                <div class="input-group has-success">
+                                    <div class="input-group-addon">$</div>
+                                    <input class="text-center" size="6"
+                                           data-bind="disable: invoice_no, value: price_ko">
+                                </div>
+                            </td>
+                            <td style="padding: 3px 3px" class="text-center">
+                                <span data-bind="text: '$' + value_ko()"></span>
+                            </td>
                             <td style="padding: 3px 3px" class="text-center" data-bind="style: {backgroundColor: paid ? null : 'pink'}">
                                 <font color="orange"><i class="fa fa-usd" data-bind="visible: paid"></i></font>
                                 <span data-bind="text: paid ? 'Yes' : 'No'"></span>
