@@ -423,7 +423,7 @@ function KO_ShipmentListRow(item) {
         }
     })();
 
-    self.old_driver = item.driver;
+    self.old_driver = item.driver || '';
     // Capture driver before change
     self.driver.subscribe(function (old_val) {
         self.old_driver = old_val;
