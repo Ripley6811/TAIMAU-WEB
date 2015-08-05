@@ -136,7 +136,7 @@ function draw_PDF() {
         doc.alttext(70, y, item.product_label ? item.product_label : item.inventory_name, font_size());
 
         if (show_unknown_amt() && ['槽車','kg'].indexOf(item.SKU) >= 0) {
-            doc.alttext(160, y, '看磅單', font_size());
+            doc.alttext(160, y, '詳磅單', font_size());
         } else {
             doc.alttext(160, y, item.qty.toString(), font_size());
         }
