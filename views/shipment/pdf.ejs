@@ -26,6 +26,9 @@
         </iframe>
     </div>
     <div class="panel-footer lightorange-blend">
+        <button class="btn btn-success btn-lg" data-bind="click: download_pdf">
+            下載文章
+        </button>
         <label>Font size:</label>
         <input type="number" size="3" data-bind="value: font_size">
     </div>
@@ -60,9 +63,13 @@ ko.computed(function () {
     draw_PDF();
 });
 
-function draw_PDF() {
+function download_pdf() {
+    draw_PDF(true);
+}
+
+function draw_PDF(download) {
     'use strict';
-    // Can we set height 140mm?
+
     var doc = new jsPDF('landscape', 'mm', [210,140]);
     var items = <%- JSON.stringify(items) %>;
 
@@ -158,6 +165,11 @@ function draw_PDF() {
 
 
     var pp = document.getElementById('shipment-pdf-frame');
-    pp.src = doc.output('bloburi');
+    if (download) {
+        doc.save(shipment_no() + '-' + buyer_branch() +'.pdf');
+    } else {
+        pp.src = doc.output('bloburi');
+//        pp.src = doc.output('datauristring');
+    }
 };
 </script>
