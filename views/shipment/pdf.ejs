@@ -70,7 +70,8 @@ function download_pdf() {
 function draw_PDF(download) {
     'use strict';
 
-    var doc = new jsPDF('landscape', 'mm', [210,140]);
+    var doc = new jsPDF('p', 'mm');
+//    var doc = new jsPDF('landscape', 'mm', [210,140]);
     var items = <%- JSON.stringify(items) %>;
 
     doc.setFont('Times', 'Roman');
