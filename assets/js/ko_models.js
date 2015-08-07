@@ -396,7 +396,8 @@ function KO_ShipmentListRow(item) {
 
     self.invoice_no = item.invoice_no;
     self.invoicedate = item.invoicedate ? item.invoicedate.substring(0,10) : '';
-    self.paid = item.paid;
+    self.paid = ko.observable(item.paid);
+    self.check_no = ko.observable(item.check_no || '');
 
     var d = self.shipmentdate;
     self.date = d.getFullYear() + ' / ' + (d.getMonth() + 1) + ' / ' + d.getDate();
@@ -428,14 +429,21 @@ function KO_ShipmentListRow(item) {
 
     self.value_ko = ko.observable(self.value);
 
+    self.calc_string = ko.observable();
+
     ko.computed(function () {
         var val = self.price_ko() * self.qty_ko();
+        self.calc_string("$" + self.price_ko() + " * " + self.qty_ko());
         if (self.unitpriced) {
             self.value_ko(Math.round(val * self.units));
+            self.calc_string(self.calc_string() + " * " + self.units);
         } else {
             self.value_ko(Math.round(val));
         }
         self.value = self.value_ko();
+
+        self.calc_string(self.calc_string() + " = $" + self.value_ko());
+        self.calc_string(self.calc_string() + " ($" + Math.round(self.value_ko() * 1.05) + ")");
     });
 
     self.old_driver = item.driver || '';
@@ -506,6 +514,26 @@ function KO_ShipmentListRow(item) {
     //            console.log(response);
                 alert("Price change saved successfully.");
                 self.price = self.price_ko();
+            });
+        }
+    });
+
+    // Update check number in database
+    ko.computed(function (old_val) {
+        var invoice_id = self.invoice_id,
+            check_no = self.check_no();
+
+        if (true) {
+            var params = {
+                _csrf: _csrf,
+                id: invoice_id,
+                check_no: check_no
+            };
+            post('/database/update/check_no', params, function (response) {
+                console.log(response);
+//                alert("Check number change saved successfully.");
+                self.paid(response.check_no != '' ? true : false);
+
             });
         }
     });

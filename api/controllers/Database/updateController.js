@@ -157,5 +157,31 @@ module.exports = {
             });
         });
     },
+
+
+
+
+    /**
+    * `Database/updateController.check_no()`
+    * params:
+    *   id = shipment database ID
+    *   qty = int
+    */
+    check_no: function (req, res) {
+        var invoice_id = req.param('id');
+
+        Invoice.findOne(invoice_id)
+        .exec(function (err, rec) {
+            if (err) res.send(err);
+            // Update check_no
+            rec.check_no = req.param('check_no');
+
+            // Save and return updated rec
+            rec.save(function (err, rec) {
+                if (err) res.send(err);
+                res.send(rec);
+            });
+        });
+    },
 };
 

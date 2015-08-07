@@ -215,7 +215,7 @@ module.exports = {
         }
         // Gets recent shipments for a company. "SHIPMENT/SHOWALL"
         Shipmentitem.query(
-            "SELECT shipi.*, sh.shipmentdate, sh.shipment_no, sh.id as shipment_id, po.price, po.orderID, invi.id as invoiceitem_id, inv.id as invoice_id, inv.invoicedate, inv.paid, inv.invoice_no, prod.*, shipi.id as shipmentitem_id "
+            "SELECT shipi.*, sh.shipmentdate, sh.shipment_no, sh.id as shipment_id, po.price, po.orderID, invi.id as invoiceitem_id, inv.id as invoice_id, inv.invoicedate, inv.paid, inv.check_no, inv.invoice_no, prod.*, shipi.id as shipmentitem_id "
             + " FROM shipmentitem shipi "
             + " LEFT JOIN invoiceitem invi ON shipi.id = invi.shipmentitem_id "
             + " LEFT JOIN invoice inv ON invi.invoice_id = inv.id "

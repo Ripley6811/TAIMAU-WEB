@@ -83,12 +83,15 @@
                                 </div>
                             </td>
                             <td style="padding: 3px 3px" class="text-center">
-                                <span data-bind="text: '$' + value_ko()"></span>
+                                <abbr data-bind="attr: {title: calc_string}">
+                                    <span data-bind="text: '$' + value_ko()"></span>
+                                </abbr>
+
+<!--                                <span class="badge"  data-bind="text: '$' + Math.round(value_ko()*1.05)"></span>-->
                             </td>
-                            <td style="padding: 3px 3px" class="text-center" data-bind="style: {backgroundColor: paid ? null : 'pink'}">
-                                <font color="orange"><i class="fa fa-usd" data-bind="visible: paid"></i></font>
-                                <span data-bind="text: paid ? 'Yes' : 'No'"></span>
-                                <i class="fa fa-question fa-spin" data-bind="visible: !paid"></i>
+                            <td style="padding: 3px 3px" class="text-center" data-bind="style: {backgroundColor: paid() ? null : 'pink'}">
+                                <input class="" style="width: 100%" size="6" placeholder="付錢了嗎?"
+                                       data-bind="value: check_no">
                             </td>
                         </tr>
                     </tbody>
@@ -218,6 +221,10 @@ viewModel.ShowAllShipmentsVM = new (function () {
 
     self.open_shipment_pdf = function (item) {
         window.location = '/shipment/pdf/' + item.shipment_id;
-    }
+    };
+
+    self.update_payment = function (item) {
+
+    };
 });
 </script>
