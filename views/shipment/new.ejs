@@ -83,15 +83,15 @@
             <table class="table table-condensed table-striped table-bordered">
                 <thead class="text-uppercase">
                     <tr>
-                        <th>選</th>
-                        <th>
+                        <th class="text-center">
                             品名
                         </th>
                         <th class="text-center">
-                            價格 / 單位
-                        </th>
-                        <th class="text-center">
                             容量 / 容器
+                        </th>
+                        <th>選</th>
+                        <th class="text-center">
+                            價格 / 單位
                         </th>
                         <th>
                             <span class="label label-primary">備註</span>
@@ -102,6 +102,15 @@
                 </thead>
                 <tbody data-bind="foreach: products">
                     <tr>
+
+            <!--        Product inventory name    -->
+                        <td class="text-center"
+                            data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
+                            <span data-bind="text: inventory_name"></span>
+                        </td>
+                        <td class="text-center" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
+                            <span data-bind="text: units() + ' ' + UM()"></span> / <span data-bind="text: SKU"></span>
+                        </td>
             <!--        Product Manifest selection    -->
                         <td data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
                             <input style="margin: 0px; width:26px; height:26px; vertical-align: top;"
@@ -117,16 +126,8 @@
                                 <i class="fa fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
                             </button>
                         </td>
-
-            <!--        Product inventory name    -->
-                        <td data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
-                            <span data-bind="text: inventory_name"></span>
-                        </td>
                         <td class="text-center" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
                             $ <span data-bind="text: curr_price"></span> <span data-bind="text: pricing"></span>
-                        </td>
-                        <td class="text-center" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
-                            <span data-bind="text: units() + ' ' + UM()"></span> / <span data-bind="text: SKU"></span>
                         </td>
                         <td data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
                             <span class="label label-primary" data-bind="text: note"></span>

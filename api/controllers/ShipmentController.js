@@ -102,7 +102,7 @@ module.exports = {
             });
         });
         setTimeout(
-            function () { res.redirect('/order/showall/'+params.group) },
+            function () { res.redirect('/shipment/showall/'+params.group) },
             200
         );
     },
