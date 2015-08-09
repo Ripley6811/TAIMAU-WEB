@@ -13,7 +13,7 @@ module.exports = {
     autoUpdatedAt: false,  // Do not use 'updatedAt' field
 
   attributes: {
-  	
+
   	name: {
   		type: 'string',
   		required: true
@@ -39,9 +39,14 @@ module.exports = {
       defaultsTo: false
     },
 
-    admin: {
+    admin: {  // Restricted editing privileges
       type: 'boolean',
       defaultsTo: false
+    },
+
+    money: {  // Clearance to view general money info (restricted money view)
+        type: 'boolean',
+        defaultsTo: false
     },
 
     toJSON: function() {

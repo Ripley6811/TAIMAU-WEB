@@ -523,7 +523,7 @@ function KO_ShipmentListRow(item) {
         var invoice_id = self.invoice_id,
             check_no = self.check_no();
 
-        if (true) {
+        if (invoice_id) {
             var params = {
                 _csrf: _csrf,
                 id: invoice_id,

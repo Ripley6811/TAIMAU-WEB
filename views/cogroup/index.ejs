@@ -4,7 +4,7 @@
         <thead class="text-uppercase">
             <tr>
                 <th></th>
-                <th class="hidden-xs">公司名稱</th>
+                <th class="hidden-xs text-center">公司名稱</th>
                 <th>分公司</th>
                 <th class="hidden-xs">統一編號</th>
                 <th>電話</th>
@@ -12,50 +12,104 @@
             </tr>
         </thead>
     <!--    <tbody data-bind="foreach: cogroups">-->
-        <tbody>
-            <% cogroups.forEach(function(cogroup) { %>
+        <tbody data-bind="foreach: cogroups">
             <tr>
                 <td style="width: 200px">
                     <div class="btn-group">
-                        <a href="/order/new/<%= cogroup.name %>" class="btn btn-custom">
+                        <button class="btn btn-custom"
+                                data-bind="click: btn_new_order">
                             <i class="fa fa-fw fa-file-powerpoint-o fa-lg"></i>
-                        </a>
-                        <a href="/shipment/new/<%= cogroup.name %>" class="btn btn-custom">
+                        </button>
+                        <button class="btn btn-custom"
+                                data-bind="click: btn_new_shipment">
                             <i class="fa fa-fw fa-truck fa-flip-horizontal fa-lg"></i>
-                        </a>
-                        <a href="/shipment/showall/<%= cogroup.name %>" class="btn btn-custom">
+                        </button>
+                        <button class="btn btn-custom"
+                                data-bind="click: btn_all_shipments">
                             <i class="fa fa-fw fa-th-list fa-lg"></i>
-                        </a>
+                        </button>
                     </div>
                 </td>
-                <td class="hidden-xs"><%= cogroup.name %><font color="#acacac">公司</font></td>
-                <td>
-                    <% cogroup.branches.forEach(function(branch) { %>
-                        <% if (branch.fullname != '') { %>
-                        <abbr title="<%= branch.fullname %>"><%= branch.name %></abbr><br>
-                        <% } else { %>
-                        <%= branch.name %><br>
-                        <% } %>
-                    <% }); %>
-                </td>
                 <td class="hidden-xs">
-                    <% cogroup.branches.forEach(function(branch) { %>
-                        <%= branch.tax_id %><br>
-                    <% }); %>
+                    <div class="btn-group btn-group-xs">
+                        <button class="btn"
+                                data-bind="css: {'btn-success': is_supplier},
+                                           click: btn_toggle_supplier">
+                            <abbr data-bind="attr: {title: is_supplier() ? 'is supplier' : 'not supplier'}">
+                                <span class="fa fa-fw fa-ambulance"></span>
+                            </abbr>
+                        </button>
+                        <button class="btn"
+                                data-bind="css: {'btn-success': is_customer},
+                                           click: btn_toggle_customer">
+                            <abbr data-bind="attr: {title: is_customer() ? 'is customer' : 'not customer'}">
+                                <span class="fa fa-fw fa-users"></span>
+                            </abbr>
+                        </button>
+                    </div>
+                    &nbsp;
+                    <span data-bind="text: name"></span>
+                    <font color="#acacac">公司</font>
                 </td>
-                <td>
-                    <% cogroup.branches.forEach(function(branch) { %>
-                        <%= branch.phone %><br>
-                    <% }); %>
+                <td data-bind="foreach: branches">
+                    <abbr data-bind="attr: {title: fullname}">
+                        <span data-bind="text: name"></span>
+                    </abbr>
+                    <br>
                 </td>
-                <td>
-                    <% cogroup.branches.forEach(function(branch) { %>
-                        <%= branch.fax %><br>
-                    <% }); %>
+                <td class="hidden-xs" data-bind="foreach: branches">
+                    <span data-bind="text: tax_id"></span>
+                    <br>
                 </td>
-
+                <td data-bind="foreach: branches">
+                    <span data-bind="text: phone"></span>
+                    <br>
+                </td>
+                <td data-bind="foreach: branches">
+                    <span data-bind="text: fax"></span>
+                    <br>
+                </td>
             </tr>
-            <% }); %>
         </tbody>
     </table>
 </div>
+
+<script>
+var cogroups = ko.mapping.fromJS(<%- JSON.stringify(cogroups) %>);
+var _csrf = '<%= _csrf %>';
+
+var btn_new_order = function (group) {
+    window.location = "/order/new/" + group.name();
+};
+
+var btn_new_shipment = function (group) {
+    window.location = "/shipment/new/" + group.name();
+};
+
+var btn_all_shipments = function (group) {
+    window.location = "/shipment/showall/" + group.name();
+};
+
+var btn_toggle_supplier = function (group) {
+    var params = {
+        _csrf: _csrf,
+        id: group.name(),
+    };
+    post('/database/update/toggleSupplier', params, function(response) {
+        group.is_supplier(response);
+    });
+};
+
+var btn_toggle_customer = function (group) {
+    var params = {
+        _csrf: _csrf,
+        id: group.name(),
+    };
+    post('/database/update/toggleCustomer', params, function(response) {
+        group.is_customer(response);
+    });
+};
+
+//console.log(cogroups());
+
+</script>

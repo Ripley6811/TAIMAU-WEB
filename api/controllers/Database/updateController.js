@@ -138,8 +138,8 @@ module.exports = {
     /**
     * `Database/updateController.orderPrice()`
     * params:
-    *   id = shipment database ID
-    *   qty = int
+    *   id = order database ID
+    *   price = float
     */
     orderPrice: function (req, res) {
         var oid = req.param('id');
@@ -164,8 +164,8 @@ module.exports = {
     /**
     * `Database/updateController.check_no()`
     * params:
-    *   id = shipment database ID
-    *   qty = int
+    *   id = invoice database ID
+    *   check_no = string
     */
     check_no: function (req, res) {
         var invoice_id = req.param('id');
@@ -180,6 +180,58 @@ module.exports = {
             rec.save(function (err, rec) {
                 if (err) res.send(err);
                 res.send(rec);
+            });
+        });
+    },
+
+
+
+
+    /**
+    * `Database/updateController.toggleSupplier()`
+    * params:
+    *   id = company group database id (abbr. name)
+    */
+    toggleSupplier: function (req, res) {
+        var id = req.param('id');
+
+        Cogroup.findOne(id)
+        .exec(function (err, rec) {
+            if (err) res.send(err);
+            // Update status
+            rec.is_supplier = !rec.is_supplier;
+
+            // Save and return updated status value
+            rec.save(function (err, rec) {
+                if (err) res.send(err);
+
+                res.send(rec.is_supplier);
+            });
+        });
+    },
+
+
+
+
+    /**
+    * `Database/updateController.toggleSupplier()`
+    * params:
+    *   id = company group database id (abbr. name)
+    */
+    toggleCustomer: function (req, res) {
+        var id = req.param('id');
+
+        Cogroup.findOne(id)
+        .exec(function (err, rec) {
+            if (err) res.send(err);
+            // Update status
+            rec.is_customer = !rec.is_customer;
+
+            // Save and return updated status value
+            rec.save(function (err, rec) {
+                if (err) res.send(err);
+
+                res.send(rec.is_customer);
             });
         });
     },
