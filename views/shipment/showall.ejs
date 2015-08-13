@@ -8,6 +8,7 @@
                 <div class="row">
                     <div class="col-xs-3">
                         <span class="h4" style="margin: 0px">Shipments</span>
+                        <div class="badge" data-bind="text: shipmentsItems().length + ' displayed'"></div>
                     </div>
                     <div class="col-xs-6">
                         <button class="btn btn-success" data-bind="click: clearSelections">Clear Selections <span class="badge">Esc</span></button>
@@ -160,8 +161,6 @@ viewModel.ShowAllShipmentsVM = new (function () {
             invoice_no: invoice_btn_data.invoice_no,
         };
         post('/database/get/invoiceitems', params, function(response) {
-            console.log(response);
-
             var items = [];
             for (var i=0; i<response.length; i++) {
                 items.push(response[i]);
@@ -192,11 +191,8 @@ viewModel.ShowAllShipmentsVM = new (function () {
             startDate: self.dateStart(),
         };
         post('/database/get/shipmentitems', params, function(response) {
-//            console.log(response);
-
             self.shipmentsItems.removeAll();
             for (var i=0; i<response.length; i++) {
-                console.log(response);
                 self.shipmentsItems.push(new KO_ShipmentListRow(response[i]));
             }
         });

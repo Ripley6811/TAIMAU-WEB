@@ -13,7 +13,7 @@
         <button type="button" class="btn btn-custom btn-lg" style="padding: 6px 3px"
               data-bind="visible: user, click: log_out">登出</button>
         </div>
-        <div class="input-group">
+        <div class="input-group hidden-sm hidden-xs">
             <input type="text" class="form-control" style="width: 50%"
                    placeholder="名稱"
                    data-bind="visible: !user(), value: user_name">
@@ -22,7 +22,7 @@
                    placeholder="密碼"
                    data-bind="visible: !user(), value: user_password">
         </div>
-        <button type="button" style="margin-top: 2px"
+        <button type="button" style="margin-top: 2px; padding: 1px"
                 class="btn btn-custom form-control"
                 data-bind="visible: !user(), click: log_in">
             登入

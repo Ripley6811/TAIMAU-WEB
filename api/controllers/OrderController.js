@@ -209,7 +209,7 @@ module.exports = {
     // Update Order details from Order/Showall page
     update: function (req, res) {
 //        var order = req.param('order');
-        console.log(req.params.all());
+//        console.log(req.params.all());
         Invoiceitem.count({order_id: req.param('id')})
         .exec(function (err, nrecs) {
             var allowPriceChange = nrecs === 0 ? true : false;

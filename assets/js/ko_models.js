@@ -456,7 +456,7 @@ function KO_ShipmentListRow(item) {
     ko.computed(function () {
         var shipment_id = self.shipment_id,
             driver = self.driver();
-        console.log('<'+self.old_driver+'>', '<'+driver+'>');
+
         if (self.driver() !== self.old_driver) {
             var params = {
                 _csrf: _csrf,
@@ -465,7 +465,6 @@ function KO_ShipmentListRow(item) {
                 group: self.group
             };
             post('/database/update/shipmentDriver', params, function (response) {
-    //            console.log(response);
                     alert("Driver change saved successfully.");
             });
         }
@@ -488,7 +487,6 @@ function KO_ShipmentListRow(item) {
                 qty: qty
             };
             post('/database/update/shipmentItemQty', params, function (response) {
-    //            console.log(response);
                 alert("Quantity change saved successfully.");
             });
         }
@@ -511,7 +509,6 @@ function KO_ShipmentListRow(item) {
                 price: price
             };
             post('/database/update/orderPrice', params, function (response) {
-    //            console.log(response);
                 alert("Price change saved successfully.");
                 self.price = self.price_ko();
             });
@@ -530,7 +527,6 @@ function KO_ShipmentListRow(item) {
                 check_no: check_no
             };
             post('/database/update/check_no', params, function (response) {
-                console.log(response);
 //                alert("Check number change saved successfully.");
                 self.paid(response.check_no != '' ? true : false);
 
