@@ -124,8 +124,11 @@ function draw_PDF(download) {
     doc.alttext(10, 32, '聯  絡  人: ' + contact_str, font_size());
     var phone_str = contact_selection().cell || contact_selection().phone;
     doc.alttext(10, 38, '連絡電話: ' + phone_str, font_size());
-
-    doc.alttext(130, 32, '單據日期: ' + items[0].shipmentdate.substring(0,10), font_size());
+    var local_date = new Date(items[0].shipmentdate);
+    var date_str = [local_date.getFullYear(),
+                    (local_date.getMonth()+1),
+                    local_date.getDate()].join('-');
+    doc.alttext(130, 32, '單據日期: ' + date_str, font_size());
     doc.alttext(130, 38, '單據號碼: ' + shipment_no(), font_size());
 
     var head_yoffset = 48;
@@ -159,10 +162,10 @@ function draw_PDF(download) {
 
     // Page lines and borders
     doc.setFillColor(200);
-    doc.rect(10, head_yoffset+1, 190, 0.5, 'F');
-    doc.rect(10, 100, 190, 0.5, 'F');
-    doc.rect(70, 100, 0.5, 15, 'F');
-    doc.rect(130, 100, 0.5, 15, 'F');
+    doc.rect(10, head_yoffset+1, 190, 0.8, 'F');
+    doc.rect(10, 100, 190, 0.8, 'F');
+    doc.rect(70, 100, 0.8, 15, 'F');
+    doc.rect(130, 100, 0.8, 15, 'F');
 
 
     var pp = document.getElementById('shipment-pdf-frame');
