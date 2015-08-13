@@ -1,16 +1,15 @@
-<div class="row" style="text-align: center">
+<div class="container-fluid" style="text-align: center">
     <form action="/user/create" method="post" id="sign-up-form" class="form-signin">
     <h2>Create an account</h2>
 
     <input type="text" class="form-control" placeholder="your name 你的名字" name="name">
     <input type="text" class="form-control" placeholder="your title" name="title">
-    <input type="text" class="form-control" placeholder="email address" name="email">
     <input type="password" class="form-control" placeholder="password" name="password">
     <input type="password" class="form-control" placeholder="password confirmation" name="confirmation">
 
     <br>
 
-    <input type="submit" class="btn btn-lg btn-primary btn-block" value="Create Account" />
+    <input type="submit" class="btn btn-lg btn-success btn-block" value="Create Account" />
     <input type="hidden" name="_csrf" value="<%= _csrf %>" />
 
 </form>

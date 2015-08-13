@@ -5,7 +5,9 @@
             <th>ID</th>
             <th>Name</th>
             <th>Title</th>
-            <th>Email</th>
+            <th>Admin</th>
+            <th>Editor</th>
+            <th>Finance</th>
             <th></th>
             <th></th>
             <th></th>
@@ -23,7 +25,13 @@
                     <%= user.title %>
                 </td>
                 <td>
-                    <%= user.email %>
+                    <%= user.priv_admin %>
+                </td>
+                <td>
+                    <%= user.priv_edit %>
+                </td>
+                <td>
+                    <%= user.priv_money %>
                 </td>
                 <td><a href="/user/show/<%= user.id %>" class="btn btn-sm btn-primary">Show</a>
                 </td>
@@ -33,7 +41,7 @@
                 </td>
             </tr>
 
-            <% }) %>
+        <% }) %>
 
     </table>
 </div>

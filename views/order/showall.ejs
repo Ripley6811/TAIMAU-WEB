@@ -1,217 +1,224 @@
-<!--Table view of all POs ordered by order date-->
-<div id="this body" class="container-fluid">
-<!--vvv START: Company header and buttons vvv-->
-<%- partial ('../company_header.ejs') %>
-<!--^^^ END: Company header and buttons ^^^-->
-    
-    
-    
-    
-	<hr>
+<!--List view of all shipments-->
+<div>
+<!--START: List view of shipments-->
+<div data-bind="with: ShowAllShipmentsVM">
+    <div>
+        <div class="panel panel-success">
+            <div id="showall-p-head" class="panel-heading" style="padding: 0px; position: fixed; z-index: 10;">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <span class="h4" style="margin: 0px">Shipments</span>
+                    </div>
+                    <div class="col-xs-6">
+                        <button class="btn btn-success" data-bind="click: clearSelections">Clear Selections <span class="badge">Esc</span></button>
+                        <button class="btn btn-success" data-bind="click: openInvoiceModal">Create Invoice <span class="badge">Enter</span></button>
+                    </div>
+                    <div class="col-xs-3">
+                        <div class="input-group">
+                            <div class="input-group-addon">從</div>
+                            <input class="form-control" type="date" data-bind="textInput: dateStart">
+                            <div class="input-group-addon">到現在</div>
+                        </div>
 
-
-<div class="panel panel-success" data-bind="with: pageVM">
-<div class="panel-heading">
-    <h3 class="panel-title">
-        <strong>訂單紀錄</strong>
-    </h3>
-</div>
-<div class="panel-body" style="padding: 0px">
-<table class="table table-condensed table-striped">
-    <thead class="text-uppercase">
-        <tr>
-            <th>訂單編號</th>
-            <th class="text-center">使用中</th>
-            <th>標籤品名</th>
-            <th class="text-center">價格</th>
-            <th class="text-center">訂單數量</th>
-            <th class="text-center">已出數量</th>
-            <th class="text-center">行程數</th>
-            <th class="text-center">訂單日期</th>
-            <th>備註</th>
-        </tr>
-    </thead>
-    
-    <tbody data-bind="foreach: orders">
-        <tr>
-            <td> 
-                <a style="padding: 2px 10px" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + id}"><strong data-bind="text: orderID"></strong> <span class="badge" data-bind="text: id"></span></a>
-            </td>
-            
-<!--        Order open/close toggle    -->
-            <td style="width: 5%" class="text-center">
-                <button class="btn btn-custom btn-xs" data-bind="click: $parent.toggleActive, visible: numberOfShipments > 0, html: toggleMessage"></button>
-                <div class="btn-group" data-bind="visible: numberOfShipments == 0">
-                    <button class="btn btn-custom btn-xs" data-bind="click: $parent.toggleActive, html: toggleMessage"></button>
-                    <button class="btn btn-danger btn-xs" data-bind="click: $parent.removeOrder"><span class="glyphicon glyphicon-trash"></span></button>
+                    </div>
                 </div>
-            </td>
-            
-<!--        Product label    -->
-            <td>
-                <span data-bind="text: label"></span>
-            </td>
-            <td class="text-left">
-                $ <span data-bind="text: price"></span><span class="badge" data-bind="visible: !applytax()"><span class="glyphicon glyphicon-ban-circle"></span> 稅</span>
-            </td>
-            
-<!--        Quantities    -->
-            <td class="text-right">
-                <span data-bind="text: qty"></span>
-            </td>
-            <td class="text-right">
-                <span data-bind="text: qty_shipped"></span>
-            </td>
-            <td class="text-left">
-                (<span data-bind="text: numberOfShipments"></span> <span class="glyphicon glyphicon-shopping-cart"></span>)
-            </td>
-            
-            <td class="text-center">
-                <span data-bind="text: orderdate"></span>
-            </td>
-            <td>
-                <span data-bind="text: ordernote"></span>
-            </td>
-            
-        </tr>
-    </tbody>
-</table>
-</div>
-    <div class="panel-footer lightorange-blend">
-<div class="row">
-    <div class="col-md-12">
-        <div class="btn-group">
-            <a class="btn btn-custom" data-bind="click: function () { page(1) }, attr: {disabled: page() == 1 ? true : false}"><span class="glyphicon glyphicon-step-backward"></span></a>
-            <a class="btn btn-custom" data-bind="click: function () { page(page()-1) }, attr: {disabled: page() == 1 ? true : false}"><span class="glyphicon glyphicon-triangle-left"></span></a>
-        </div>
-        <div class="btn-group" data-bind="foreach: availablePages">
-            <a class="btn btn-custom" data-bind="click: function () { $parent.page(val) }, attr: {disabled: $parent.page() == val ? true : false}, text: val"></a>
-        </div>
-        
-        <div class="btn-group">
-            <a class="btn btn-custom" data-bind="click: function () { page(page()+1) }, attr: {disabled: page() == maxPage() ? true : false}"><span class="glyphicon glyphicon-triangle-right"></span></a>
-            <a class="btn btn-custom" data-bind="click: function () { page(maxPage()) }, attr: {disabled: page() == maxPage() ? true : false}"><span class="glyphicon glyphicon-step-forward"></span></a>
+                <table id="showall-th" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center">訂單編號</th>
+                            <th class="text-center">產品/服務</th>
+                            <th class="text-center">出貨單編號</th>
+                            <th class="text-center">出貨日期</th>
+                            <th class="text-center">QTY</th>
+                            <th class="text-center">發票編號</th>
+                            <th class="text-center">發票日期</th>
+                            <th class="text-center">單價</th>
+                            <th class="text-center">總價</th>
+                            <th class="text-center">付錢</th>
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>
+            <div id="showall-p-body" class="panel-body" style="padding: 0px">
+                <table id="showall-td" class="table table-striped table-bordered">
+                    <tbody data-bind="foreach: shipmentsItems">
+                        <tr>
+                            <td style="padding: 3px 3px"
+                                class="text-center">
+                                <a style="padding: 2px 10px"
+                                   class="btn btn-custom"
+                                   data-bind="attr: {href: '/order/show/' + order_id}">
+                                    <strong data-bind="text: orderID"></strong>
+                                    <span class="badge"
+                                          data-bind="visible: !orderID || $parent.debug, text: order_id"></span>
+                                </a>
+                            </td>
+                            <td style="padding: 3px 3px">
+                                <span data-bind="text: inventory_name"></span>
+                            </td>
+
+                            <td style="padding: 3px 3px; border-left: solid 2px #532929;"
+                                class="text-center">
+                                <button style="padding: 2px 10px" class="btn btn-custom"
+                                   data-bind="click: $parent.open_shipment_pdf">
+                                    <strong data-bind="text: shipment_no"></strong>
+                                    <span class="badge"
+                                          data-bind="visible: !shipment_no || $parent.debug, text: shipment_id"></span>
+                                </button>
+                            </td>
+                            <td style="padding: 3px 3px" class="text-center"><span data-bind="text: date"></span></td>
+                            <td style="padding: 3px 3px" class="text-right"><span data-bind="text: qty"></span> <span data-bind="text: countUnit"></span></td>
+
+                            <td style="padding: 3px 3px; border-left: solid 2px #532929;" class="text-center">
+                                <input style="margin: 0px; width:26px; height:26px; vertical-align: top;" type="checkbox" data-bind="visible: invoice_id == undefined, checked: selected;">
+                                <button style="padding: 2px 10px" class="btn btn-custom" data-bind="visible: invoice_id != undefined, click: $parent.view_invoice"><strong data-bind="text: invoice_no"></strong> <span class="badge" data-bind="visible: !invoice_no || $parent.debug, text: invoice_id"></span></button>
+                            </td>
+                            <td style="padding: 3px 3px" class="text-center"><span data-bind="text: invoicedate"></span></td>
+                            <td style="padding: 3px 3px" class="text-center"><span data-bind="text: '$ ' + price"></span></td>
+                            <td style="padding: 3px 3px" class="text-center"><span data-bind="text: '$ ' + value"></span></td>
+                            <td style="padding: 3px 3px" class="text-center" data-bind="style: {backgroundColor: paid ? null : 'pink'}">
+                                <font color="orange"><i class="fa fa-usd" data-bind="visible: paid"></i></font>
+                                <span data-bind="text: paid ? 'Yes' : 'No'"></span>
+                                <i class="fa fa-question fa-spin" data-bind="visible: !paid"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
-    </div>
-    </div>
+<!--END: List view of shipments-->
+
+
+<%- partial ('../invoice/modal.ejs') %>
+
+
+</div><!--END: container-fluid-->
 
 
 <script>
-var viewModel = viewModel || {};
+var cogroup = <%- JSON.stringify(cogroup) %>;
 var co_name = viewModel.co_name = '<%= cogroup.name %>';
-var _csrf = viewModel._csrf = '<%= _csrf %>';
-    
-//var cogroup = new KO_Cogroup(<%- JSON.stringify(cogroup) %>);
-addCompanyNavButtons(co_name);
-    
-    
-function PageModel() {
-    var self = this;
-    
-    self.page = ko.observable(1);
-    self.limit = ko.observable(18);
-    self.maxPage = ko.observable(1);
-    
-    self.availablePages = ko.observableArray();
-    self.orders = ko.observableArray();
-    
-    self.toggleActive = function(order) {
-        order.is_open(!order.is_open());
-        self.ordersUpdate(order);
-    }
-    
-    self.ordersUpdate = function (order) {
-        var params = {
-            _csrf: _csrf, 
-            id: co_name,
-            order: order
-        };
-        var cb = function (response) {
-            console.log(response, order);
-            if (response.is_open !== order.is_open()) {
-                order.is_open(!order.is_open());
-            }
-        };
-        post('/database/update/order', params, cb);
-    };
-    
-    self.removeOrder = function (order) {
-        var params = {
-            _csrf: _csrf, 
-            co_name: co_name,
-            order: order
-        };
-        var cb = function (response) {
-//            console.log('REMOVE', response);
-            if (response.status === 500) {
-                alert(response.raw.code);
-            } else {
-                self.orders.remove(order);
-                self.loadOrders(); // Refresh list so that it is full.
-            }
-        };
-        post('/database/destroy/order', params, cb);
-    };
-    
-    self.loadOrders = function () {
-        var params = {
-            _csrf: _csrf,
-            group: co_name,
-            page: Number(self.page()),
-            limit: Number(self.limit())
-        };
-        var cb = function (response) {
-            self.orders.removeAll();
-            for (var i=0; i<response.length; i++) {
-//                console.log(response[i]);
-                self.orders.push(new KO_PurchaseOrder(response[i].MPN, response[i]));
-            }
-        };
-        post('/database/get/orders', params, cb);
-    };    
-    
-    /**
-     * Set `maxPage` onload and when `limit` is changed.
-     * 
-     * Requests a count of orders from database and sets maxPage value.
-     */
-    ko.computed(function () {
-        var limit = self.limit(); //<- Activate computed call
-        
-        var params = {
-            _csrf: _csrf,
-            co_name: co_name
-        };
-        var cb = function (response) {
-            console.log('COUNT:', response);
-            self.maxPage(Math.ceil(response.count / limit));
-        };
-        post('/database/count/orders', params, cb);
-    });
-    
-    /**
-     * Set `availablePages` list of page numbers when `maxPage` or `page`
-     * are changed.
-     */
-    ko.computed(function () {
-        var page = self.page(), //<- Activate computed call
-            maxPage = self.maxPage();
-        
-        self.availablePages.removeAll();
-        for (var i=Math.max(page-3,1); ; i++) {
-            if (i <= maxPage && self.availablePages().length < 7) {
-                self.availablePages.push({val:i});
-            } else break;
-        }
-        self.loadOrders();
-    });
-    
-}
+var _csrf = '<%= _csrf %>';
 
-    
-viewModel.pageVM = new PageModel();
-console.dir(viewModel);
-ko.applyBindings(viewModel, document.getElementById('this body'));
+
+var key = {
+    ESC: 27,
+    ENTER: 13,
+    PLUS: 43
+};
+
+viewModel.ShowAllShipmentsVM = new (function () {
+    'use strict';
+    var self = this;
+
+    self.debug = false;  // Show database ID numbers in all cases if true
+    var d = new Date();
+    d.setMonth(d.getMonth() - 2);
+    self.dateStart = ko.observable(d.toISOString().substring(0, 10));
+
+    /**
+     * SHIPMENT methods
+     */
+    self.shipments = ko.observableArray();
+    self.shipmentsItems = ko.observableArray();
+
+    self.clearSelections = function() {
+        for (var i=0; i<self.shipmentsItems().length; i++) {
+            self.shipmentsItems()[i].selected(false);
+        }
+    };
+
+    self.openInvoiceModal = function() {
+        var items = [];
+        for (var i=0; i<self.shipmentsItems().length; i++) {
+            var si = self.shipmentsItems()[i];
+            if (si.selected() && si.invoiceitem_id == null) {
+                console.log(si);
+                items.push(si);
+            }
+        }
+        viewModel.invoiceModalVM.showModal(items);
+    };
+
+    self.view_invoice = function(invoice_btn_data) {
+//        console.log(invoice_btn_data.invoice_no);
+        var params = {
+            _csrf: _csrf,
+            id: co_name,
+            invoice_no: invoice_btn_data.invoice_no,
+        };
+        post('/database/get/invoiceitems', params, function(response) {
+            console.log(response);
+
+            var items = [];
+            for (var i=0; i<response.length; i++) {
+                items.push(response[i]);
+            }
+            viewModel.invoiceModalVM.showModal(items);
+        });
+    };
+
+    document.onkeydown = function(evt) {
+        // Exit any modal if displayed.
+        if (evt.keyCode == key.ESC) {
+            if (viewModel.invoiceModalVM.isVisible()) viewModel.invoiceModalVM.exitModal();
+            else self.clearSelections();
+        }
+        // Enter the normal shipment form.
+        if (evt.keyCode == key.ENTER) {
+            if (viewModel.invoiceModalVM.isVisible()) return true;
+            else self.openInvoiceModal();
+        }
+    };
+
+
+
+    self.getShipmentsArray = ko.computed(function() {
+        var params = {
+            _csrf: _csrf,
+            id: co_name,
+            startDate: self.dateStart(),
+        };
+        post('/database/get/shipmentitems', params, function(response) {
+//            console.log(response);
+
+            self.shipmentsItems.removeAll();
+            for (var i=0; i<response.length; i++) {
+                console.log(response);
+                self.shipmentsItems.push(new KO_ShipmentListRow(response[i]));
+            }
+        });
+    });
+//    self.getShipmentsArray();
+
+//    ko.computed(function () {
+//        self.getShipmentsArray();
+//    });
+
+    // Set the header cell widths to match the body cell widths
+    ko.computed(function () {
+        if (self.shipmentsItems().length > 0) {
+            var ths = document.getElementById('showall-th').getElementsByTagName('th');
+            var tds = document.getElementById('showall-td').getElementsByTagName('td');
+            if (tds.length >= ths.length) {
+                for (var i = 0; i < ths.length; i++) {
+                    ths[i].style.width = tds[i].offsetWidth + 'px';
+                }
+            }
+            // Edit body starting offset from header
+            var panel_head = document.getElementById("showall-p-head");
+            var panel_body = document.getElementById("showall-p-body");
+            panel_body.style.marginTop = panel_head.offsetHeight + 'px';
+        }
+    });
+
+    self.open_shipment_pdf = function (item) {
+        window.open('/shipment/pdf/' + item.shipment_id, '', "width=1000, height=600");
+    }
+});
+
+//viewModel.ShowAllShipmentsVM = new ShowAllShipmentsVM();
 </script>

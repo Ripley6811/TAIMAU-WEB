@@ -1,17 +1,36 @@
 <div class="container-fluid" data-bind="with: SidebarVM">
-    <div class="row">
+    <div class="row" style="padding: 4px;">
+        <div class="col-md-3" style="padding: 0px">
         <!--TODO: Logo button toggle minify/maximize sidebar-->
-        <a class="navbar-brand" style="padding: 4px;" href="/">
-            <img alt="taimau_logo" src="/images/taimau_symbol_h360_raised.png" height="43">
-        </a>
-        <span style="font-size: 25px"
-              data-bind="visible: user">蔣武捷</span>
+            <a class="navbar-brand" style="padding: 0px" href="/">
+                <img alt="taimau_logo" src="/images/taimau_symbol_h360_raised.png" height="43">
+            </a>
+        </div>
+        <div class="col-md-6 text-center hidden-sm hidden-xs" style="padding: 4px">
+        <div style="font-size: 22px" data-bind="visible: user, text: user"></div>
+        </div>
+        <div class="col-md-3 text-right" style="padding: 4px">
+        <button type="button" class="btn btn-custom btn-lg" style="padding: 6px 3px"
+              data-bind="visible: user, click: log_out">登出</button>
+        </div>
+        <div class="input-group">
+            <input type="text" class="form-control" style="width: 50%"
+                   placeholder="名稱"
+                   data-bind="visible: !user(), value: user_name">
+
+            <input type="password" class="form-control" style="width: 50%"
+                   placeholder="密碼"
+                   data-bind="visible: !user(), value: user_password">
+        </div>
         <button type="button" style="margin-top: 2px"
-                class="btn btn-custom btn-lg"
+                class="btn btn-custom form-control"
                 data-bind="visible: !user(), click: log_in">
             登入
         </button>
     </div>
+
+    <hr>
+
     <div class="row">
         <a href="/cogroup" role="button" class="btn sharp btn-success btn-block">
             <i class="fa fa-fw fa-book fa-lg"></i>&nbsp;
@@ -207,7 +226,12 @@ viewModel.SidebarVM = new (function () {
     var self = this;
 
     self.user = ko.observable(null);
+    self.user_name = ko.observable();
+    self.user_password = ko.observable();
     self.log_in = function () {
+
+    };
+    self.log_out = function () {
 
     };
 

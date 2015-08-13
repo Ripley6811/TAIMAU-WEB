@@ -233,6 +233,7 @@ module.exports = {
                     // Update QTY and NOTE only
                     order.qty = params.qty;
                     order.ordernote = params.ordernote;
+                    order.orderID = params.orderID;
                     order.save();
                     req.flash('message', 'Record Updated!');
                     res.redirect('/order/show/'+order.id);

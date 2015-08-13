@@ -12,23 +12,12 @@ module.exports = {
         res.view();
     },
 
-    create: function (req, res, next) {
-
-        var userObj = {
-            name: req.param('name'),
-            title: req.param('title'),
-            email: req.param('email'),
-            password: req.param('password'),
-            confirmation: req.param('confirmation')
-        }
-
-        // Create a User with the params sent from 
-        // the sign-up form --> new.ejs
-        User.create(userObj, function userCreated(err, user) {
+    create: function (req, res) {
+        // Create a User
+        User.create(req.allParams(), function userCreated(err, user) {
 
             // // If there's an error
-            // if (err) return next(err);
-
+            // if (err) return res.send(err);
             if (err) {
                 console.log(err);
 //                req.session.flash = {
@@ -46,7 +35,7 @@ module.exports = {
             // Change status to online
             user.online = true;
             user.save(function (err, user) {
-                if (err) return next(err);
+                if (err) return res.send(err);
 
                 // add the action attribute to the user object for the flash message.
                 user.action = " signed-up and logged-in."
@@ -56,7 +45,7 @@ module.exports = {
 
                 // After successfully creating the user
                 // redirect to the show action
-                // From ep1-6: //res.json(user); 
+                // From ep1-6: //res.json(user);
 
                 res.redirect('/user/show/' + user.id);
             });
@@ -64,21 +53,21 @@ module.exports = {
     },
 
     // render the profile view (e.g. /views/show.ejs)
-    show: function (req, res, next) {
+    show: function (req, res) {
         User.findOne(req.param('id'), function foundUser(err, user) {
-            if (err) return next(err);
-            if (!user) return next();
+            if (err) return res.send(err);
+            if (!user) return res.send();
             res.view({
                 user: user
             });
         });
     },
 
-    index: function (req, res, next) {
+    index: function (req, res) {
 
         // Get an array of all users in the User collection(e.g. table)
         User.find(function foundUsers(err, users) {
-            if (err) return next(err);
+            if (err) return res.send(err);
             // pass the array down to the /views/index.ejs page
             res.view({
                 users: users
@@ -87,12 +76,12 @@ module.exports = {
     },
 
     // render the edit view (e.g. /views/edit.ejs)
-    edit: function (req, res, next) {
+    edit: function (req, res) {
 
         // Find the user from the id passed in via params
         User.findOne(req.param('id'), function foundUser(err, user) {
-            if (err) return next(err);
-            if (!user) return next('User doesn\'t exist.');
+            if (err) return res.send(err);
+            if (!user) return res.send('User doesn\'t exist.');
 
             res.view({
                 user: user
@@ -101,7 +90,7 @@ module.exports = {
     },
 
     // process the info from edit view
-    update: function (req, res, next) {
+    update: function (req, res) {
 
         if (req.session.User.admin) {
             var userObj = {
@@ -127,15 +116,15 @@ module.exports = {
         });
     },
 
-    destroy: function (req, res, next) {
+    destroy: function (req, res) {
 
         User.findOne(req.param('id'), function foundUser(err, user) {
-            if (err) return next(err);
+            if (err) return res.send(err);
 
-            if (!user) return next('User doesn\'t exist.');
+            if (!user) return res.send('User doesn\'t exist.');
 
             User.destroy(req.param('id'), function userDestroyed(err) {
-                if (err) return next(err);
+                if (err) return res.send(err);
 
                 // Inform other sockets (e.g. connected sockets that are subscribed) that this user is now logged in
                 User.publishUpdate(user.id, {
@@ -160,7 +149,7 @@ module.exports = {
 //
 //        // Find all current users in the user model
 //        User.find(function foundUsers(err, users) {
-//            if (err) return next(err);
+//            if (err) return res.send(err);
 //
 //            // subscribe this socket to the User model classroom
 //            User.subscribe(req.socket);

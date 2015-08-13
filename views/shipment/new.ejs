@@ -1,19 +1,27 @@
 <div class="panel panel-success" style="margin: 0px" data-bind="with: ShipmentsVM">
-    <div class="panel-heading">
+    <div class="panel-heading" style="padding-bottom: 0px">
         <div class="row">
             <div class="col-sm-4 col-sm-push-4 text-center">
                 <button class="btn btn-lg btn-success" data-bind="click: showModal">創造出貨單 <span class="badge">Enter</span></button>
             </div>
             <div class="col-sm-4 col-sm-pull-4">
                 <ul class="nav nav-tabs">
-                    <li id="tab" data-bind="css: {active: po_tab}">
-                        <a href="#" data-bind="click: toggleTab">
-                            <strong>訂單</strong>
+                    <li id="tab" class="text-center" style="background: lightgrey"
+                        data-bind="css: {active: po_tab}">
+                        <a href="#" style="padding-bottom: 0px"
+                           data-bind="click: togglePO">
+                            <strong style="font-size: 26px">訂單</strong>
+                            <br>
+                            <div class="badge" data-bind="text: orders().length"></div>
                         </a>
                     </li>
-                    <li id="tab" data-bind="css: {active: prod_tab}">
-                        <a href="#" data-bind="click: toggleTab">
-                            <strong>產品</strong>
+                    <li id="tab" class="text-center" style="background: lightgrey"
+                        data-bind="css: {active: prod_tab}">
+                        <a href="#" style="padding-bottom: 0px"
+                           data-bind="click: toggleProd">
+                            <strong style="font-size: 26px">產品</strong>
+                            <br>
+                            <div class="badge" data-bind="text: products().length"></div>
                         </a>
                     </li>
                 </ul>
@@ -21,7 +29,8 @@
         </div>
     </div>
     <div class="tab-content">
-        <div data-bind="visible: po_tab" style="padding: 0px; overflow-y:scroll; height:84vh;">
+        <div data-bind="visible: po_tab"
+             style="padding: 0px; overflow-y:scroll; height:84vh;">
             <table class="table table-condensed table-striped table-bordered">
                 <thead class="text-uppercase">
                     <tr>
@@ -120,10 +129,10 @@
                             <button style="padding: 3px 6px; vertical-align: top;" class="btn btn-sm btn-custom" data-bind="click: $parent.showMEModal">
 <!--                                    <i class="fa fa-truck fa-flip-horizontal"></i><i class="fa fa-truck fa-flip-horizontal"></i>-->
 
-                                <i class="fa fa-ambulance" data-bind="visible: is_supply"></i>
-                                <i class="fa fa-ambulance" data-bind="visible: is_supply"></i>
-                                <i class="fa fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
-                                <i class="fa fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
+                                <i class="fa fa-fw fa-ambulance" data-bind="visible: is_supply"></i>
+                                <i class="fa fa-fw fa-ambulance" data-bind="visible: is_supply"></i>
+                                <i class="fa fa-fw fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
+                                <i class="fa fa-fw fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
                             </button>
                         </td>
                         <td class="text-center" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
@@ -350,10 +359,20 @@ viewModel.ShipmentsVM = new (function () {
     self.po_tab = ko.observable(true);
     self.prod_tab = ko.observable(false);
 
-    self.toggleTab = function (whatami) {
-        self.po_tab(!self.po_tab());
-        self.prod_tab(!self.prod_tab());
 
+    self.toggleProd = function () {
+        self.po_tab(false);
+        self.prod_tab(true);
+        self.clearSelections();
+    };
+
+    self.togglePO = function () {
+        self.prod_tab(false);
+        self.po_tab(true);
+        self.clearSelections();
+    };
+
+    self.clearSelections = function () {
         for (var i=0; i<self.orders().length; i++) {
             self.orders()[i].selected(false);
         }
