@@ -43,8 +43,10 @@ Requires: "cogroup" object.
                             <div class="col-md-6" style="padding: 0px 2px">
                                 <div class="row-fluid">
                                     <div class="col-xs-4" style="padding: 0px">
-                                        <label style="width: 100%;" data-bind="text: name, visible: nameLock(), click: $parent.showModal"></label>
-                                        <input class="form-control" size="5" placeholder="簡寫" data-bind="value: name, visible: !nameLock()">
+                                        <label style="width: 100%; padding: 4px; margin: 0px"
+                                               data-bind="text: name, visible: nameLock(), click: $parent.showModal"></label>
+                                        <input class="form-control" size="5" placeholder="簡寫"
+                                               data-bind="value: name, visible: !nameLock()">
                                     </div>
                                     <div class="col-xs-8" style="padding: 0px">
                                         <div class="input-group">
@@ -54,24 +56,24 @@ Requires: "cogroup" object.
                                     </div>
                                 </div>
                                 <div class="input-group">
-                                    <div class="input-group-addon"><span class="glyphicon glyphicon-registration-mark"></span>
+                                    <div class="input-group-addon"><span class="fa fa-fw fa-lg fa-registered"></span>
                                     </div>
                                     <input class="form-control" placeholder="full name" style="width: 100%;" data-bind="textInput: fullname">
                                 </div>
                                 <div class="input-group">
-                                    <div class="input-group-addon"><span class="glyphicon glyphicon-globe"></span>
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-globe fa-lg fa-fw"></span>
                                     </div>
                                     <input class="form-control" placeholder="english name" style="width: 100%;" data-bind="textInput: english_name">
                                 </div>
                             </div>
                             <div class="col-md-6" style="padding: 0px 2px">
                                 <div class="input-group">
-                                    <div class="input-group-addon"><span class="glyphicon glyphicon-earphone"></span>
+                                    <div class="input-group-addon"><span class="fa fa-fw fa-lg fa-phone"></span>
                                     </div>
                                     <input class="form-control" placeholder="phone" style="width: 100%;" data-bind="textInput: phone">
                                 </div>
                                 <div class="input-group">
-                                    <div class="input-group-addon"><span class="glyphicon glyphicon-print"></span>
+                                    <div class="input-group-addon"><span class="fa fa-fw fa-lg fa-fax"></span>
                                     </div>
                                     <input class="form-control" placeholder="fax" style="width: 100%;" data-bind="textInput: fax">
                                 </div>
@@ -82,18 +84,18 @@ Requires: "cogroup" object.
                         <div class="row-fluid">
                             <div class="col-md-7" style="padding: 0px 2px">
                                 <div class="input-group">
-                                    <div class="input-group-addon"><span class="glyphicon glyphicon-home"></span>
+                                    <div class="input-group-addon"><span class="fa fa-fw fa-lg fa-home"></span>
                                     </div>
                                     <input class="form-control" placeholder="office address" style="width: 100%;" data-bind="textInput: address_office">
                                 </div>
 
                                 <div class="input-group">
-                                    <div class="input-group-addon"><span class="glyphicon glyphicon-shopping-cart"></span>
+                                    <div class="input-group-addon"><span class="fa fa-fw fa-lg fa-truck"></span>
                                     </div>
                                     <input class="form-control" placeholder="shipping address" style="width: 100%;" data-bind="textInput: address_shipping">
                                 </div>
                                 <div class="input-group">
-                                    <div class="input-group-addon"><span class="glyphicon glyphicon-usd"></span>
+                                    <div class="input-group-addon"><span class="fa fa-fw fa-lg fa-money"></span>
                                     </div>
                                     <input class="form-control" placeholder="billing address" style="width: 100%;" data-bind="textInput: address_billing">
                                 </div>
@@ -140,7 +142,7 @@ function BranchesVM() {
     var self = this;
     // Make branchNames available to contactsVM for selection.
     self.branchNames = viewModel.branchNames = ko.observableArray();
-    
+
     self.currentBranch = ko.observable();
     self.modalVisible = ko.observable(false);
     document.onkeydown = function(evt) {
@@ -156,7 +158,7 @@ function BranchesVM() {
     self.printDetails = function(item) {
         console.log(item);
     };
-    
+
     self.branches = ko.observableArray();
     self.addBranch = function() {
         var newBranch = new KO_Branch();
@@ -167,8 +169,8 @@ function BranchesVM() {
     };
     self.removeBranch = function(branch) {
         var params = {
-            _csrf: _csrf, 
-            co_name: co_name, 
+            _csrf: _csrf,
+            co_name: co_name,
             name: branch.name
         };
         post('/branch/destroy', params, function(response) {
@@ -181,11 +183,11 @@ function BranchesVM() {
             }
         });
     };
-    
+
     self.saveBranch = function(branch) {
         var params = {
-            _csrf: _csrf, 
-            co_name: co_name, 
+            _csrf: _csrf,
+            co_name: co_name,
             branch: branch
         };
         // XXX: Update or create? or just create.
@@ -199,10 +201,10 @@ function BranchesVM() {
             }
         });
     };
-    
+
     self.getBranches = function () {
         var params = {
-            _csrf: _csrf, 
+            _csrf: _csrf,
             id: co_name
         };
         post('/database/get/branches', params, function(response) {
@@ -214,7 +216,7 @@ function BranchesVM() {
             }
         });
     };
-    
+
     self.getBranches();
 }
 

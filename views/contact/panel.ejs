@@ -22,34 +22,34 @@ Requires: "cogroup" object.
             </thead>
             <tbody data-bind="foreach: contacts">
                 <tr>
-                    <td>
-                        <select data-bind="options: $root.branchNames, textInput: branch"></select>
+                    <td style="width: 10%">
+                        <select class="form-control" data-bind="options: $root.branchNames, textInput: branch"></select>
                     </td>
                     <td style="width: 20%">
                         <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-user"></span>
+                            <div class="input-group-addon"><span class="fa fa-fw fa-lg fa-user"></span>
                             </div>
                             <input class="form-control" size="4" placeholder="name" data-bind="textInput: name">
                         </div>
                         <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span>
+                            <div class="input-group-addon"><span class="fa fa-fw fa-lg fa-briefcase"></span>
                             </div>
                             <input class="form-control" size="5" placeholder="position" data-bind="textInput: position">
                         </div>
                     </td>
                     <td style="width: 30%">
                         <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-earphone"></span>
+                            <div class="input-group-addon"><span class="fa fa-fw fa-lg fa-phone"></span>
                             </div>
                             <input class="form-control" placeholder="phone" style="width: 100%;" data-bind="textInput: phone">
                         </div>
                         <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-phone"></span>
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-phone fa-fw fa-lg"></span>
                             </div>
                             <input class="form-control" placeholder="cell" style="width: 100%;" data-bind="textInput: cell">
                         </div>
                         <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-print"></span>
+                            <div class="input-group-addon"><span class="fa fa-fw fa-lg fa-fax"></span>
                             </div>
                             <input class="form-control" placeholder="fax" style="width: 100%;" data-bind="textInput: fax">
                         </div>
@@ -57,7 +57,7 @@ Requires: "cogroup" object.
                     </td>
                     <td>
                         <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span>
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-envelope fa-fw fa-lg"></span>
                             </div>
                             <input class="form-control" placeholder="email" style="width: 100%;" data-bind="textInput: email">
                         </div>
@@ -87,12 +87,12 @@ var viewModel = viewModel || {};
 var co_name = viewModel.co_name = '<%= cogroup.name %>';
 var _csrf = viewModel._csrf = '<%= _csrf %>';
 
-    
+
 function ContactsVM() {
     var self = this;
-    
+
     self.branchNames = viewModel.branchNames || ko.observableArray();
-    
+
     // TODO: Figure out how to make sure the branch names stay updated.
     // For now, just have to refresh screen as needed.
     // One option is to NOT use observableArray for each contact row.
@@ -107,7 +107,7 @@ function ContactsVM() {
         });
     };
     if (self.branchNames().length == 0) self.getBranchNames();
-    
+
     /**
      * CONTACT section controls
      */
@@ -119,8 +119,8 @@ function ContactsVM() {
     };
     self.removeContact = function(contact) {
         var params = {
-            _csrf: _csrf, 
-            co_name: co_name, 
+            _csrf: _csrf,
+            co_name: co_name,
             id: contact.id
         };
         post('/contact/destroy', params, function(response) {
@@ -134,11 +134,11 @@ function ContactsVM() {
             }
         });
     };
-    
+
     self.saveContact = function(contact) {
         var params = {
-            _csrf: _csrf, 
-            co_name: co_name, 
+            _csrf: _csrf,
+            co_name: co_name,
             contact: contact
         };
         post('/contact/updateOrCreate', params, function(response) {
@@ -151,15 +151,15 @@ function ContactsVM() {
             }
         });
     };
-    
+
     self.getContacts = function () {
         var params = {
-            _csrf: _csrf, 
+            _csrf: _csrf,
             id: co_name
         };
         post('/database/get/contacts', params, function(response) {
             var db_contacts = response;
-            
+
             self.contacts.removeAll();
             for (var i=0; i<db_contacts.length; i++) {
                 self.contacts.push(new KO_Contact(db_contacts[i]));
@@ -167,7 +167,7 @@ function ContactsVM() {
         });
     };
 //    self.getBranchNames();
-    
+
     self.getContacts();
     // Update contacts if the branchNames array changes.
     ko.computed(function () {
@@ -177,5 +177,5 @@ function ContactsVM() {
 }
 
 viewModel.contactsVM = new ContactsVM();
-    
+
 </script>
