@@ -10,15 +10,15 @@
                         <span class="h4" style="margin: 0px">Shipments</span>
                         <div class="badge" data-bind="text: shipmentsItems().length + ' displayed'"></div>
                     </div>
-                    <div class="col-xs-6">
+                    <div class="col-xs-5">
                         <button class="btn btn-success" data-bind="click: clearSelections">Clear Selections <span class="badge">Esc</span></button>
                         <button class="btn btn-success" data-bind="click: openInvoiceModal">Create Invoice <span class="badge">Enter</span></button>
                     </div>
-                    <div class="col-xs-3">
+                    <div class="col-xs-4">
                         <div class="input-group">
-                            <div class="input-group-addon">從</div>
-                            <input class="form-control" type="date" data-bind="textInput: dateStart">
-                            <div class="input-group-addon">到現在</div>
+                            <div class="input-group-addon">顯示</div>
+                            <input class="form-control" type="number" data-bind="textInput: nRecsShown">
+                            <div class="input-group-addon">個紀錄</div>
                         </div>
 
                     </div>
@@ -129,7 +129,8 @@ viewModel.ShowAllShipmentsVM = new (function () {
     self.debug = false;  // Show database ID numbers in all cases if true
     var d = new Date();
     d.setMonth(d.getMonth() - 2);
-    self.dateStart = ko.observable(d.toISOString().substring(0, 10));
+//    self.dateStart = ko.observable(d.toISOString().substring(0, 10));
+    self.nRecsShown = ko.observable(20);
 
     /**
      * SHIPMENT methods
@@ -188,7 +189,7 @@ viewModel.ShowAllShipmentsVM = new (function () {
         var params = {
             _csrf: _csrf,
             id: co_name,
-            startDate: self.dateStart(),
+            limit: parseInt(self.nRecsShown()),
         };
         post('/database/get/shipmentitems', params, function(response) {
             self.shipmentsItems.removeAll();

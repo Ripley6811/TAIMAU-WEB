@@ -199,6 +199,7 @@ function KO_PurchaseOrder(product, order) {
     self.sku = product.SKU;
     self.guige = product.SKU;
     self.qty = ko.observable(order.qty ? order.qty : '');
+    self.qty_remaining = self.qty() - self.qty_shipped;
     //    self.price = ko.observable(product.curr_price); // Why did i do this?
     self.price = ko.observable(order.price || null);
     self.applytax = ko.observable(order.applytax);

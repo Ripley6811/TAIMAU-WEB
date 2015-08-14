@@ -222,9 +222,10 @@ module.exports = {
             + " JOIN shipment sh ON sh.id = shipi.shipment_id "
             + " JOIN `order` po ON po.id = shipi.order_id "
             + " JOIN product prod ON prod.MPN = po.MPN "
-            + " WHERE po.group LIKE ? AND sh.shipmentdate >= ?"
-            + " ORDER BY shipmentdate DESC, sh.id DESC;"
-            , [req.param('id'), req.param('startDate')],
+            + " WHERE po.group LIKE ?"
+            + " ORDER BY shipmentdate DESC, sh.id DESC"
+            + " LIMIT ?"
+            , [req.param('id'), parseInt(req.param('limit'))],
         function(err, recs) {
             if (err) console.log(err);
             res.send(recs);
@@ -346,6 +347,21 @@ module.exports = {
         .exec(function (err, rec) {
             if (err) { res.send(err); return; }
             res.send(rec);
+        });
+    },
+
+
+    /**
+    * `Database/getController.recent_pos()`
+    */
+    recent_pos: function (req, res) {
+        Order.find({group: req.param('cogroup')})
+        .populate('MPN')
+        .sort('orderdate desc')
+        .limit(req.param('limit') || 5)
+        .exec(function (err, recs) {
+            if (err) { res.send(err); return; }
+            res.json(recs);
         });
     }
 };

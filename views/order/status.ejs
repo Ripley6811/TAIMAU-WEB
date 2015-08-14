@@ -107,7 +107,7 @@ viewModel.ShowAllShipmentsVM = new (function () {
 
     self.debug = false;  // Show database ID numbers in all cases if true
     var d = new Date();
-    d.setMonth(d.getMonth() - 1);
+    d.setMonth(d.getMonth() - 2);
     self.dateStart = ko.observable(d.toISOString().substring(0, 10));
 
     /**

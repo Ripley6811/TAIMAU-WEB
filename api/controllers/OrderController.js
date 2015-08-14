@@ -250,6 +250,7 @@ module.exports = {
         var co_name = req.param('id');
         Order.find({group: co_name, is_open: true})
         .populate('MPN')
+        .populate('shipments')
         .exec(function (err, orders) {
             res.send(orders);
         });
