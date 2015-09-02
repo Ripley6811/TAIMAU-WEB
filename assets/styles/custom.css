@@ -324,3 +324,7 @@ hr {
     width: 20px;
     height: 20px;
 }
+
+.highlight-row > td {
+    background-color: blue
+}

@@ -1,0 +1,118 @@
+<!--Table view of companies-->
+<div>
+    <table class="table table-condensed table-striped">
+        <thead class="text-uppercase">
+            <tr>
+                <th></th>
+                <th>Save/Del</th>
+                <th>公司 / 分公司</th>
+                <th>is active</th>
+                <th>正名字</th>
+                <th>英文名</th>
+                <th>稅ID</th>
+                <th>電話</th>
+                <th>傳真</th>
+                <th>email</th>
+                <th>address</th>
+                <th>address_billing</th>
+                <th>address_office</th>
+                <th>address_shipping</th>
+                <th>note</th>
+            </tr>
+        </thead>
+    <!--    <tbody data-bind="foreach: cogroups">-->
+        <tbody data-bind="foreach: branches">
+            <tr onclick="highlightRow(this)">
+                <td>
+                    <badge class="badge" data-bind="text: $index() + 1"></badge>
+                </td>
+                <td>
+                    <span class="btn-group btn-group-sm" style="width: 140px">
+                        <button class="btn btn-primary" style="width: 50%; padding: 2px 6px; font-size: 14px; font-weight: bold" data-bind="click: save_branch">Save</button>
+                        <button class="btn btn-danger" style="width: 50%; padding: 2px 6px; font-size: 14px; font-weight: bold" data-bind="click: del_branch">Del</button>
+                    </span>
+                </td>
+                <td>
+                    <span class="btn-group btn-group-sm" style="width: 200px">
+                        <button class="btn btn-custom" style="width: 50%; padding: 2px 6px; font-size: 14px; font-weight: bold" data-bind="click: goto_branch, text: group"></button>
+                        <button class="btn btn-custom" style="width: 50%; padding: 2px 6px; font-size: 14px; font-weight: bold" data-bind="click: goto_branch, text: name"></button>
+                    </span>
+                </td>
+                <td><label style="width: 100px"><input type="checkbox" data-bind="checked: is_active"> is_active</label></td>
+                <td><input type="text" placeholder="fullname" data-bind="textInput: fullname"></td>
+                <td><input type="text" placeholder="english_name" data-bind="textInput: english_name"></td>
+                <td><input type="text" placeholder="tax_id" data-bind="textInput: tax_id"></td>
+                <td><input type="text" placeholder="phone" data-bind="textInput: phone"></td>
+                <td><input type="text" placeholder="fax" data-bind="textInput: fax"></td>
+                <td><input type="text" placeholder="email" data-bind="textInput: email"></td>
+                <td><input type="text" placeholder="address" data-bind="textInput: address"></td>
+                <td><input type="text" placeholder="address_billing" data-bind="textInput: address_billing"></td>
+                <td><input type="text" placeholder="address_office" data-bind="textInput: address_office"></td>
+                <td><input type="text" placeholder="address_shipping" data-bind="textInput: address_shipping"></td>
+                <td><input type="text" placeholder="note" data-bind="textInput: note"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+var branches = ko.mapping.fromJS(<%- JSON.stringify(branches) %>);
+var check_length = <%= length %>;
+// Verify that parsed JSON data matches the transmitted length value.
+if (branches().length !== check_length) {
+    alert(branches().length + ' !== ' + check_length + '\nData length check failed!');
+}
+var _csrf = '<%= _csrf %>';
+
+var goto_branch = function (branch) {
+    window.location = '/cogroup/show/' + branch.group();
+};
+
+// Reference to active/clicked row
+var active_row = null;
+/**
+ * Highlight table row by changing background color of each cell.
+ * @param {Object} tr_el The HTML <tr> element to iterate over
+ */
+var highlightRow = function (tr_el) {
+    // Clear highlighting of previous row
+    for(var i = 0; active_row && i < active_row.children.length; i++) {
+        active_row.children[i].style.removeProperty("background-color");
+    }
+    // Change saved reference to active row
+    active_row = tr_el;
+    // Add highlighting to new row
+    for(var i = 0; i < active_row.children.length; i++) {
+        active_row.children[i].style.backgroundColor = 'yellow';
+    }
+};
+
+var save_branch = function (branch) {
+    console.log('save_branch', ko.toJS(branch));
+    var obj = ko.toJS(branch);
+    var params = {
+        _csrf: _csrf,
+        id: obj.name,
+        branch: obj
+    };
+    post('/database/update/branch', params, function(response) {
+        console.log(response);
+        alert(ko.toJSON(response));
+    });
+};
+
+var del_branch = function (branch) {
+    console.log('del_branch', ko.toJS(branch));
+    var obj = ko.toJS(branch);
+    var params = {
+        _csrf: _csrf,
+        id: obj.name
+    };
+    post('/database/destroy/branch', params, function(response) {
+        console.log(response);
+        alert(ko.toJSON(response));
+
+
+    });
+};
+</script>

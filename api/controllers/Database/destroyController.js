@@ -23,8 +23,12 @@ module.exports = {
      * `Database\destroyController.branch()`
      */
     branch: function (req, res) {
-        return res.json({
-            todo: 'branch() is not implemented yet!'
+        console.log(req.allParams());
+
+        Branch.destroy(req.param('id'), function(err, rec) {
+            if (err) { res.send(err); return; }
+
+            res.json(rec);
         });
     },
 
@@ -45,11 +49,11 @@ module.exports = {
     order: function (req, res) {
         var co_name = req.param('co_name'),
             order = req.param('order');
-        
+
         Order.destroy({id: order.id, group: co_name})
         .exec(function (err, records) {
-            if (err) { 
-                res.send(err); 
+            if (err) {
+                res.send(err);
             } else if (records.length > 1) {
                 res.send({'err': 'Too many records deleted',
                           'records': records});
@@ -64,8 +68,12 @@ module.exports = {
      * `Database\destroyController.product()`
      */
     product: function (req, res) {
-        return res.json({
-            todo: 'product() is not implemented yet!'
+        console.log(req.allParams());
+
+        Branch.destroy(req.param('id'), function(err, rec) {
+            if (err) { res.send(err); return; }
+
+            res.json(rec);
         });
     },
 
@@ -82,7 +90,7 @@ module.exports = {
 
     /**
      * `Database\destroyController.shipmentitem()`
-     * 
+     *
      * Returns the single record if successful. Otherwise returns the error
      * and records array.
      */
@@ -90,15 +98,15 @@ module.exports = {
         console.log('DESTROY/SHIPMENTITEM', req.params.all());
         var id = req.param('id'),
             order_id = req.param('order_id');
-            
+
         if (isNaN(Number(id))) {
             res.send('ID is not a number');
         }
-        
+
         Shipmentitem.destroy({id: id, order_id: order_id})
         .exec(function (err, records) {
-            if (err) { 
-                res.send(err); 
+            if (err) {
+                res.send(err);
             } else if (records.length > 1) {
                 res.send({'err': 'Too many records deleted',
                           'records': records});

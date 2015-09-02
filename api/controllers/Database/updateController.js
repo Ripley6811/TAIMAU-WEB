@@ -18,10 +18,10 @@ module.exports = {
         console.log(editRecord.MPN);
 
         if (editRecord.MPN) {
-            Product.update(editRecord.MPN, editRecord, function(err, rec) {
+            Product.update(editRecord.MPN, editRecord, function(err, recs) {
                 if (err) { res.send(err); return; }
 
-                res.send(rec);
+                res.json(recs);
             });
         }
     },
@@ -31,8 +31,12 @@ module.exports = {
     * `Database/updateController.branch()`
     */
     branch: function (req, res) {
-        return res.json({
-            todo: 'branch() is not implemented yet!'
+        console.log(req.allParams());
+
+        Branch.update(req.param('id'), req.param('branch'), function(err, recs) {
+            if (err) { res.send(err); return; }
+
+            res.json(recs);
         });
     },
 
