@@ -19,6 +19,9 @@ module.exports = {
             unique: true,
             primaryKey: true
         },
+        pinyin: {
+            type: 'string'
+        },
         is_active: {
             type: 'boolean',
             defaultsTo: true,
@@ -31,7 +34,7 @@ module.exports = {
             type: 'boolean',
             defaultsTo: true,
         },
-        
+
         branches: {
             collection: 'branch',
             via: 'group'

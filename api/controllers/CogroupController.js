@@ -181,6 +181,20 @@ module.exports = {
 
             res.send(cogroupnames);
         });
+    },
+    // Get list of names of active companies
+    namepinyinlist: function (req, res) {
+//        Cogroup.find({or:[{is_supplier:true},{is_customer:true}]})
+        Cogroup.find()
+        .sort('pinyin')
+        .exec(function (err, cogroups) {
+            if (err) {
+                res.json({error: err.message}, 400);
+                return
+            }
+
+            res.json(cogroups);
+        });
     }
 };
 
