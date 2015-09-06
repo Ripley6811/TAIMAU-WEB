@@ -5,19 +5,11 @@
             <tr>
                 <th></th>
                 <th>Save/Del</th>
-                <th>公司 / 分公司</th>
+                <th>公司</th>
+                <th>Pinyin</th>
                 <th>is active</th>
-                <th>正名字</th>
-                <th>英文名</th>
-                <th>稅ID</th>
-                <th>電話</th>
-                <th>傳真</th>
-                <th>email</th>
-                <th>address</th>
-                <th>address_billing</th>
-                <th>address_office</th>
-                <th>address_shipping</th>
-                <th>note</th>
+                <th>is supplier</th>
+                <th>is customer</th>
             </tr>
         </thead>
     <!--    <tbody data-bind="foreach: cogroups">-->
@@ -56,7 +48,7 @@ if (cogroups().length !== check_length) {
 var _csrf = '<%= _csrf %>';
 
 var goto_cogroup = function (cogroup) {
-    window.location = '/cogroup/show/' + cogroup.group();
+    window.location = '/cogroup/show/' + cogroup.name();
 };
 
 // Reference to active/clicked row
