@@ -86,7 +86,9 @@ function HomepageVM() {
             // Show first few items
             self.pinyin_list.removeAll();
             res.forEach(function(cogroup) {
-                self.pinyin_list.push(cogroup);
+                if (cogroup.pinyin) {
+                    self.pinyin_list.push(cogroup);
+                }
             });
         };
         xmlhttp2.open('GET', '/cogroup/namepinyinlist', true);
