@@ -1,0 +1,109 @@
+<!--Table view of companies-->
+<div>
+    <table class="table table-condensed table-striped">
+        <thead class="text-uppercase">
+            <tr>
+                <th></th>
+                <th>Save/Del</th>
+                <th>公司 / 分公司</th>
+                <th>is active</th>
+                <th>正名字</th>
+                <th>英文名</th>
+                <th>稅ID</th>
+                <th>電話</th>
+                <th>傳真</th>
+                <th>email</th>
+                <th>address</th>
+                <th>address_billing</th>
+                <th>address_office</th>
+                <th>address_shipping</th>
+                <th>note</th>
+            </tr>
+        </thead>
+    <!--    <tbody data-bind="foreach: cogroups">-->
+        <tbody data-bind="foreach: cogroups">
+            <tr onclick="highlightRow(this)">
+                <td>
+                    <badge class="badge" data-bind="text: $index() + 1"></badge>
+                </td>
+                <td>
+                    <span class="btn-group btn-group-sm" style="width: 140px">
+                        <button class="btn btn-primary" style="width: 50%; padding: 2px 6px; font-size: 14px; font-weight: bold" data-bind="click: save_cogroup">Save</button>
+                        <button class="btn btn-danger" style="width: 50%; padding: 2px 6px; font-size: 14px; font-weight: bold" data-bind="click: del_cogroup">Del</button>
+                    </span>
+                </td>
+                <td>
+                    <span class="btn-group btn-group-sm" style="width: 100px">
+                        <button class="btn btn-custom" style="width: 100%; padding: 2px 6px; font-size: 14px; font-weight: bold" data-bind="click: goto_cogroup, text: name"></button>
+                    </span>
+                </td>
+                <td><input type="text" placeholder="pinyin" data-bind="textInput: pinyin"></td>
+                <td><label style="width: 100px"><input type="checkbox" data-bind="checked: is_active"> is_active</label></td>
+                <td><label style="width: 120px"><input type="checkbox" data-bind="checked: is_supplier"> is_supplier</label></td>
+                <td><label style="width: 120px"><input type="checkbox" data-bind="checked: is_customer"> is_customer</label></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+var cogroups = ko.mapping.fromJS(<%- JSON.stringify(cogroups) %>);
+var check_length = <%= length %>;
+// Verify that parsed JSON data matches the transmitted length value.
+if (cogroups().length !== check_length) {
+    alert(cogroups().length + ' !== ' + check_length + '\nData length check failed!');
+}
+var _csrf = '<%= _csrf %>';
+
+var goto_cogroup = function (cogroup) {
+    window.location = '/cogroup/show/' + cogroup.group();
+};
+
+// Reference to active/clicked row
+var active_row = null;
+/**
+ * Highlight table row by changing background color of each cell.
+ * @param {Object} tr_el The HTML <tr> element to iterate over
+ */
+var highlightRow = function (tr_el) {
+    // Clear highlighting of previous row
+    for(var i = 0; active_row && i < active_row.children.length; i++) {
+        active_row.children[i].style.removeProperty("background-color");
+    }
+    // Change saved reference to active row
+    active_row = tr_el;
+    // Add highlighting to new row
+    for(var i = 0; i < active_row.children.length; i++) {
+        active_row.children[i].style.backgroundColor = 'yellow';
+    }
+};
+
+var save_cogroup = function (cogroup) {
+    console.log('save_cogroup', ko.toJS(cogroup));
+    var obj = ko.toJS(cogroup);
+    var params = {
+        _csrf: _csrf,
+        id: obj.name,
+        cogroup: obj
+    };
+    post('/database/update/cogroup', params, function(response) {
+        console.log(response);
+        alert(ko.toJSON(response));
+    });
+};
+
+var del_cogroup = function (cogroup) {
+    console.log('del_cogroup', ko.toJS(cogroup));
+    var obj = ko.toJS(cogroup);
+    var params = {
+        _csrf: _csrf,
+        id: obj.name
+    };
+    post('/database/destroy/cogroup', params, function(response) {
+        console.log(response);
+        alert(ko.toJSON(response));
+
+
+    });
+};
+</script>

@@ -7,6 +7,21 @@
 
 module.exports = {
     /**
+     * `AdminController.cogroup()`
+     */
+    cogroup: function (req, res) {
+        Cogroup.find()
+        .sort('pinyin')
+        .exec(function (err, cogroups) {
+            if (err) res.send(err);
+
+            res.view({
+                length: cogroups.length,
+                cogroups: cogroups
+            })
+        })
+    },
+    /**
      * `AdminController.branch()`
      */
     branch: function (req, res) {

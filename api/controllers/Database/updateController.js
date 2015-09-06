@@ -28,6 +28,20 @@ module.exports = {
 
 
     /**
+    * `Database/updateController.cogroup()`
+    */
+    cogroup: function (req, res) {
+        console.log(req.allParams());
+
+        Cogroup.update(req.param('id'), req.param('cogroup'), function(err, recs) {
+            if (err) { res.send(err); return; }
+
+            res.json(recs);
+        });
+    },
+
+
+    /**
     * `Database/updateController.branch()`
     */
     branch: function (req, res) {
