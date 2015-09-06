@@ -2,7 +2,11 @@
 <html>
 
 <head>
+    <% if (res.locals.cogroup !== undefined) { %>
+    <title><%= cogroup.name %></title>
+    <% } else { %>
     <title>台茂化工儀器原料行</title>
+    <% } %>
 
     <!-- Viewport mobile tag for sensible mobile support -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><!--    <script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js"></script>-->
@@ -82,7 +86,7 @@
 -->
 
     <!--TEMPLATES-->
-    
+
     <!--TEMPLATES END-->
     <script>
         // Adds the KnockoutJS viewmodel to page
