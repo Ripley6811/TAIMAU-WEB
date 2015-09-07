@@ -143,6 +143,7 @@ viewModel.ReportsVM = new (function () {
     self.arEndDate_ko = ko.observable();
     self.download_ready_ko = ko.observable();
     self.include_totals_ko = ko.observable(true);
+    self.item_subtotals_ko = ko.observable(true);
     self.include_clientname_ko = ko.observable(true);
     self.altTitle_ko = ko.observable('');
     self.jinchu_ko = ko.observable('all');
@@ -256,6 +257,9 @@ viewModel.ReportsVM = new (function () {
                 }
             }
 
+            /**
+             * Print the subtotal, tax and total.
+             */
             if (self.include_totals_ko.peek()) {
                 // Calculate total and tax total
                 var total = 0;
@@ -278,6 +282,40 @@ viewModel.ReportsVM = new (function () {
                 doc.setFillColor(100);
                 doc.rect(spacing[6], ypos-14, spacing[8]-spacing[6], 0.2, 'F');
                 doc.rect(spacing[6], ypos+1, spacing[8]-spacing[6], 1, 'F');
+            }
+
+            /**
+             * Print per item totals on another page
+             */
+            if (self.item_subtotals_ko.peek()) {
+                var totals = {},
+                    counts = {},
+                    trips = {},
+                    danwei = {},
+                    ypos = 15+j*5;
+
+                selectedItems.forEach(function (each) {
+                    if (!totals[each.product_label]) {
+                        totals[each.product_label] = 0;
+                        counts[each.product_label] = 0;
+                        trips[each.product_label] = 0;
+                        danwei[each.product_label] = each.UM;
+                    }
+                    totals[each.product_label] += Math.round(each['value']);
+                    counts[each.product_label] += Math.round(each['qty']*each['units']);
+                    trips[each.product_label] += 1;
+                });
+
+                doc.addPage();
+                var ypos = 20;
+                for (var key in totals) {
+                    doc.alttext(20, ypos, key, 11);
+                    doc.alttext(80, ypos, trips[key] + " 趟", 11);
+                    doc.alttext(110, ypos, counts[key] + " " + danwei[key], 11);
+                    doc.alttext(140, ypos, "$ " + totals[key], 11);
+                    ypos += 5;
+                }
+
             }
 
 
