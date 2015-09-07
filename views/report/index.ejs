@@ -72,7 +72,12 @@
                     <label class="checkbox-inline" style="margin-left: 10px">
                         <input type="checkbox"
                                data-bind="checked: include_totals_ko">
-                        <span>顯示總計</span>
+                        <span>顯示價格總計</span>
+                    </label>
+                    <label class="checkbox-inline" style="margin-left: 10px">
+                        <input type="checkbox"
+                               data-bind="checked: item_subtotals_ko">
+                        <span>顯示產品總計</span>
                     </label>
                 </div>
                 <h4><strong>列</strong> <small>取消"出貨單號",加品名的空間</small></h4>
@@ -143,7 +148,7 @@ viewModel.ReportsVM = new (function () {
     self.arEndDate_ko = ko.observable();
     self.download_ready_ko = ko.observable();
     self.include_totals_ko = ko.observable(true);
-    self.item_subtotals_ko = ko.observable(true);
+    self.item_subtotals_ko = ko.observable(false);
     self.include_clientname_ko = ko.observable(true);
     self.altTitle_ko = ko.observable('');
     self.jinchu_ko = ko.observable('all');
@@ -380,6 +385,7 @@ viewModel.ReportsVM = new (function () {
         }
         self.taimao_ko();  // branch toggle
         self.include_totals_ko();  // show totals toggle
+        self.item_subtotals_ko();  // show item counts toggle
         self.include_clientname_ko();
         self.altTitle_ko();
         // Reload PDF if not currently working
