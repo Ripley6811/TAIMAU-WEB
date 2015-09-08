@@ -8,10 +8,12 @@
 
             </select>
         </div>
+        <br>
         <div class="row text-center">
             <div class="btn-group"
                  data-bind="visible: company_list().length > 0, foreach: company_list">
-                <button type="button" style="font-size: 20px" class="btn btn-custom btn-lg sharp"
+                <button type="button" style="width: 12.5%; font-size: 20px; padding: 6px 0px;"
+                        class="btn btn-custom btn-lg sharp"
                         data-bind="click: $parent.loadCompany">
                     <strong data-bind="text: name"></strong>
                 </button>
@@ -20,6 +22,11 @@
                 <i class="fa fa-spinner fa-pulse"></i> 加載公司名錄
             </div>
         </div>
+        <br>
+        <a class="btn btn-success btn-lg"
+           href="/cogroup/new">
+            + 公司
+        </a>
     </div>
 </div>
 
