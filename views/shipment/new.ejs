@@ -1,10 +1,14 @@
 <div class="panel panel-success" style="margin: 0px" data-bind="with: ShipmentsVM">
     <div class="panel-heading" style="padding-bottom: 0px">
         <div class="row">
-            <div class="col-sm-4 col-sm-push-4 text-center">
-                <button class="btn btn-lg btn-success" data-bind="click: showModal">創造出貨單 <span class="badge">Enter</span></button>
+            <div class="col-sm-7 col-sm-push-3 text-center">
+                <button class="btn btn-lg btn-success" data-bind="click: showModal">用選擇創造出貨單 <span class="badge">Enter</span></button>
+                <button class="btn btn-lg btn-danger"
+                        data-bind="click: setAsArchived, visible: po_tab">
+                    把選擇標記為不再用
+                </button>
             </div>
-            <div class="col-sm-4 col-sm-pull-4">
+            <div class="col-sm-3 col-sm-pull-7">
                 <ul class="nav nav-tabs">
                     <li id="tab" class="text-center" style="background: lightgrey"
                         data-bind="css: {active: po_tab}">
@@ -436,6 +440,38 @@ viewModel.ShipmentsVM = new (function () {
         getOrders(params, callback);
     };
     self.ordersGet();
+
+    self.setAsArchived = function () {
+        for (var row in self.rows()) {
+            var xmlhttp = new XMLHttpRequest(),
+                params = {
+                    _csrf: _csrf,
+                    order: {
+                        id: self.rows()[row].id,
+                        is_open: false
+                    }
+                };
+
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState !== 4) return;
+                console.log(xmlhttp);
+                if (!xmlhttp.response) {
+                    alert("Response is empty");
+                    return;
+                }
+            };
+            xmlhttp.open('POST', '/database/update/order', true);
+            xmlhttp.setRequestHeader('Content-type', 'application/json');
+            xmlhttp.send(ko.toJSON(params));
+
+            for (var i = 0; i < self.orders().length; i++) {
+                var iorder = self.orders()[i];
+                if (iorder.id == params.order.id) {
+                    self.orders.remove(iorder);
+                }
+            }
+        }
+    };
 
     self.isPO = ko.observable(true);
     self.rows = ko.observableArray([]);

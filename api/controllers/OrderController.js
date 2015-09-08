@@ -136,7 +136,7 @@ module.exports = {
                 });
             }
             // Return to PO view
-            res.redirect('/order/showall/' + params.group);
+            res.redirect('/shipment/new/' + params.group);
         });
     },
     // Get all shipments for an order and order by duedate or id.
@@ -245,7 +245,7 @@ module.exports = {
         });
 
     },
-    // Retrieve all order for a company.
+    // Retrieve all open orders for a company.
     getOpen: function (req, res, next) {
         var co_name = req.param('id');
         Order.find({group: co_name, is_open: true})
@@ -255,7 +255,7 @@ module.exports = {
             res.send(orders);
         });
     },
-    // Retrieve all order for a company.
+    // Retrieve all orders for a company.
     getAll: function (req, res, next) {
         var co_name = req.param('id');
         Order.find({group: co_name})
