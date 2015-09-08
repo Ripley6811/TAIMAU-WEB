@@ -199,8 +199,11 @@
         <!--Show several quick link buttons to frequently used active companies-->
         <div class="hidden-sm hidden-xs">
             <div class="row text-center">
-                <div class="" data-bind="visible: company_list().length > 0, foreach: company_list">
-                    <button type="button" style="margin: 4px; padding: 2px" class="btn btn-custom btn-lg" data-bind="click: $parent.loadCompany">
+                <div class="btn-group" data-bind="visible: company_list().length > 0, foreach: company_list">
+                    <button type="button"
+                            style="width: 50%; border-radius: 0px; margin: 0px; padding: 2px"
+                            class="btn btn-custom btn-lg"
+                            data-bind="click: $parent.loadCompany">
                         <strong data-bind="text: name"></strong>
                     </button>
                 </div>
@@ -279,7 +282,7 @@ viewModel.SidebarVM = new (function () {
             var res = JSON.parse(cookieStr.substring(cl_index+8));
             // Show first few items
             self.company_list.removeAll();
-            res.slice(0, 40).forEach(function(name) {
+            res.slice(0, 20).forEach(function(name) {
                 self.company_list.push({'name':name});
             });
             // Use lines below to delete 'co_list' cookie
@@ -300,7 +303,7 @@ viewModel.SidebarVM = new (function () {
                 var res = JSON.parse(xmlhttp.response);
                 // Show first few items
                 self.company_list.removeAll();
-                res.slice(0, 40).forEach(function(name) {
+                res.slice(0, 20).forEach(function(name) {
                     self.company_list.push({'name':name});
                 });
             };
