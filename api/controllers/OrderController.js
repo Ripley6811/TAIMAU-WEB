@@ -135,7 +135,7 @@ module.exports = {
                     });
                 });
             }
-            // Return to PO view
+            // Go to create shipment page.
             res.redirect('/shipment/new/' + params.group);
         });
     },
