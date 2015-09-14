@@ -6,22 +6,22 @@
  */
 
 module.exports = {
-	
-    
-	
-    'new': function (req, res) {
-        Cogroup.findOne(req.param('id'))
-            .populate('branches')
-            .exec(function (err, cogroup) {
-                if (err) res.json({
-                    error: err.message
-                }, 400);
 
-                res.view({ cogroup: cogroup });
-            });
-    },
-    
-    
+
+
+//    'new': function (req, res) {
+//        Cogroup.findOne(req.param('id'))
+//            .populate('branches')
+//            .exec(function (err, cogroup) {
+//                if (err) res.json({
+//                    error: err.message
+//                }, 400);
+//
+//                res.view({ cogroup: cogroup });
+//            });
+//    },
+
+
     create: function (req, res, next) {
 //        console.log(req.params.all());
 
@@ -36,7 +36,7 @@ module.exports = {
             note: req.param('note')
         };
 
-        // Create a User with the params sent from 
+        // Create a User with the params sent from
         // the sign-up form --> new.ejs
         Contact.create(contactObj, function(err, contact) {
 
@@ -51,20 +51,22 @@ module.exports = {
             res.redirect('/cogroup/show/' + contactObj.group);
         });
     },
-    
-    'edit': function (req, res) {
-        // console.log('CONTACT_EDIT', req.params.all(), req.param('id'));
-        Contact.findOne(req.param('id'))
-            .exec(function (err, contact) {
-                if (err) res.json({
-                    error: err.message
-                }, 400);
-            
-                console.log('FOUND THIS:', contact);
-            
-                res.view({ contact: contact });
-            });
-    },
+
+//    'edit': function (req, res) {
+//        // console.log('CONTACT_EDIT', req.params.all(), req.param('id'));
+//        Contact.findOne(req.param('id'))
+//            .exec(function (err, contact) {
+//                if (err) res.json({
+//                    error: err.message
+//                }, 400);
+//
+//                console.log('FOUND THIS:', contact);
+//
+//                res.view({ contact: contact });
+//            });
+//    },
+
+
     /**
      * Update or create a single record.
      * @param   {String}   co_name Name of company group.
@@ -104,21 +106,21 @@ module.exports = {
     destroy: function (req, res, next) {
         var co_name = req.param('co_name'),
             id = req.param('id');
-        
+
         Contact.destroy({id: id, group: co_name})
         .exec(function (err, recs) {
             if (err) {
                 res.send(false);
                 return false;
             }
-            
+
             res.send(recs[0]);
         });
     },
-    
+
     contactList: function (req, res, next) {
         var co_name = req.param('id');
-        
+
         Contact.find({group: co_name}, function (err, contacts) {
             if (err) {
                 res.send(false);

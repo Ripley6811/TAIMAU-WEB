@@ -172,40 +172,41 @@ module.exports = {
         });
     },
 
-    showall: function (req, res) {
-        console.log('SHOWALL\n', req.params.all());
-        var groupName = req.param('id'),
-            page = parseInt(req.param('page')),
-            pageLimit = 16; // Records per page.
+//    showall: function (req, res) {
+//        console.log('SHOWALL\n', req.params.all());
+//        var groupName = req.param('id'),
+//            page = parseInt(req.param('page')),
+//            pageLimit = 16; // Records per page.
+//
+//        // Calculate number of pages.
+//        Order.count({group: groupName}, function(e, count){
+//            var maxPage = Math.ceil(count / pageLimit);
+//            if (page === undefined || isNaN(page) || page < 1) page = 1;
+//            if (page > maxPage) page = maxPage;
+//
+//            Order.find({group: groupName})
+//            .sort('orderdate DESC')
+//            .populate('MPN')
+//            .populate('group')
+//            .populate('shipments')
+//            .paginate({page: page, limit: 16})
+//            .exec(function (err, orders) {
+//                if (err) res.json({
+//                    error: err.message
+//                }, 400);
+//
+//                Cogroup.findOne(req.param('id'), function (err, cogroup) {
+//                    res.view({
+//                        cogroup: cogroup,
+//                        orders: orders,
+//                        page: page,
+//                        maxPage: maxPage,
+//                    });
+//                });
+//            });
+//        });
+//    },
 
-        // Calculate number of pages.
-        Order.count({group: groupName}, function(e, count){
-            var maxPage = Math.ceil(count / pageLimit);
-            if (page === undefined || isNaN(page) || page < 1) page = 1;
-            if (page > maxPage) page = maxPage;
-
-            Order.find({group: groupName})
-            .sort('orderdate DESC')
-            .populate('MPN')
-            .populate('group')
-            .populate('shipments')
-            .paginate({page: page, limit: 16})
-            .exec(function (err, orders) {
-                if (err) res.json({
-                    error: err.message
-                }, 400);
-
-                Cogroup.findOne(req.param('id'), function (err, cogroup) {
-                    res.view({
-                        cogroup: cogroup,
-                        orders: orders,
-                        page: page,
-                        maxPage: maxPage,
-                    });
-                });
-            });
-        });
-    },
     // Update Order details from Order/Showall page
     update: function (req, res) {
 //        var order = req.param('order');

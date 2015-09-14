@@ -7,19 +7,19 @@
 
 module.exports = {
 
-    'new': function (req, res) {
-        Cogroup.findOne(req.param('id'))
-//            .populate('branches')
-            .exec(function (err, cogroup) {
-                if (err) res.json({
-                    error: err.message
-                }, 400);
+//    'new': function (req, res) {
+//        Cogroup.findOne(req.param('id'))
+////            .populate('branches')
+//            .exec(function (err, cogroup) {
+//                if (err) res.json({
+//                    error: err.message
+//                }, 400);
+//
+//                res.view({ cogroup: cogroup });
+//            });
+//    },
+//
 
-                res.view({ cogroup: cogroup });
-            });
-    },
-    
-    
     create: function (req, res, next) {
 //        console.log(req.params.all());
 
@@ -38,7 +38,7 @@ module.exports = {
             note: req.param('note')
         };
 
-        // Create a User with the params sent from 
+        // Create a User with the params sent from
         // the sign-up form --> new.ejs
         Branch.create(branchObj, function(err, branch) {
 
@@ -52,51 +52,51 @@ module.exports = {
             res.redirect('/cogroup/show/' + branchObj.group);
         });
     },
-    
-    'index': function (req, res) {
-        Branch.find({
-            where: {
-                group: {
-                    '!': '台茂'
-                }
-            },
-            sort: 'group'
-        })
-            .exec(function (err, branches) {
-                if (err) res.json({
-                    error: err.message
-                }, 400);
 
-                res.view({
-                    branches: branches
-                });
-            });
-    },
+//    'index': function (req, res) {
+//        Branch.find({
+//            where: {
+//                group: {
+//                    '!': '台茂'
+//                }
+//            },
+//            sort: 'group'
+//        })
+//            .exec(function (err, branches) {
+//                if (err) res.json({
+//                    error: err.message
+//                }, 400);
+//
+//                res.view({
+//                    branches: branches
+//                });
+//            });
+//    },
 
-    'edit': function (req, res) {
-//        console.log('BRANCH_EDIT', req.params.all(), req.param('id'));
-        Branch.findOne(req.param('id'))
-            .exec(function (err, branch) {
-                if (err) res.json({
-                    error: err.message
-                }, 400);
-            
-                // Add a parameter giving the number of orders in the database.
-                var qstring = 'SELECT (SELECT COUNT(*) FROM `order` WHERE `group` = ?) AS NumberOfRecords, (SELECT COUNT(*) FROM `contact` WHERE `branch` = ?) AS NumberOfContacts;';
-                Branch.query(qstring, [branch.group, branch.name], function (err, rows) {
-                    if (err) res.json({
-                        error: err.message
-                    }, 400);
-
-                    res.view({
-                        branch: branch,
-                        numberOfRecords: rows[0].NumberOfRecords,
-                        numberOfContacts: rows[0].NumberOfContacts,
-                        group: branch.group
-                    });
-                });
-            });
-    },
+//    'edit': function (req, res) {
+////        console.log('BRANCH_EDIT', req.params.all(), req.param('id'));
+//        Branch.findOne(req.param('id'))
+//            .exec(function (err, branch) {
+//                if (err) res.json({
+//                    error: err.message
+//                }, 400);
+//
+//                // Add a parameter giving the number of orders in the database.
+//                var qstring = 'SELECT (SELECT COUNT(*) FROM `order` WHERE `group` = ?) AS NumberOfRecords, (SELECT COUNT(*) FROM `contact` WHERE `branch` = ?) AS NumberOfContacts;';
+//                Branch.query(qstring, [branch.group, branch.name], function (err, rows) {
+//                    if (err) res.json({
+//                        error: err.message
+//                    }, 400);
+//
+//                    res.view({
+//                        branch: branch,
+//                        numberOfRecords: rows[0].NumberOfRecords,
+//                        numberOfContacts: rows[0].NumberOfContacts,
+//                        group: branch.group
+//                    });
+//                });
+//            });
+//    },
 
     update: function (req, res, next) {
         //        console.log('BRANCH_UPDATE');
@@ -124,16 +124,16 @@ module.exports = {
                 });
         }
     },
-    
+
     branchList: function (req, res, next) {
         var co_name = req.param('id');
-        
+
         Branch.find({group: co_name}, function (err, branches) {
 //            console.log(err, branches);
             res.send(branches);
         });
     },
-    
+
     /**
      * Update or create a single record.
      * @param   {String}   co_name Name of company group.
@@ -143,7 +143,7 @@ module.exports = {
         // console.log('BRANCH_UPDATE');
         var co_name = req.param('co_name'),
             branch = req.param('branch');
-        
+
         // Blank name IDs are not allowed.
         if (branch.name === '') {
             res.send(false);
@@ -156,9 +156,9 @@ module.exports = {
                 res.send(err);
                 return false;
             }
-            
+
 //            console.log('BRANCH FINDorCREATE:', typeof rec, rec);
-            
+
             Branch.update({name: branch.name, group: co_name}, branch)
             .exec(function (err, recs) {
                 if (err) {
@@ -171,7 +171,7 @@ module.exports = {
             });
         });
     },
-    
+
     /**
      * Destroy a single record.
      * @param   {String}   co_name Name of company group.
@@ -180,7 +180,7 @@ module.exports = {
     destroy: function (req, res, next) {
         var co_name = req.param('co_name'),
             name = req.param('name');
-        
+
         Branch.destroy({name: name, group: co_name})
         .exec(function (err, recs) {
             if (err) {

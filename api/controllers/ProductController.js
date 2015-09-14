@@ -7,11 +7,12 @@
 
 module.exports = {
     // Show new product entry form.
-    'new': function (req, res) {
-        var id = req.param('id');
-
-        res.view({ group: id });
-    },
+//    'new': function (req, res) {
+//        var id = req.param('id');
+//
+//        res.view({ group: id });
+//    },
+    
     // Show new product entry form.
     create: function (req, res) {
         var productObj = {
