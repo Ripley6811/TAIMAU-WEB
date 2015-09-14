@@ -1,3 +1,7 @@
+<!--
+
+Reviewed: 2015, Sep 14
+-->
 <div class="panel panel-success" style="margin: 0px" data-bind="with: ShipmentsVM">
     <div class="panel-heading" style="padding-bottom: 0px">
         <div class="row">
@@ -333,7 +337,8 @@ var key = {
 viewModel.ShipmentsVM = new (function () {
     var self = this;
 
-
+    self.products = ko.observableArray();
+    self.orders = ko.observableArray();
     self.modalVisible = ko.observable(false);
     self.showModal = function(clickedItem) {
         if (self.rows().length == 0) {
@@ -397,38 +402,53 @@ viewModel.ShipmentsVM = new (function () {
     };
 
 
-    self.products = ko.observableArray();
     self.productsGet = function () {
-        params = {
-            _csrf: _csrf,
-            id: co_name,
-        };
-        callback = function (products) {
+        // TODO: Change to GET request
+        var params = {_csrf: _csrf, id: co_name},
+            xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState !== 4) return;
+
+            var db_records = JSON.parse(xmlhttp.response);
+            // Sort by user set rank value.
+            db_records.sort(function (a, b) {
+                return a.json.rank - b.json.rank;
+            });
+
             self.products.removeAll();
-            for (var i=0; i<products.length; i++) {
-                if (!products[i].discontinued) {
-                    self.products.push(new KO_Product(products[i]));
+            for (var i=0; i<db_records.length; i++) {
+                if (!db_records[i].discontinued) {
+                    self.products.push(new KO_Product(db_records[i]));
                 }
             }
         };
-        getProducts(params, callback);
+        xmlhttp.open('POST', '/product/get', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON(params));
     };
     self.productsGet();
 
 
-
-
-    self.orders = ko.observableArray();
     self.ordersGet = function () {
-        params = {
-            _csrf: _csrf,
-            id: co_name,
-        };
-        callback = function (orders) {
+        // TODO: Change to GET request
+        var params = {_csrf: _csrf, id: co_name},
+            xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState !== 4) return;
+            var db_records = JSON.parse(xmlhttp.response);
+
+            // Sort by rank value.
+            db_records.sort(function (a, b) {
+                return a.MPN.json.rank - b.MPN.json.rank;
+            });
+
+            // Reconstruct orders KO array
             self.orders.removeAll();
-            for (var i=0; i<orders.length; i++) {
-                if (orders[i].is_open) {
-                    self.orders.push(new KO_PurchaseOrder(orders[i].MPN, orders[i]));
+            for (var i=0; i<db_records.length; i++) {
+                if (db_records[i].is_open) {
+                    self.orders.push(new KO_PurchaseOrder(db_records[i].MPN, db_records[i]));
                 }
             }
             // If no orders then set view to product list.
@@ -437,7 +457,9 @@ viewModel.ShipmentsVM = new (function () {
                 self.po_tab(false);
             }
         };
-        getOrders(params, callback);
+        xmlhttp.open('POST', '/order/getOpen', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON(params));
     };
     self.ordersGet();
 

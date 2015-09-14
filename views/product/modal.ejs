@@ -1,20 +1,23 @@
-<!--Modal for editing/creating a single product-->
+<!--Modal for editing/creating a single product
+
+Reviewed: 2015, Sep 14
+-->
 <div data-bind="with: productModalVM">
 <form data-bind="submit: doSubmit">
     <div id="product modal" class="modal" data-bind="style: {display: productModalVisible() ? 'block' : 'none'}">
         <div class="panel panel-success">
-            
+
             <div class="panel-heading">
-            
+
                 <div class="row-fluid h2 text-center">
                     <strong>產品</strong>或<strong>服務</strong> - <strong data-bind="text: product.group"></strong>
                 </div>
             </div><!--panel-heading-->
-            
+
             <div class="panel-body" data-bind="with: product">
                 <input type="hidden" name="_csrf" value="<%= _csrf %>" />
-                
-                
+
+
                 <div>
                     <label>
                         <input type="radio" name="a" data-bind="checked: is_supply, checkedValue: true, enable: $parent.isNewEntry">進貨(買) </label>
@@ -49,9 +52,9 @@
                     <label>
                         <input type="radio" name="c" data-bind="checked: unitcounted, checkedValue: false, enable: $parent.isNewEntry">用<strong data-bind="text: SKU"></strong>數量</label>
                 </div>
-                
+
                 <hr>
-                
+
                 <!--Visually verify entries-->
                 <h3><strong>提交之前檢查下面的訊息:</strong></h3>
                 <ul>
@@ -60,9 +63,9 @@
                         <span data-bind="text: UM"></span> / <span data-bind="text: SKU"></span>
                     </li>
                     <li>
-                        1 
+                        1
                         <span data-bind="text: UM, visible: unitpriced()"></span><span data-bind="text: SKU, visible: !unitpriced()"></span>的價格是<strong>$<span data-bind="text: curr_price"></span></strong>
-                        ( 1 
+                        ( 1
                         <span data-bind="text: UM, visible: unitpriced()"></span>
                         <span data-bind="text: SKU, visible: !unitpriced()"></span>
                         = $<span data-bind="text: curr_price"></span>
@@ -74,7 +77,7 @@
                 </ul>
 
             </div><!--panel-body-->
-            
+
             <div class="panel-footer lightorange-blend">
                 <div class="row">
                     <div class="col-sm-6 text-center">
@@ -86,7 +89,7 @@
                     </div>
                 </div>
             </div><!--panel-footer-->
-            
+
         </div><!--panel-->
     </div><!--modal-->
 </form>
@@ -95,11 +98,11 @@
 <script>
 var viewModel = viewModel || {};
 var _csrf = viewModel._csrf = '<%= _csrf %>';
-    
-    
+
+
 function ProductModalVM() {
     var self = this;
-    
+
     self.productModalVisible = ko.observable(false);
     self.showProductModal = function(clickedItem) {
         self.productModalVisible(true);
@@ -107,7 +110,7 @@ function ProductModalVM() {
     self.exitProductModal = function(clickedItem) {
         self.productModalVisible(false);
     };
-    
+
     document.onkeydown = function(evt) {
         if (evt.keyCode == 27 && self.productModalVisible() == true) {
             self.exitProductModal();
@@ -116,11 +119,11 @@ function ProductModalVM() {
             self.showProductModal();
         }
     };
-    
+
     self.product = new KO_Product();
     self.isNewEntry = ko.observable(true); // True for new entry, false for edit mode.
     self.onModalClose = null; // Callback to execute when modal closes.
-    
+
     /**
      * Add a new product to database.
      * @param {String} companyID Company group database ID
@@ -134,7 +137,7 @@ function ProductModalVM() {
         self.isNewEntry(true);
         self.productModalVisible(true);
     };
-    
+
     var clearProduct = function() {
         self.product.MPN(null);
         self.product.group(null);
@@ -155,7 +158,7 @@ function ProductModalVM() {
         self.product.discontinued(false);
         self.product.json({});
     };
-    
+
     /**
      * Edit an existing product in database.
      * @param {String} productID Product ID
@@ -165,7 +168,7 @@ function ProductModalVM() {
         // enable the fields that should not be changed.
         self.onModalClose = callback;
         self.isNewEntry(false);
-        
+
         var params = {
             _csrf: _csrf,
             id: productID
@@ -173,7 +176,7 @@ function ProductModalVM() {
         console.log(productID, params);
         post('/database/get/product', params, function(res) {
             console.log(res);
-            
+
             self.product.MPN(res.MPN);
             self.product.group(res.group);
             self.product.product_label(res.product_label);
@@ -192,13 +195,13 @@ function ProductModalVM() {
             self.product.is_supply(res.is_supply);
             self.product.discontinued(res.discontinued);
             self.product.json(res.json);
-            
-            
+
+
             self.productModalVisible(true);
         });
-        
+
     };
-    
+
     /**
      * Control submission as new product record or update to existing record.
      */
@@ -223,7 +226,7 @@ function ProductModalVM() {
             var params = {_csrf: _csrf, product: self.product};
             post('/database/update/product', params, function(res) {
                 alert(JSON.stringify(res));
-                
+
                 self.productModalVisible(false);
                 self.onModalClose();
             });
@@ -231,6 +234,6 @@ function ProductModalVM() {
     };
 }
 
-    
+
 viewModel.productModalVM = new ProductModalVM();
 </script>

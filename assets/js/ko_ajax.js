@@ -2,25 +2,25 @@
  * Methods involving AJAX requests.
  */
 
-getProducts = function (params, callback) {
-    getTemplate('/product/get', params, function (res_records) {
-        // Sort by rank value.
-        res_records.sort(function (a, b) {
-            return a.json.rank - b.json.rank;
-        });
-        callback(res_records);
-    });
-};
+//getProducts = function (params, callback) {
+//    getTemplate('/product/get', params, function (res_records) {
+//        // Sort by rank value.
+//        res_records.sort(function (a, b) {
+//            return a.json.rank - b.json.rank;
+//        });
+//        callback(res_records);
+//    });
+//};
 
-getOrders = function (params, callback) {
-    getTemplate('/order/getOpen', params, function (res_records) {
-        // Sort by rank value.
-        res_records.sort(function (a, b) {
-            return a.MPN.json.rank - b.MPN.json.rank;
-        });
-        callback(res_records);
-    });
-};
+//getOrders = function (params, callback) {
+//    getTemplate('/order/getOpen', params, function (res_records) {
+//        // Sort by rank value.
+//        res_records.sort(function (a, b) {
+//            return a.MPN.json.rank - b.MPN.json.rank;
+//        });
+//        callback(res_records);
+//    });
+//};
 
 getShipments = function (params, callback) {
     getTemplate('/database/get/shipments', params, function (res_records) {

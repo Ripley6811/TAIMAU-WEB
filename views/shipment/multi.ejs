@@ -1,3 +1,7 @@
+<!--
+
+Reviewed: 2015, Sep 14
+-->
 <!--START: Multi-Shipment form-->
 <div data-bind="with: multiModalVM">
     <div id="form modal" class="modal" data-bind="style: {display: multiEntryVisible() ? 'block' : 'none'}">
@@ -94,7 +98,7 @@
 <script>
 var viewModel = viewModel || {};
 var _csrf = viewModel._csrf = '<%= _csrf %>';
-    
+
 
 var key = {
     ESC: 27,
@@ -104,39 +108,39 @@ var key = {
 
 function MultiModalVM() {
     var self = this;
-    
-    
+
+
     self.productData = new KO_Product();
     self.us = ko.observable();
     self.them = ko.observable();
-    
+
     /**
      * Load the product from data with given MPN (ID).
      * @param {String} productID Product ID string.
      */
     self.open = function(productID) {
         var params = {_csrf: _csrf, id: productID};
-        post('/database/get/product', params, function(res) {            
+        post('/database/get/product', params, function(res) {
             self.productData.MPN(res.MPN);
             self.productData.inventory_name(res.inventory_name);
             self.productData.SKU(res.SKU);
             self.productData.curr_price(res.curr_price);
             self.productData.is_supply(res.is_supply);
-            
+
             self.multiEntryVisible(true);
         });
     };
 
     self.multiEntryVisible = ko.observable(false);
-    
+
     self.exitMEModal = function(clickedItem) {
         self.multiEntryVisible(false);
     };
 
-    
+
     self.shipments = ko.observableArray();
     self.shipments.push(new KO_ShipmentItem());
-    
+
     /**
      * If last line qty is filled in then add a new line for another entry.
      */
@@ -146,14 +150,14 @@ function MultiModalVM() {
             self.shipments()[self.shipments().length - 1].qty(); // Force listener update.
         }
     });
-    
+
     self.doSubmit = function() {
         // Number of rows should be greater than 1. Last one is always incomplete.
         if (self.shipments().length == 1) {
             alert('Enter at least one quantity to submit');
             return;
         }
-        
+
         var items = [];
         for (var i=0; i<self.shipments().length; i++) {
             var shipmentItem = self.shipments()[i];
@@ -189,6 +193,6 @@ function MultiModalVM() {
         });
     };
 }
-    
+
 viewModel.multiModalVM = new MultiModalVM();
 </script>
