@@ -12,7 +12,7 @@ module.exports = {
 //
 //        res.view({ group: id });
 //    },
-    
+
     // Show new product entry form.
     create: function (req, res) {
         var productObj = {
@@ -128,6 +128,7 @@ module.exports = {
                 }
             });
     },
+
     // Show product editing form.
     edit: function (req, res) {
         var id = req.param('id').replace('-percent-','%');
@@ -143,6 +144,7 @@ module.exports = {
                 res.view({ product: product });
             });
     },
+
     // Submit product updates to database.
     update: function (req, res) {
         var id = req.param('MPN'),

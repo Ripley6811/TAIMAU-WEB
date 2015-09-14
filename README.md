@@ -9,37 +9,48 @@ Browser based database management for TAIMAU.
 
 ## Page/Link Mapping
 ##### Main page links (`static/index`)
-- shipment/showall/"CO"
-- cogroup/new
+- `shipment/showall/"CO"`
+- `cogroup/new`
 
 ##### Sidebar: Comprehensive links (green buttons)
 - `cogroup/index.html`
-    - `order/new/"CO"`
-    - shipment/new/"CO"
-    - shipment/showall/"CO"
-- cogroup/index/suppliers (*same as above*)
-- cogroup/index/customers (*same as above*)
-- product/index
-    - shipment/new/"CO"
-- order/status
-    - order/show/"ID"
-    - shipment/pdf/"ID"
-- analysis/index
+    - LINK - `order/new/"CO"`
+    - LINK - `shipment/new/"CO"`
+    - LINK - `shipment/showall/"CO"`
+- `cogroup/index/suppliers` (*same as above*)
+- `cogroup/index/customers` (*same as above*)
+- `product/index`
+    - LINK - `shipment/new/"CO"`
+    - AJAX - `/database/get/products`
+- `order/status`
+    - LINK - `order/show/"ID"`
+    - LINK - `shipment/pdf/"ID"`
+- `analysis/index`
 
 ##### Sidebar: Specific company links (gold buttons)
-- cogroup/show/"CO"
-    - *branch/modal*
-    - *contact/modal*
-- product/showall/"CO"
-    - *product/modal*
-- order/new/"CO"
-- shipment/new/"CO"
-- shipment/showall/"CO"
-    - order/show/"ID"
-    - shipment/pdf/"ID"
-- report/index/"CO"
+- `cogroup/show/"CO"`
+    - EJS - `branch/panel`
+    - EJS - `contact/panel`
+- `product/showall/"CO"`
+    - EJS - `product/modal`
+- `order/new/"CO"`
+- `shipment/new/"CO"`
+- `shipment/showall/"CO"`
+    - LINK - `order/show/"ID"`
+    - LINK - `shipment/pdf/"ID"`
+- `report/index/"CO"`
 
 ##### Sidebar: Frequent company links (gold buttons)
-- shipment/showall/"CO" (*see same link above*)
+- `shipment/showall/"CO"` (*see same link above*)
 
-*italics* indicates used as modal or embedded in higher page.
+##### Admin/Other
+- `admin/cogroup`
+    - LINK - `cogroup/show/"CO"`
+- `admin/branch`
+- `admin/product`
+
+|||
+|-|-|
+| EJS | indicates an EJS partial embedded in parent page.
+| AJAX | A database AJAX query used in parent page.
+| LINK | Page is linked to by button in parent page.
