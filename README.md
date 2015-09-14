@@ -9,9 +9,10 @@ Browser based database management for TAIMAU.
 
 ## Page/Link Mapping
 ##### Main page links (`static/index`)
-- `shipment/showall/"CO"`
+- `shipment/showall/"CO"` (*see same link below*)
 - `cogroup/new`
-    - **Link** - `cogroup/show/"CO"`
+    - **Form** - `/cogroup/create`
+        - **Link** - `cogroup/show/"CO"` (submit redirects here)
 
 ##### Sidebar: Comprehensive links (green buttons)
 - `cogroup/index.html`
@@ -61,7 +62,11 @@ Browser based database management for TAIMAU.
         - **Ajax** - `/database/save/multipleshipments`
             - **Link** - `shipment/showall/"CO"` (callback redirect)
     - **Form** - `/shipment/create`
+        - **Link** - `shipment/showall/"CO"` (submit redirects here)
 - `shipment/showall/"CO"`
+    - **EJS** - `invoice/modal`
+    - **Ajax** - `/database/get/shipmentitems`
+    - **Ajax** - `/database/get/invoiceitems`
     - **Link** - `order/show/"ID"`
     - **Link** - `shipment/pdf/"ID"`
 - `report/index/"CO"`
