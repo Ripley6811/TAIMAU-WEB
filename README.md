@@ -49,8 +49,8 @@ Browser based database management for TAIMAU.
 - `admin/branch`
 - `admin/product`
 
-| Abbrev. | Description |
-|-|-|
+|   |   |
+|---|---|
 | EJS | indicates an EJS partial embedded in parent page. |
 | AJAX | A database AJAX query used in parent page. |
 | LINK | Page is linked to by button in parent page. |
