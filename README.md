@@ -7,12 +7,12 @@ Browser based database management for TAIMAU.
 - **Bootstrap** css to bootstrap the front-end design
 - **Font-Awesome** icons
 
-## Page/**Link** Mapping
-##### Main page **Link**s (`static/index`)
+## Page/Link Mapping
+##### Main page links (`static/index`)
 - `shipment/showall/"CO"`
 - `cogroup/new`
 
-##### Sidebar: Comprehensive **Link**s (green buttons)
+##### Sidebar: Comprehensive links (green buttons)
 - `cogroup/index.html`
     - **Link** - `order/new/"CO"`
     - **Link** - `shipment/new/"CO"`
@@ -27,7 +27,7 @@ Browser based database management for TAIMAU.
     - **Link** - `shipment/pdf/"ID"`
 - `analysis/index`
 
-##### Sidebar: Specific company **Link**s (gold buttons)
+##### Sidebar: Specific company links (gold buttons)
 - `cogroup/show/"CO"`
     - **EJS** - `branch/panel`
     - **EJS** - `contact/panel`
@@ -40,17 +40,25 @@ Browser based database management for TAIMAU.
     - **Link** - `shipment/pdf/"ID"`
 - `report/index/"CO"`
 
-##### Sidebar: Frequent company **Link**s (gold buttons)
-- `shipment/showall/"CO"` (*see same **Link** above*)
+##### Sidebar: Frequent company links (gold buttons)
+- `shipment/showall/"CO"` (*see same link above*)
 
 ##### Admin/Other
 - `admin/cogroup`
     - **Link** - `cogroup/show/"CO"`
+    - **Ajax** - `/database/update/cogroup`
+    - **Ajax** - `/database/destroy/cogroup`
 - `admin/branch`
+    - **Link** - `cogroup/show/"CO"`
+    - **Ajax** - `/database/update/branch`
+    - **Ajax** - `/database/destroy/branch`
 - `admin/product`
+    - **Link** - `product/showall/"CO"`
+    - **Ajax** - `/database/update/product`
+    - **Ajax** - `/database/destroy/product`
 
 |   |   |
 |---|---|
 | **EJS** | indicates an EJS partial embedded in parent page. |
 | **Ajax** | A database AJAX query used in parent page. |
-| **Link** | Page is **Link**ed to by button or action in parent page. |
+| **Link** | Page is linked to by button or action in parent page. |
