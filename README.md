@@ -11,6 +11,7 @@ Browser based database management for TAIMAU.
 ##### Main page links (`static/index`)
 - `shipment/showall/"CO"`
 - `cogroup/new`
+    - **Link** - `cogroup/show/"CO"`
 
 ##### Sidebar: Comprehensive links (green buttons)
 - `cogroup/index.html`
@@ -30,15 +31,41 @@ Browser based database management for TAIMAU.
 ##### Sidebar: Specific company links (gold buttons)
 - `cogroup/show/"CO"`
     - **EJS** - `branch/panel`
+        - **Ajax** - `/branch/destroy`
+        - **Ajax** - `/database/save/branch`
+        - **Ajax** - `/database/get/branches`
     - **EJS** - `contact/panel`
+        - **Ajax** - `/database/get/branches`
+        - **Ajax** - `/contact/destroy`
+        - **Ajax** - `/contact/updateOrCreate`
+        - **Ajax** - `/database/get/contacts`
+    - **Link** - `/cogroup/destroy/"CO"`
 - `product/showall/"CO"`
     - **EJS** - `product/modal`
+        - **Ajax** - `/database/get/product`
+        - **Ajax** - `/database/save/product`
+        - **Ajax** - `/database/update/product`
+    - **Ajax** - `/product/destroy`
+    - **Ajax** - `/product/updateOrCreate`
+    - **Ajax** - `/product/merge`
 - `order/new/"CO"`
+    - **Ajax** - `/database/get/recent_pos`
+    - **Form** - `/order/create`
 - `shipment/new/"CO"`
+    - **Ajax** - `/product/get`
+    - **Ajax** - `/order/getOpen`
+    - **Ajax** - `/database/update/order`
+    - **Ajax** - `/shipment/availableNumber`
+    - **EJS** - `shipment/multi`
+        - **Ajax** - `/database/get/product`
+        - **Ajax** - `/database/save/multipleshipments`
+            - **Link** - `shipment/showall/"CO"` (callback redirect)
+    - **Form** - `/shipment/create`
 - `shipment/showall/"CO"`
     - **Link** - `order/show/"ID"`
     - **Link** - `shipment/pdf/"ID"`
 - `report/index/"CO"`
+    - **Ajax** - `/database/get/activityreport`
 
 ##### Sidebar: Frequent company links (gold buttons)
 - `shipment/showall/"CO"` (*see same link above*)
@@ -62,3 +89,4 @@ Browser based database management for TAIMAU.
 | **EJS** | indicates an EJS partial embedded in parent page. |
 | **Ajax** | A database AJAX query used in parent page. |
 | **Link** | Page is linked to by button or action in parent page. |
+| **Form** | Form submission link. |
