@@ -7,6 +7,36 @@
 
 module.exports = {
 
+    /**
+     * For the new (2015-9-14) comprehensive PO page.
+     * "req" parameters:
+     * limit - max recs to return
+     * co - Retrieve records for a specific group
+     * po - Retrieve record with this value
+     * mpn - Retrieve all records with product ID
+     */
+    index: function (req, res) {
+        console.log(req.allParams());
+        var limit = req.param('limit') || 50;
+
+        var search_params = {};
+        console.log(typeof req.param('id'));
+//        if (parseInt(req.param('id')) !== NaN) search_params.order_id = req.param('id');
+        if (req.param('co')) search_params.group = req.param('co');
+        if (req.param('mpn')) search_params.MPN = req.param('mpn');
+        if (req.param('po')) search_params.orderID = req.param('po');
+
+        Order.find(search_params)
+        .limit(limit)
+        .populate('MPN')
+        .sort('orderdate DESC')
+        .exec(function (err, orders) {
+            if (err) res.json(err);
+
+            res.view({orders: orders})
+        });
+    },
+
     // Sort and show all orders arranged by due date.
     due: function (req, res) {
         var page = req.param('id');

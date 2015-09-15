@@ -1,4 +1,12 @@
+/**
+ * @fileOverview KnockoutJS Models
+ */
 
+/**
+ * Cogroup model
+ * @constructor
+ * @param   {Object} [data={}] - Add data for existing cogroup.
+ */
 function KO_Cogroup(data) {
     var self = this,
         data = data || {};
@@ -25,7 +33,9 @@ function KO_Cogroup(data) {
         self.saveUpdate();
     };
 
-
+    /**
+     * Save changes to this entity to the database.
+     */
     self.saveUpdate = function () {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {

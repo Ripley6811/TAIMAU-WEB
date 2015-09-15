@@ -296,19 +296,29 @@ function ItemsModel() {
 
     self.products = ko.observableArray([]);
     self.productsGet = function () {
-        params = {
-            _csrf: _csrf,
-            id: co_name,
-        };
-        callback = function (products) {
+        // TODO: Change to GET request
+        var params = {_csrf: _csrf, id: co_name},
+            xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState !== 4) return;
+
+            var db_records = JSON.parse(xmlhttp.response);
+            // Sort by user set rank value.
+            db_records.sort(function (a, b) {
+                return a.json.rank - b.json.rank;
+            });
+
             self.products.removeAll();
-            for (var i=0; i<products.length; i++) {
-                if (!products[i].discontinued) {
-                    self.products.push(new KO_Product(products[i]));
+            for (var i=0; i<db_records.length; i++) {
+                if (!db_records[i].discontinued) {
+                    self.products.push(new KO_Product(db_records[i]));
                 }
             }
         };
-        getProducts(params, callback);
+        xmlhttp.open('POST', '/product/get', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON(params));
     };
     self.productsGet();
 

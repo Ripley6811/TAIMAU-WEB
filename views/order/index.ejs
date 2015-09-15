@@ -1,0 +1,61 @@
+<!--
+TODO:
+    Add editable fields to all cells that are enabled during editing
+    Add modal that pops up when rows are selected and Enter key pressed
+    Add a way to add new PO and a way to copy existing PO as a new one
+    Add delete option
+    Add way to see manifest list. maybe popup when mouseover delivered amt.
+-->
+<table class="table table-condensed table-striped table-bordered"
+       data-bind="with: OrdersVM">
+    <thead>
+        <th>選</th>
+        <th>日期</th>
+        <th>賣家</th>
+        <th>買主</th>
+        <th>PO#</th>
+        <th>品名</th>
+        <th>訂量</th>
+        <th>剩量</th>
+        <th>價格</th>
+        <th>納稅</th>
+    </thead>
+    <tbody data-bind="foreach: orders">
+        <tr ondblclick="dblclick()"
+            data-bind="click: function (data, event) { $parent.rowClick(event, $index()); },
+                       css: {'highlight-row': $parent.selectedRows[$index()]}">
+            <td class="dropdown" style="width: 2em">
+                <button class="btn btn-custom btn-xs dropdown-toggle"
+                        data-bind="click: function () {}, clickBubble: false,
+                                   attr: {id: 'dropdown' + $index()}"
+                        data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false"
+                        role="button">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <div class="dropdown-menu"
+                    data-bind="attr: {'aria-labelledby': 'dropdown' + $index()}">
+                    <div class=" btn-group-vertical">
+                        <li class="btn btn-success">編輯訂單</li>
+                        <li class="btn btn-success">看出貨單</li>
+                        <li class="btn btn-success" data-bind="visible: !is_open()">在開啟訂單</li>
+                        <li class="btn btn-success" data-bind="visible: is_open">結束訂單並歸檔</li>
+                        <li class="btn btn-success" >複製舊訂單</li>
+                        <li class="btn btn-danger" >刪除訂單</li>
+                    </div>
+                </div>
+            </td>
+            <td data-bind="text: $root.formatDate(orderdate())"></td>
+            <td data-bind="text: seller"></td>
+            <td data-bind="text: buyer"></td>
+            <td data-bind="text: orderID"></td>
+            <td data-bind="text: MPN.inventory_name"></td>
+            <td class="text-right" data-bind="text: qty"></td>
+            <td class="text-right" data-bind="text: null"></td>
+            <td class="text-right" data-bind="text: '$' + price()"></td>
+            <td data-bind="text: applytax"></td>
+        </tr>
+    </tbody>
+</table>
+
+<script><%- partial ('viewmodel.js') %></script>

@@ -1,8 +1,11 @@
 /**
  * Numeric value validation. Copied from KnockoutJS web site.
- * 
+ *
  * Example of use in rounding to three decimal places:
  *     `self.units = ko.observable().extend({ numeric: 3 });`
+ * @param   {Object} target    - The KO observable
+ * @param   {Number} precision - Precision in numbers
+ * @returns {Object} - The result
  */
 ko.extenders.numeric = function(target, precision) {
     //create a writable computed observable to intercept writes to our observable
@@ -13,7 +16,7 @@ ko.extenders.numeric = function(target, precision) {
                 roundingMultiplier = Math.pow(10, precision),
                 newValueAsNum = isNaN(newValue) ? 0 : parseFloat(+newValue),
                 valueToWrite = Math.round(newValueAsNum * roundingMultiplier) / roundingMultiplier;
- 
+
             //only write if it changed and allow a single period at end
             if (String(newValue).indexOf('.') === String(newValue).length-1) {
                 target(newValue);
@@ -27,10 +30,10 @@ ko.extenders.numeric = function(target, precision) {
             }
         }
     }).extend({ notify: 'always' });
- 
+
     //initialize with current value to make sure it is rounded appropriately
     result(target());
- 
+
     //return the new computed observable
     return result;
 };
