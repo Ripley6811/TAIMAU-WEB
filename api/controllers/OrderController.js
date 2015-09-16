@@ -237,45 +237,34 @@ module.exports = {
 //        });
 //    },
 
-    // Update Order details from Order/Showall page
+    // Update Order details from order page
     update: function (req, res) {
-//        var order = req.param('order');
-//        console.log(req.params.all());
-        Invoiceitem.count({order_id: req.param('id')})
+        var id = req.param('id'),
+            updates = req.param('updates');
+
+        console.log(req.params.all());
+        Invoiceitem.count({order_id: id})
         .exec(function (err, nrecs) {
-            var allowPriceChange = nrecs === 0 ? true : false;
-
-            if (allowPriceChange) {
-                Order.update({id: req.param('id')}, req.params.all())
-                .exec( function (err, orders) {
-                    if (err) { res.send(err); return; }
-
-                    req.flash('message', 'Record Updated!');
-                    res.redirect('/order/show/'+orders[0].id);
-                });
-            } else {
-                Order.findOne({id: req.param('id')})
-                .exec( function (err, order) {
-                    if (err) { res.send(err); return; }
-                    var params = req.params.all();
-                    if (order.price != params.price) {
-                        req.flash('message', 'Cannot change price with existing invoices!');
-                    }
-                    // Update QTY and NOTE only
-                    order.qty = params.qty;
-                    order.ordernote = params.ordernote;
-                    order.orderID = params.orderID;
-                    order.save();
-                    req.flash('message', 'Record Updated!');
-                    res.redirect('/order/show/'+order.id);
-                });
+            // Do not update price and tax if invoices exist
+            if (nrecs > 0) {
+                delete updates['applytax']
+                delete updates['price']
             }
+            // Update record
+            Order.findOne(id)
+            .populate('MPN')
+            .exec( function (err, order) {
+                if (err) { res.send(err); return; }
 
-//
-
+                for (var prop in updates) {
+                    order[prop] = updates[prop];
+                }
+                order.save();
+                res.json(order);
+            });
         });
-
     },
+
     // Retrieve all open orders for a company.
     getOpen: function (req, res, next) {
         var co_name = req.param('id');

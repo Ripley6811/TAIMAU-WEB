@@ -65,12 +65,12 @@ module.exports = {
           required: true,
           defaultsTo: true
       },
-      
+
       shipments: {
             collection: 'shipmentitem',
           via: 'order_id'
       },
-    
+
       qty_shipped: function () {
 //          console.log(this.shipments.length);
             var total = 0;
@@ -79,7 +79,7 @@ module.exports = {
             }
             return total;
       },
-    
+
       qty_remaining: function () {
 //          console.log(this.shipments.length);
             var total = 0;
@@ -100,14 +100,14 @@ module.exports = {
           if (this.duedate === null) {
               return '';
           } else {
-              return this.duedate.getFullYear() + 
+              return this.duedate.getFullYear() +
                   ' / ' + (this.duedate.getMonth()+1) +
                   ' / ' + this.duedate.getDate();
           }
       }
       ,
       orderdate_string: function () {
-          return this.orderdate.getFullYear() + 
+          return this.orderdate.getFullYear() +
               ' / ' + (1+this.orderdate.getMonth()) +
               ' / ' + this.orderdate.getDate();
       }
