@@ -67,7 +67,7 @@ module.exports = {
       },
 
       shipments: {
-            collection: 'shipmentitem',
+          collection: 'shipmentitem',
           via: 'order_id'
       },
 

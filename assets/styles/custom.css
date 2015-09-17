@@ -325,8 +325,17 @@ hr {
     height: 20px;
 }
 
+.checkbox-30 {
+    width: 30px;
+    height: 30px;
+}
+
 .highlight-row > td {
     background-color: yellow !important;
+}
+
+.archived-row > td {
+    background-color: rgb(176, 176, 176) !important;
 }
 
 .dropdown-menu {
@@ -337,4 +346,17 @@ hr {
     top: auto;
     left: auto;
     padding: 0px;
+}
+
+.tooltip-inner {
+    width: 120px;
+}
+
+.alert {
+    padding: 5px;
+    margin-bottom: auto;
+}
+
+.vertical-middle > td {
+    vertical-align: middle !important;
 }

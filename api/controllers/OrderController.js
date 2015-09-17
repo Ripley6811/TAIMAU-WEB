@@ -16,11 +16,9 @@ module.exports = {
      * mpn - Retrieve all records with product ID
      */
     index: function (req, res) {
-        console.log(req.allParams());
-        var limit = req.param('limit') || 50;
+        var limit = req.param('limit') || 60,
+            search_params = {};
 
-        var search_params = {};
-        console.log(typeof req.param('id'));
 //        if (parseInt(req.param('id')) !== NaN) search_params.order_id = req.param('id');
         if (req.param('co')) search_params.group = req.param('co');
         if (req.param('mpn')) search_params.MPN = req.param('mpn');
@@ -29,11 +27,29 @@ module.exports = {
         Order.find(search_params)
         .limit(limit)
         .populate('MPN')
+        .populate('shipments')
         .sort('orderdate DESC')
         .exec(function (err, orders) {
             if (err) res.json(err);
 
-            res.view({orders: orders})
+            for (var i=0; i<orders.length; i++) {
+                orders[i].qty_shipped = orders[i].qty_shipped();
+                delete orders[i].shipments;
+            }
+
+            if (search_params.group) {
+                Cogroup.findOne(search_params.group)
+                .populate('branches')
+                .populate('contacts')
+                .exec(function (err, group) {
+                    if (err) res.json(err);
+
+                    res.view({cogroup: group,
+                              orders: orders})
+                });
+            } else {
+                res.view({orders: orders})
+            }
         });
     },
 
@@ -302,6 +318,28 @@ module.exports = {
                 cogroup: cogroup,
             });
         });
+    },
+
+    /**
+     * Deletes a single order record.
+     * Used by '/order' page.
+     * Created: 2015 Sept. 17.
+     */
+    delete: function (req, res) {
+        var rec_id = req.param('id');
+
+        Order.findOne(rec_id)
+        .exec(function (err, rec) {
+            if (err) {res.json(err); return;}
+
+            rec.destroy(function (err) {
+                if (err) {
+                    res.json(err);
+                } else {
+                    res.send(204);
+                }
+            });
+        })
     }
 };
 

@@ -1,32 +1,100 @@
 "use strict";
 
-var orderdata = <%- JSON.stringify(orders) %>;  // Kept separate because it messes up formatting
+var orderdata = <%- JSON.stringify(orders) %>;  // Kept separate because it messes up formatting and syntax coloring
 
 /**
  * @namespace
  */
 viewModel.OrdersVM = {
+    /**
+     * Creates the Orders KO Array and adds extra observables.
+     */
     init: function () {
-        this.orders = ko.mapping.fromJS(orderdata);
-        this.selectedRows = [];
-        this.editingRows = [];
+        var self = this;
+
+        self.orders = ko.mapping.fromJS(orderdata);
+        self.isPurchase = ko.observable(null);
+        self.shipment_no = ko.observable();
+        // Add additional observables
         for (var i=0; i<orderdata.length; i++) {
-            this.selectedRows.push(ko.observable(false));
-            this.editingRows.push(ko.observable(false));
+            var order = self.orders()[i],
+                prod = self.orders()[i].MPN;
+            order.isSelected = ko.observable(false);
+            order.isEditing = ko.observable(false);
+            order.isConfirmingDelete = ko.observable(false);
+            order.errorMessage = ko.observable();
+            order.qtyRequested = ko.observable();
+            order.qtyMeasure = prod.units() === 1 ? prod.UM() : prod.SKU();
         }
+
+        document.onkeydown = function(evt) {
+            if (evt.keyCode == 13) {
+                var orders = self.orders();
+                for (var i=0; i<orders.length; i++) {
+                    if (orders[i].isSelected() && orders[i].is_purchase()) {
+                        self.isPurchase(true);
+                    } else if (orders[i].isSelected() && !orders[i].is_purchase()) {
+                        self.isPurchase(false);
+                    }
+                }
+                self.computeAvailableNumber();
+                $('#createShipmentModal').modal('show')
+            }
+        };
+
+        self.sortOrderDate();
+//        self.sortOrderOpen();
     },
 
+    /**
+     * Sorts orders by date with newest at top.
+     */
+    sortOrderDate: function () {
+        this.orders.sort(function (a, b) {
+            var p = 'orderdate';
+            return b[p]() === a[p]() ? 0 : (b[p]() < a[p]() ? -1 : 1);
+        });
+    },
+
+    /**
+     * Sorts the orders array by order number. Blanks at bottom.
+     */
+    sortOrderID: function () {
+        this.orders.sort(function (a, b) {
+            var p = 'orderID',
+                a = a[p]() ? a[p]().toUpperCase() : 'zzz',
+                b = b[p]() ? b[p]().toUpperCase() : 'zzz';
+            return a === b ? 0 : (a < b ? -1 : 1);
+        });
+    },
+
+    /**
+     * Sorts the orders array with open/active ones at top.
+     */
+    sortOrderOpen: function () {
+        this.orders.sort(function (a, b) {
+            var p = 'is_open';
+            return a[p]() === b[p]() ? 0 : (a[p]() > b[p]() ? -1 : 1);
+        });
+    },
+
+    /**
+     * Adds or removes highlighting to a table row.
+     * @param {Object} event Event object for click.
+     * @param {Number} index Index of record in Orders KO Array.
+     */
     rowClick: function (event, index) {
+        var ko_rec = this.orders()[index];
         if (event.ctrlKey) {
-            console.log(event);
-            this.selectedRows[index](!this.selectedRows[index]());
+            ko_rec.isSelected(!ko_rec.isSelected());
         }
     },
 
-    editButton: function (index, data) {
-        this.editingRows[index](true);
-    },
-
+    /**
+     * Saves new values to an object and passes it to update function.
+     * @param {Object} el    HTML button element calling this function.
+     * @param {Number} index Index of record in Orders KO Array.
+     */
     editSaveButton: function (el, index) {
         // Traverse up to row (TR) element
         while (el.tagName !== 'TR') {
@@ -36,44 +104,59 @@ viewModel.OrdersVM = {
         // Get list of cell (TD) elements
         var td_list = el.children,
             updates = {};
-        // Look for "input" tags and get values
+        // Look for "has-input" tags and get values
         for (var i=0; i<td_list.length; i++) {
-            if (td_list[i].getAttribute("input") === "orderdate") {
-                var value = new Date(td_list[i].children[1].value);
+            var inputType = td_list[i].getAttribute("has-input"),
+                inputChild = td_list[i].children[1];
+            // Convert and validate value type
+            if (inputType === "orderdate") {
+                var value = new Date(inputChild.value);
                 if (!isNaN(value.getDate()))
                     updates["orderdate"] = value;
-            }
-            if (td_list[i].getAttribute("input") === "orderID") {
-                var value = td_list[i].children[1].value;
+            } else if (inputType === "orderID") {
+                var value = inputChild.value;
                 updates["orderID"] = value;
-            }
-            if (td_list[i].getAttribute("input") === "qty") {
-                var value = parseInt(td_list[i].children[1].value);
+            } else if (inputType === "qty") {
+                var value = parseInt(inputChild.value);
                 if (!isNaN(value))
                     updates["qty"] = value;
-            }
-            if (td_list[i].getAttribute("input") === "price") {
-                var value = parseFloat(td_list[i].children[1].value);
+            } else if (inputType === "price") {
+                var value = parseFloat(inputChild.value);
                 if (!isNaN(value))
                     updates["price"] = value;
-            }
-            if (td_list[i].getAttribute("input") === "applytax") {
-                var value = td_list[i].children[1].checked;
+            } else if (inputType === "applytax") {
+                var value = inputChild.checked;
                 updates["applytax"] = value;
-            }
-            if (td_list[i].getAttribute("input") === "ordernote") {
-                var value = td_list[i].children[1].value;
+            } else if (inputType === "ordernote") {
+                var value = inputChild.value;
                 updates["ordernote"] = value;
             }
         }
-//        this.editingRows[index](false);
+//        this.orders()[index].isEditing(false);
         this.updateRecord(index, updates);
     },
 
-    editCancelButton: function (index) {
-        this.editingRows[index](false);
+    /**
+     * Turns on editing mode for record.
+     * @param {Number} index Index of record in the Orders KO Array.
+     */
+    editButton: function (index) {
+        this.orders()[index].isEditing(true);
     },
 
+    /**
+     * Turns off editing mode for particular record in Orders KO Array.
+     * @param {Number} index Index of record in the Orders KO Array.
+     */
+    editCancelButton: function (index) {
+        this.orders()[index].isEditing(false);
+    },
+
+    /**
+     * Updates the Order record in database.
+     * @param {Number} index   Index of record in the Orders KO Array.
+     * @param {Object} updates Key-values pairs for properties to update.
+     */
     updateRecord: function (index, updates) {
         var ko_rec = this.orders()[index],
             params = {
@@ -81,13 +164,12 @@ viewModel.OrdersVM = {
                 updates: updates,
                 _csrf: viewModel._csrf,
             };
-        console.log('params', params);
+
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState !== 4) return;
 
             var data = JSON.parse(xmlhttp.response);
-            console.log(data);
             // Update view if successful
             for (var property in updates) {
                 ko_rec[property](data[property]);
@@ -98,10 +180,65 @@ viewModel.OrdersVM = {
         xmlhttp.send(ko.toJSON(params));
     },
 
-    deleteRecord: function () {
-        console.log('DELETE NOT IMPLEMENTED')
+    /**
+     * Deletes an Order record from the database.
+     * @param   {Object}  ko_rec A KO mapped record object.
+     * @returns {Boolean} Deletion succeeded or not.
+     */
+    deleteRecord: function (ko_rec) {
+        var orders_KOA = this.orders,
+            params = {
+                id: ko_rec.id(),
+                _csrf: viewModel._csrf,
+            };
+
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState !== 4) return;
+
+            // Remove record from array if successful
+            if (xmlhttp.status === 204) {
+                orders_KOA.remove(ko_rec);
+                return true;
+            }
+            // Display error
+            var data = JSON.parse(xmlhttp.response);
+            if (data.error && data.raw.code === 'ER_ROW_IS_REFERENCED_2') {
+                ko_rec.errorMessage("不能刪除 - 訂單已經出貨.");
+                return false;
+            }
+        };
+        xmlhttp.open('DELETE', '/order/delete', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON(params));
     },
 
+    submitClicked: function (stuff) {
+        console.log(stuff);
+    },
+
+    // Retrieve a new shipment number from database.
+    // AJAJ request for product record
+    computeAvailableNumber: function () {
+        console.log('this what', this);
+        if (this.isPurchase() === false) {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState !== 4) return;
+                console.log(xmlhttp);
+                if (!xmlhttp.response) {
+                    alert("Response is empty");
+                    return;
+                }
+
+                this.shipment_no(xmlhttp.responseText);
+            };
+            xmlhttp.open('GET', '/shipment/availableNumber', true);
+            xmlhttp.send();
+        } else {
+            this.shipment_no('');
+        }
+    },
 }
 viewModel.OrdersVM.init();
 
@@ -124,8 +261,9 @@ viewModel.formatDate = function (datestr) {
 };
 
 /**
- * Activate the use of Bootstrap dropdowns on page.
+ * Activate the use of Bootstrap javascript on page.
  */
 $(function () {
     $('[data-toggle="dropdown"]').dropdown()
+    $('[data-toggle="tooltip"]').tooltip()
 })
