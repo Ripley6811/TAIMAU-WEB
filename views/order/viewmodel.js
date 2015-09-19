@@ -13,6 +13,8 @@ viewModel.OrdersVM = {
         var self = this;
 
         self.orders = ko.mapping.fromJS(orderdata);
+        self.products = ko.observableArray();
+        self.loadProducts();
         self.isPurchase = ko.observable(null);
         self.shipment_no = ko.observable();
         // Add additional observables
@@ -52,7 +54,7 @@ viewModel.OrdersVM = {
             }
             // Opens new PO window when Alt+N is pressed
             if (evt.keyCode == 78 && evt.altKey) {
-                console.log('new po function');
+                self.createNewOrder();
                 return false;
             }
         };
@@ -99,7 +101,9 @@ viewModel.OrdersVM = {
      * @param {Number} index Index of record in Orders KO Array.
      */
     rowClick: function (event, index) {
-        if (event.ctrlKey) {
+        if (event.ctrlKey && event.altKey) {
+            this.toggleOpen(index);
+        } else if (event.ctrlKey) {
             this.toggleSelection(index);
         }
     },
@@ -120,6 +124,7 @@ viewModel.OrdersVM = {
      * @param {Number} index Index of record in Orders KO Array.
      */
     editSaveButton: function (el, index) {
+        var ko_rec = this.orders()[index];
         // Traverse up to row (TR) element
         while (el.tagName !== 'TR') {
             el = el.parentElement;
@@ -132,6 +137,7 @@ viewModel.OrdersVM = {
         for (var i=0; i<td_list.length; i++) {
             var inputType = td_list[i].getAttribute("has-input"),
                 inputChild = td_list[i].children[1];
+//            console.log(inputType, inputChild);
             // Convert and validate value type
             if (inputType === "orderdate") {
                 var value = new Date(inputChild.value);
@@ -154,10 +160,19 @@ viewModel.OrdersVM = {
             } else if (inputType === "ordernote") {
                 var value = inputChild.value;
                 updates["ordernote"] = value;
+            } else if (inputType === "MPN" && !ko_rec.id()) {
+                var value = inputChild.value;
+                console.log('select value', value);
+                updates["MPN"] = value;
             }
         }
+
+        if (ko_rec.id()) {
 //        this.orders()[index].isEditing(false);
-        this.updateRecord(index, updates);
+            this.updateRecord(ko_rec, updates);
+        } else {
+            this.createRecord(ko_rec, updates);
+        }
     },
 
     /**
@@ -178,12 +193,11 @@ viewModel.OrdersVM = {
 
     /**
      * Updates the Order record in database.
-     * @param {Number} index   Index of record in the Orders KO Array.
+     * @param {Object} ko_rec  Record in the Orders KO Array.
      * @param {Object} updates Key-values pairs for properties to update.
      */
-    updateRecord: function (index, updates) {
-        var ko_rec = this.orders()[index],
-            params = {
+    updateRecord: function (ko_rec, updates) {
+        var params = {
                 id: ko_rec.id(),
                 updates: updates,
                 _csrf: viewModel._csrf,
@@ -200,6 +214,42 @@ viewModel.OrdersVM = {
             }
         };
         xmlhttp.open('PUT', '/order/update', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON(params));
+    },
+
+    /**
+     * Creates an Order record in database.
+     * @param {Object} ko_rec  Record in the Orders KO Array.
+     * @param {Object} updates Key-values pairs for properties to update.
+     */
+    createRecord: function (ko_rec, updates) {
+        var newRec = ko.toJS(ko_rec);
+        // Delete the null ID.
+        delete newRec.id;
+        // Change product object to product ID
+        newRec.MPN = newRec.MPN.MPN;
+        // Update properties from inputs
+        for (var prop in updates) {
+            newRec[prop] = updates[prop];
+        }
+
+        var params = {
+                data: newRec,
+                _csrf: viewModel._csrf,
+            };
+
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState !== 4) return;
+
+            var data = JSON.parse(xmlhttp.response);
+            // Update view if successful
+            ko.mapping.fromJS(data, ko_rec);
+            // Update order price based on product price
+            ko_rec.price(data.MPN.curr_price);
+        };
+        xmlhttp.open('POST', '/order/createOne', true);
         xmlhttp.setRequestHeader('Content-type', 'application/json');
         xmlhttp.send(ko.toJSON(params));
     },
@@ -266,13 +316,61 @@ viewModel.OrdersVM = {
     },
 
     /**
-     * Switches the order record to open or closed
+     * Create a new PO based on old PO, add to array and enable editing.
+     * @param {Object} [data=this.orders()[0]] Data from old PO to copy.
      */
-    toggleOpen: function (data, event) {
-        var index = this.orders.indexOf(data),
-            updates = {is_open: !data.is_open()};
+    createFromTemplate: function (data) {
+        var newData = ko.toJS(data || this.orders()[0]);
+        delete newData['shipments'];
+        newData['id'] = undefined;
+        newData['qty_shipped'] = 0;
+        newData['is_open'] = true;
+        newData['orderdate'] = new Date();
+        this.orders.unshift(ko.mapping.fromJS(newData));
+        this.orders()[0].isEditing(true);
+        return this.orders()[0];
+    },
+
+    /**
+     * Create a new PO based, add to array and enable editing.
+     */
+    createNewOrder: function () {
+        var ko_rec = this.createFromTemplate();
+        ko_rec.qty(0);
+        ko_rec.ordernote('');
+
+    },
+
+    /**
+     * Switches the order record to open or closed (archived)
+     */
+    toggleOpen: function (index) {
+        var updates = {is_open: !this.orders()[index].is_open()};
         this.updateRecord(index, updates);
     },
+
+    /**
+     * Request list of products for new PO creation.
+     */
+    loadProducts: function () {
+        var self = this,
+            xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState !== 4) return;
+
+            if (!xmlhttp.response) {
+                alert("Response is empty");
+                return;
+            }
+
+            var products = ko.mapping.fromJSON(xmlhttp.response);
+            for (var i=0; i<products().length; i++) {
+                self.products.push(products()[i]);
+            }
+        };
+        xmlhttp.open('GET', '/product/get/<%= res.locals.cogroup ? cogroup.name : null %>', true);
+        xmlhttp.send();
+    }
 }
 viewModel.OrdersVM.init();
 

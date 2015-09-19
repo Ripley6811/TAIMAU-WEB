@@ -340,6 +340,28 @@ module.exports = {
                 }
             });
         })
+    },
+
+    /**
+     * Creates a single new PO
+     * Used in "order?co=CO" page.
+     */
+    createOne: function (req, res) {
+        var data = req.param('data');
+
+        Order.create(data)
+        .exec(function (err, rec) {
+            if (err) {res.send(err); return;}
+
+            // Return rec with MPN populated
+            Order.findOne(rec.id)
+            .populate('MPN')
+            .exec(function (err, recPlusMPN) {
+                if (err) {res.send(err); return;}
+
+                res.json(recPlusMPN);
+            });
+        });
     }
 };
 
