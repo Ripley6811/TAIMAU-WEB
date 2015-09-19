@@ -1,6 +1,6 @@
 "use strict";
 
-var orderdata = <%- JSON.stringify(orders) %>;  // Kept separate because it messes up formatting and syntax coloring
+var orderdata = eval('<%- JSON.stringify(orders) %>');  // Kept separate because it messes up formatting and syntax coloring
 
 /**
  * @namespace
@@ -29,16 +29,31 @@ viewModel.OrdersVM = {
 
         document.onkeydown = function(evt) {
             if (evt.keyCode == 13) {
-                var orders = self.orders();
+                var orders = self.orders(),
+                    noneSelected = true;
                 for (var i=0; i<orders.length; i++) {
-                    if (orders[i].isSelected() && orders[i].is_purchase()) {
-                        self.isPurchase(true);
-                    } else if (orders[i].isSelected() && !orders[i].is_purchase()) {
-                        self.isPurchase(false);
+                    if (orders[i].isSelected()) {
+                        noneSelected = false;
+                        self.isPurchase(orders[i].is_purchase());
                     }
                 }
-                self.computeAvailableNumber();
-                $('#createShipmentModal').modal('show')
+                // Opens help window if none is selected.
+                if (noneSelected) {
+                    $('#helpModal').modal('show');
+                } else {
+                    self.computeAvailableNumber();
+                    $('#createShipmentModal').modal('show');
+                }
+            }
+            // Opens help window if F1 is pressed.
+            if (evt.keyCode == 112) {
+                $('#helpModal').modal('show');
+                return false;
+            }
+            // Opens new PO window when Alt+N is pressed
+            if (evt.keyCode == 78 && evt.altKey) {
+                console.log('new po function');
+                return false;
             }
         };
 
@@ -84,10 +99,19 @@ viewModel.OrdersVM = {
      * @param {Number} index Index of record in Orders KO Array.
      */
     rowClick: function (event, index) {
-        var ko_rec = this.orders()[index];
         if (event.ctrlKey) {
-            ko_rec.isSelected(!ko_rec.isSelected());
+            this.toggleSelection(index);
         }
+    },
+
+    /**
+     * Adds or removes highlighting to a table row.
+     * @param {Object} event Event object for click.
+     * @param {Number} index Index of record in Orders KO Array.
+     */
+    toggleSelection: function (index) {
+        var ko_rec = this.orders()[index];
+        ko_rec.isSelected(!ko_rec.isSelected());
     },
 
     /**
@@ -214,11 +238,12 @@ viewModel.OrdersVM = {
     },
 
     submitClicked: function (stuff) {
-        console.log(stuff);
+        console.log('NOT IMPLEMENTED YET');
     },
 
-    // Retrieve a new shipment number from database.
-    // AJAJ request for product record
+    /**
+     * Retrieves an available shipment number from database.
+     */
     computeAvailableNumber: function () {
         console.log('this what', this);
         if (this.isPurchase() === false) {
@@ -238,6 +263,15 @@ viewModel.OrdersVM = {
         } else {
             this.shipment_no('');
         }
+    },
+
+    /**
+     * Switches the order record to open or closed
+     */
+    toggleOpen: function (data, event) {
+        var index = this.orders.indexOf(data),
+            updates = {is_open: !data.is_open()};
+        this.updateRecord(index, updates);
     },
 }
 viewModel.OrdersVM.init();

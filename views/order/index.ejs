@@ -1,10 +1,21 @@
 <!--
 TODO:
-    Add modal that pops up when rows are selected and Enter key pressed
     Add a way to add new PO and a way to copy existing PO as a new one
     Add way to see manifest list. maybe popup when mouseover delivered amt.
 -->
 <div data-bind="with: OrdersVM">
+    <div style="position: fixed; right: 0px">
+        <button class="btn btn-success"
+                data-toggle="tooltip" data-placement="bottom" title="Alt+N">
+            新訂單
+        </button>
+        <button class="btn btn-success"
+                onclick="$('#helpModal').modal('show');"
+                data-toggle="tooltip" data-placement="bottom" title="F1">
+            Help
+        </button>
+    </div>
+
   <table class="table table-condensed table-striped">
     <thead>
         <th>選</th>
@@ -14,14 +25,16 @@ TODO:
         <th>PO#</th>
         <th>品名</th>
         <th>訂量</th>
-        <th>剩量</th>
+        <th>已送</th>
         <th>價格</th>
         <th>納稅</th>
         <th>備註</th>
     </thead>
     <tbody data-bind="foreach: orders">
         <tr data-bind="click: function (data, event) { $parent.rowClick(event, $index()); return true; },
-                       css: {'highlight-row': isSelected, 'archived-row': !is_open() && !isSelected()},
+                       css: {'highlight-row': is_open && isSelected,
+                             'archived-row': !is_open() && !isSelected(),
+                             'highlight-archived-row': !is_open() && isSelected},
                        attr: {id: 'rec-' + $index()}">
             <td style="width: 2em">
                 <div class="dropdown">
@@ -37,20 +50,26 @@ TODO:
                         data-bind="attr: {'aria-labelledby': 'dropdown' + $index()}">
                         <div class="btn-group-vertical">
                             <button class="btn btn-success" style="text-align: left"
+                                data-bind="click: function () { $parent.toggleSelection($index()) }">
+                                <i class="fa fa-pencil-square-o fa-fw fa-lg"></i> 切換選擇 (Ctrl+左鍵)
+                            </button>
+                            <button class="btn btn-success" style="text-align: left"
                                 data-bind="click: function (data) { $parent.editButton($index(), data); }">
                                 <i class="fa fa-pencil-square-o fa-fw fa-lg"></i> 編輯訂單
                             </button>
                             <button disabled class="btn btn-success" style="text-align: left">
                                 <i class="fa fa-list-alt fa-fw fa-lg"></i> 看出貨單
                             </button>
-                            <button disabled class="btn btn-success" style="text-align: left" data-bind="visible: !is_open()">
-                                <i class="fa fa-refresh fa-fw fa-lg"></i> 在開啟訂單
-                            </button>
-                            <button disabled class="btn btn-success" style="text-align: left" data-bind="visible: is_open">
-                                <i class="fa fa-ban fa-fw fa-lg"></i> 結束訂單並歸檔
-                            </button>
                             <button disabled class="btn btn-success" style="text-align: left">
                                 <i class="fa fa-files-o fa-fw fa-lg"></i> 複製舊訂單
+                            </button>
+                            <button class="btn btn-success" style="text-align: left"
+                                    data-bind="visible: !is_open(), click: function (data) {$parent.toggleOpen(data)}">
+                                <i class="fa fa-refresh fa-fw fa-lg"></i> 再開啟訂單
+                            </button>
+                            <button class="btn btn-warning" style="text-align: left"
+                                    data-bind="visible: is_open, click: function (data) {$parent.toggleOpen(data)}">
+                                <i class="fa fa-ban fa-fw fa-lg"></i> 結束訂單並歸檔
                             </button>
                             <button class="btn btn-danger" style="text-align: left"
                                 data-bind="click: function (data) {data.isConfirmingDelete(true)}">
@@ -137,128 +156,9 @@ TODO:
     </tbody>
   </table>
 
-  <!-- Modal: Create Shipment from POs -->
-  <div class="modal fade" id="createShipmentModal" tabindex="-1" role="dialog" aria-labelledby="createShipmentModal">
-    <div class="modal-dialog modal-lg" role="document">
-        <form class="modal-content"
-              action="/shipment/create" method="post">
-            <div class="modal-header lightgreen-blend">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h3 class="modal-title text-center">創造出貨單</h3>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-7">
-                        <div class="form-group">
-                            <label class="col-md-3 control-label">台茂</label>
-                            <div class="col-md-9 has-success">
-                                <select class="form-control" name="us" required>
-                                    <option value="台茂">台茂</option>
-                                    <option value="永茂">永茂</option>
-                                    <option value="富茂">富茂</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-7">
-                        <div class="form-group">
-                            <label class="col-md-3 control-label">客戶</label>
-                            <div class="col-md-9 has-success">
-                                <select class="form-control" name="them" required>
-                                <% cogroup.branches.forEach(function(branch) { %>
-                                <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
-                                <% }); %>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-5">
-                        <div class="form-group">
-                            <label class="col-md-4 control-label">貨單日期</label>
-                            <div class="col-md-8 has-success">
-                                <input type="date" class="form-control" name="shipmentdate" required>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-7">
-                        <div class="form-group">
-                            <label class="col-md-3 control-label">聯 絡 人</label>
-                            <div class="col-md-9 has-success">
-                                <select class="form-control" name="contact">
-                                <% cogroup.contacts.forEach(function(contact) { %>
-                                <option value="<%= contact.id %>"><%= contact.position %> : <%= contact.name %> : <%= contact.phone %></option>
-                                <% }); %>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-5">
-                        <div class="form-group">
-                            <label class="col-md-4 control-label">貨單編號</label>
-                            <div class="col-md-8 has-success">
-                                <input type="text" class="form-control" maxlength="15" placeholder="" name="shipment_no" data-bind="textInput: shipment_no">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">送貨地址</label>
-                            <div class="col-md-9 has-success">
-                                <input type="text" class="form-control" placeholder="" name="shipmentdest">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <table class="table table-condensed">
-                    <thead>
-                        <td>PO#</td>
-                        <td>品名</td>
-                        <td align="right">剩量/訂量</td>
-                        <td align="center">這次出貨量</td>
-                        <td align="center">出貨後剩量</td>
-                    </thead>
-                    <tbody data-bind="foreach: orders">
-                        <tr class="vertical-middle" data-bind="if: isSelected">
-                            <td>
-                                <input type="hidden" name="PO" data-bind="value: id">
-                                <input type="hidden" name="is_supply" data-bind="value: MPN.is_supply">
-                                <input type="hidden" name="MPN" data-bind="value: MPN.MPN">
-                                <input type="hidden" name="price" data-bind="value: price">
-                                <span data-bind="text: orderID"></span>
-                                <label class="badge" data-bind="text: id, visible: !orderID()"></label>
-                            </td>
-                            <td data-bind="text: MPN.inventory_name"></td>
-                            <td align="right"
-                                data-bind="text: qty() - qty_shipped() + ' / ' + qty() + ' ' + qtyMeasure"></td>
-                            <td align="center">
-                                <input name="qty" type="text" required class="form-control input-sm text-right"
-                                       style="width: 8em; font-size: 16px"
-                                       data-bind="textInput: qtyRequested">
-                            </td>
-                            <td align="center"
-                                data-bind="text: qty() - qty_shipped() - qtyRequested()"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <input type="hidden" name="_csrf" value="<%= _csrf %>">
-                <input type="hidden" name="group" value="<%= cogroup.name %>" />
-                <button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
-                <button type="submit" class="btn btn-success">提交</button>
-            </div>
-        </form>
-    </div>
-  </div>
-
+    <%- partial ('modal.shipment.ejs') %>
+    <%- partial ('modal.help.ejs') %>
 </div><!--End of "with" div-->
+
 
 <script><%- partial ('viewmodel.js') %></script>

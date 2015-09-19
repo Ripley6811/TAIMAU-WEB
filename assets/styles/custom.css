@@ -331,11 +331,23 @@ hr {
 }
 
 .highlight-row > td {
-    background-color: yellow !important;
+    background-color: rgb(255, 255, 0) !important;
 }
 
 .archived-row > td {
     background-color: rgb(176, 176, 176) !important;
+}
+
+.highlight-archived-row > td {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffff00+0,b0b0b0+100 */
+    background: rgb(255,255,0); /* Old browsers */
+    background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,0,1) 0%, rgba(176,176,176,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(255,255,0,1)), color-stop(100%,rgba(176,176,176,1))); /* Chrome,Safari4+ */
+    background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,0,1) 0%,rgba(176,176,176,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-radial-gradient(center, ellipse cover,  rgba(255,255,0,1) 0%,rgba(176,176,176,1) 100%); /* Opera 12+ */
+    background: -ms-radial-gradient(center, ellipse cover,  rgba(255,255,0,1) 0%,rgba(176,176,176,1) 100%); /* IE10+ */
+    background: radial-gradient(ellipse at center,  rgba(255,255,0,1) 0%,rgba(176,176,176,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffff00', endColorstr='#b0b0b0',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
 
 .dropdown-menu {
