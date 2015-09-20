@@ -91,7 +91,7 @@ TODO:
                 <div class="btn-group-vertical btn-group-sm"
                      data-bind="visible: isEditing">
                     <button class="btn btn-danger has-tooltip"
-                            data-bind="click: $parent.editCancelButton($index())"
+                            data-bind="click: function () {$parent.editCancelButton($index())}"
                             data-toggle="tooltip" data-placement="top" title="關閉編輯視窗">
                         <i class="fa fa-close fa-lg"></i>
                     </button>
@@ -102,7 +102,7 @@ TODO:
                     </button>
                 </div>
             </td>
-            <td has-input="orderdate">
+            <td has-input="orderdate" class="has-success">
                 <div data-bind="text: $root.formatDate(orderdate())"></div>
                 <input class="form-control" type="text" style="width: 10em"
                        data-bind="attr: {value: (new Date(orderdate())).toLocaleDateString()},
@@ -142,7 +142,7 @@ TODO:
                 </button>
             </td>
             <% } %>
-            <td has-input="orderID">
+            <td has-input="orderID" class="has-success">
                 <div data-bind="visible: id, html: orderID() ? orderID : '<label class=\'badge\'>' + id() + '</label>'"></div>
                 <input class="form-control" type="text" style="width: 10em"
                        placeholder="PO#"
@@ -152,15 +152,17 @@ TODO:
                      style="font-size: 16px"
                      data-bind="visible: !id()">本紀錄還沒儲存!</div>
             </td>
-            <td has-input="MPN">
+            <td has-input="MPN" class="has-success">
                 <div data-bind="text: MPN.inventory_name"></div>
-                <select class="form-control" data-bind="visible: !id(),
-                                   foreach: $parent.products">
-                    <option data-bind="value: MPN, html: inventory_name"></option>
-
+                <select class="form-control" style="width: auto"
+                        data-bind="visible: !id(),
+                                   options: $parent.products,
+                                   optionsText: function (item) {return item.inventory_name() + ' : $' + item.curr_price()},
+                                   optionsValue: 'MPN',
+                                   optionsCaption: '選別的...'">
                 </select>
             </td>
-            <td has-input="qty" align="right">
+            <td has-input="qty" class="has-success" align="right">
                 <div data-bind="text: qty"></div>
                 <input class="form-control text-right" type="text" style="width: 6em"
                        data-bind="attr: {value: qty()},
@@ -169,11 +171,11 @@ TODO:
             <td align="right">
                 <div data-bind="text: qty_shipped"></div>
             </td>
-            <td has-input="price" align="right">
+            <td has-input="price" class="has-success" align="right">
                 <div data-bind="text: '$' + price()"></div>
                 <input class="form-control text-right" type="text" style="width: 6em"
                        data-bind="attr: {value: price()},
-                                  visible: isEditing() && id()">
+                                  visible: isEditing()">
             </td>
             <td has-input="applytax">
                 <div data-bind="html: applytax() ? '<i class=\'fa fa-lg fa-check-square-o\'></i>' : '<i class=\'fa fa-lg fa-square-o\'></i>'"></div>
@@ -181,7 +183,7 @@ TODO:
                        data-bind="checked: applytax(),
                                   visible: isEditing">
             </td>
-            <td has-input="ordernote" style="max-width: 300px">
+            <td has-input="ordernote" class="has-success" style="max-width: 300px">
                 <div data-bind="text: ordernote"></div>
                 <input class="form-control" type="text" placeholder="備註"
                        data-bind="attr: {value: ordernote()},

@@ -163,7 +163,9 @@ viewModel.OrdersVM = {
             } else if (inputType === "MPN" && !ko_rec.id()) {
                 var value = inputChild.value;
                 console.log('select value', value);
-                updates["MPN"] = value;
+                if (value) {
+                    updates["MPN"] = value;
+                }
             }
         }
 
@@ -188,7 +190,13 @@ viewModel.OrdersVM = {
      * @param {Number} index Index of record in the Orders KO Array.
      */
     editCancelButton: function (index) {
-        this.orders()[index].isEditing(false);
+        var order = this.orders()[index];
+        if (order.id()) {
+            order.isEditing(false);
+        } else {
+            // Remove this unsaved new entry.
+            this.orders.remove(order);
+        }
     },
 
     /**
@@ -246,8 +254,8 @@ viewModel.OrdersVM = {
             var data = JSON.parse(xmlhttp.response);
             // Update view if successful
             ko.mapping.fromJS(data, ko_rec);
-            // Update order price based on product price
-            ko_rec.price(data.MPN.curr_price);
+            var prod = ko_rec.MPN;
+            ko_rec.qtyMeasure = prod.units() === 1 ? prod.UM() : prod.SKU();
         };
         xmlhttp.open('POST', '/order/createOne', true);
         xmlhttp.setRequestHeader('Content-type', 'application/json');
@@ -287,10 +295,6 @@ viewModel.OrdersVM = {
         xmlhttp.send(ko.toJSON(params));
     },
 
-    submitClicked: function (stuff) {
-        console.log('NOT IMPLEMENTED YET');
-    },
-
     /**
      * Retrieves an available shipment number from database.
      */
@@ -321,13 +325,18 @@ viewModel.OrdersVM = {
      */
     createFromTemplate: function (data) {
         var newData = ko.toJS(data || this.orders()[0]);
+        // Reset some attributes for new entry.
         delete newData['shipments'];
         newData['id'] = undefined;
         newData['qty_shipped'] = 0;
         newData['is_open'] = true;
         newData['orderdate'] = new Date();
+        // Add entry to first position and enable editing.
         this.orders.unshift(ko.mapping.fromJS(newData));
         this.orders()[0].isEditing(true);
+        this.orders()[0].isSelected(false);
+        // Scroll page to top.
+        window.scrollTo(0, 0);
         return this.orders()[0];
     },
 
@@ -338,15 +347,15 @@ viewModel.OrdersVM = {
         var ko_rec = this.createFromTemplate();
         ko_rec.qty(0);
         ko_rec.ordernote('');
-
     },
 
     /**
      * Switches the order record to open or closed (archived)
      */
     toggleOpen: function (index) {
-        var updates = {is_open: !this.orders()[index].is_open()};
-        this.updateRecord(index, updates);
+        var order = this.orders()[index],
+            updates = {is_open: !order.is_open()};
+        this.updateRecord(order, updates);
     },
 
     /**
