@@ -310,11 +310,11 @@ hr {
 @media (min-width: 985px) {
 
     #sidebar-wrapper {
-      width: 250px;
+      width: 230px;
     }
 
     #page-content-wrapper {
-        padding-left: 250px;
+        padding-left: 230px;
     }
 }
 
