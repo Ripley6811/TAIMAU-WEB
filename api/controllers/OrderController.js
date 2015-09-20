@@ -16,41 +16,25 @@ module.exports = {
      * mpn - Retrieve all records with product ID
      */
     index: function (req, res) {
-        var limit = req.param('limit') || 60,
-            search_params = {};
+        var search_params = {};
 
 //        if (parseInt(req.param('id')) !== NaN) search_params.order_id = req.param('id');
         if (req.param('co')) search_params.group = req.param('co');
-        if (req.param('mpn')) search_params.MPN = req.param('mpn');
-        if (req.param('po')) search_params.orderID = req.param('po');
+//        if (req.param('mpn')) search_params.MPN = req.param('mpn');
+//        if (req.param('po')) search_params.orderID = req.param('po');
 
-        Order.find(search_params)
-        .limit(limit)
-        .populate('MPN')
-        .populate('shipments')
-        .sort('orderdate DESC')
-        .exec(function (err, orders) {
-            if (err) res.json(err);
+        if (search_params.group) {
+            Cogroup.findOne(search_params.group)
+            .populate('branches')
+            .populate('contacts')
+            .exec(function (err, group) {
+                if (err) res.json(err);
 
-            for (var i=0; i<orders.length; i++) {
-                orders[i].qty_shipped = orders[i].qty_shipped();
-                delete orders[i].shipments;
-            }
-
-            if (search_params.group) {
-                Cogroup.findOne(search_params.group)
-                .populate('branches')
-                .populate('contacts')
-                .exec(function (err, group) {
-                    if (err) res.json(err);
-
-                    res.view({cogroup: group,
-                              orders: orders})
-                });
-            } else {
-                res.view({orders: orders})
-            }
-        });
+                res.view({cogroup: group});
+            });
+        } else {
+            res.view();
+        }
     },
 
     // Sort and show all orders arranged by due date.
@@ -297,6 +281,34 @@ module.exports = {
         Order.find({group: co_name})
         .exec(function (err, orders) {
             res.send(orders);
+        });
+    },
+
+    // Retrieve a limited "page" of orders.
+    page: function (req, res, next) {
+        var limit = req.param('limit') || 50,
+            page = req.param('page') || 1,
+            search_params = {};
+
+//        if (parseInt(req.param('id')) !== NaN) search_params.order_id = req.param('id');
+        if (req.param('co')) search_params.group = req.param('co');
+        if (req.param('mpn')) search_params.MPN = req.param('mpn');
+        if (req.param('po')) search_params.orderID = req.param('po');
+
+        Order.find(search_params)
+        .paginate({page: page, limit: limit})
+        .populate('MPN')
+        .populate('shipments')
+        .sort('orderdate DESC')
+        .exec(function (err, orders) {
+            if (err) res.json(err);
+
+            for (var i=0; i<orders.length; i++) {
+                orders[i].qty_shipped = orders[i].qty_shipped();
+                delete orders[i].shipments;
+            }
+
+            res.json({orders: orders})
         });
     },
 

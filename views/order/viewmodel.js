@@ -1,7 +1,5 @@
 "use strict";
 
-var orderdata = eval('<%- JSON.stringify(orders) %>');  // Kept separate because it messes up formatting and syntax coloring
-
 /**
  * Order ViewModel
  * Ensure MPN is populated
@@ -9,9 +7,9 @@ var orderdata = eval('<%- JSON.stringify(orders) %>');  // Kept separate because
  * @returns {Object} Order ViewModel.
  */
 var orderModel = function (data) {
+    // Convert data to KO observable object.
     var self = ko.mapping.fromJS(data);
-    console.log('orderModel this', self);
-    // Set extra UI control variables
+    // Set extra UI control observables.
     self.isSelected = ko.observable(false);
     self.isEditing = ko.observable(false);
     self.isConfirmingDelete = ko.observable(false);
@@ -28,6 +26,7 @@ var orderModel = function (data) {
  * @namespace
  */
 viewModel.OrdersVM = {
+    isLoading: ko.observable(true),
     /**
      * Creates the Orders KO Array and adds extra observables.
      */
@@ -35,16 +34,11 @@ viewModel.OrdersVM = {
         var self = this;
 
         self.orders = ko.observableArray();
-        self.nOrders = 0;
+        self.ordersPage = 1;
         self.products = ko.observableArray();
         self.loadProducts();
         self.isPurchase = ko.observable(null);
         self.shipment_no = ko.observable();
-        // Add additional observables
-        for (var i=0; i<orderdata.length; i++) {
-            self.orders.push(orderModel(orderdata[i]));
-            self.nOrders += 1;
-        }
 
         document.onkeydown = function(evt) {
             if (evt.keyCode == 13) {
@@ -75,9 +69,56 @@ viewModel.OrdersVM = {
                 return false;
             }
         };
-
+        // Adds window listener to load more records when scroll hits bottom.
+        var $win = $(window),
+            $doc = $(document);
+        $win.scroll(function () {
+            if ($win.height() + $win.scrollTop()
+                        == $doc.height()) {
+                self.retrieveOrderRecords();
+            }
+        });
+        self.retrieveOrderRecords();
         self.sortOrderDate();
-//        self.sortOrderOpen();
+    },
+
+    /**
+     * Retrieves a page of records from database and adds to Orders array.
+     */
+    retrieveOrderRecords : function () {
+        var self = this,
+            callback = function (orderdata) {
+                if (orderdata.length === 0) {
+                    self.isLoading(false);
+                    return;
+                }
+                self.ordersPage += 1;
+                orderdata.forEach(function (order) {
+                    self.orders.push(orderModel(order));
+                })
+                // Activate year & other tooltips (opt-in function).
+                $('[data-toggle="tooltip"]').tooltip();
+            },
+            params = {
+                _csrf: '<%= _csrf %>',
+                co: '<%= res.locals.cogroup ? cogroup.name : "" %>',
+                page: self.ordersPage
+            },
+            xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState !== 4) return;
+            if (!xmlhttp.response) {
+                alert("Response is empty");
+                return;
+            }
+
+            var res = JSON.parse(xmlhttp.response);
+            callback(res.orders);
+        };
+        xmlhttp.open('POST', '/order/page', true);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
+        xmlhttp.send(ko.toJSON(params));
     },
 
     /**
@@ -272,7 +313,7 @@ viewModel.OrdersVM = {
             // Update view if successful
             ko.mapping.fromJS(data, ko_rec);
             var prod = ko_rec.MPN;
-            ko_rec.qtyMeasure = prod.units() === 1 ? prod.UM() : prod.SKU();
+//            ko_rec.qtyMeasure = prod.units() === 1 ? prod.UM() : prod.SKU();
         };
         xmlhttp.open('POST', '/order/createOne', true);
         xmlhttp.setRequestHeader('Content-type', 'application/json');
@@ -352,6 +393,8 @@ viewModel.OrdersVM = {
         this.orders.unshift(ko.mapping.fromJS(newData));
         this.orders()[0].isEditing(true);
         this.orders()[0].isSelected(false);
+        // Activate year & other tooltips (opt-in function).
+        $('[data-toggle="tooltip"]').tooltip();
         // Scroll page to top.
         window.scrollTo(0, 0);
         return this.orders()[0];
@@ -417,20 +460,4 @@ viewModel.formatDate = function (datestr) {
         return outstr;
 };
 
-/**
- * Activate the use of Bootstrap javascript on page.
- */
-$(function () {
-    $('[data-toggle="dropdown"]').dropdown()
-    $('[data-toggle="tooltip"]').tooltip()
 
-
-//    var $win = $(window),
-//        $doc = $(document);
-//    $win.scroll(function () {
-//        if ($win.height() + $win.scrollTop()
-//                    == $doc.height()) {
-//            alert('Scrolled to Page Bottom');
-//        }
-//    });
-})

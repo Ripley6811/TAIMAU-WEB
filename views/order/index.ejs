@@ -4,6 +4,7 @@ TODO:
     Think about adding auto-filling price when selecting product
     Add way to see manifest list. maybe popup when mouseover delivered amt.
     Load fewer entries and extend when scrolled to bottom.
+    Tooltips for new records do not show with bootstrap style
 -->
 <div data-bind="with: OrdersVM">
     <div style="position: fixed; right: 0px">
@@ -42,7 +43,7 @@ TODO:
                        <% if (res.locals.cogroup) { %>
                        'highlight-row': is_open && isSelected,
                        'highlight-archived-row': !is_open() && isSelected,
-                        <% } %>},
+                       <% } %>},
                        attr: {id: 'rec-' + $index()}">
             <td style="width: 2em">
                 <div class="dropdown">
@@ -110,7 +111,7 @@ TODO:
                 <div data-bind="text: $root.formatDate(orderdate()),
                                 attr: {title: (new Date(orderdate())).getFullYear() + '年'}"
                      data-toggle="tooltip" data-placement="right"></div>
-                <input class="form-control" type="text" style="width: 10em"
+                <input class="form-control" type="text" style="width: 6em" maxlength="10"
                        data-bind="attr: {value: (new Date(orderdate())).toLocaleDateString()},
                                   visible: isEditing">
                 <div class="alert alert-danger fade in text-center" role="alert"
@@ -136,8 +137,24 @@ TODO:
                 <span data-bind="text: seller"></span>
                 <i class="fa fa-arrow-right fa-fw"></i>
                 <span data-bind="text: buyer"></span>
+                <div class="input-group" width="10em">
+                    <select class="form-control" style="width: 30%"
+                            data-bind="visible: !id(),
+                                       options: $parent.products,
+                                       optionsText: function (item) {return item.inventory_name() + ' : $' + item.curr_price()},
+                                       optionsValue: 'MPN',
+                                       optionsCaption: '選別的...'">
+                    </select>
+                    <select class="form-control" style="width: 30%"
+                            data-bind="visible: !id(),
+                                       options: $parent.products,
+                                       optionsText: function (item) {return item.inventory_name() + ' : $' + item.curr_price()},
+                                       optionsValue: 'MPN',
+                                       optionsCaption: '選別的...'">
+                    </select>
+                </div>
             </td>
-            <% } else { %>
+            <% } else {  // No cogroup selected %>
             <td>
                 <button class="btn btn-custom"
                         data-bind="click: function () {window.location='/order?co=' + group()}"
@@ -150,7 +167,7 @@ TODO:
             <% } %>
             <td has-input="orderID" class="has-success">
                 <div data-bind="visible: id, html: orderID() ? orderID : '<label class=\'badge\'>' + id() + '</label>'"></div>
-                <input class="form-control" type="text" style="width: 10em"
+                <input class="form-control" type="text" style="width: 8em"
                        placeholder="PO#"
                        data-bind="attr: {value: orderID()},
                                   visible: isEditing">
@@ -170,7 +187,7 @@ TODO:
             </td>
             <td has-input="qty" class="has-success" align="right">
                 <div data-bind="text: qty"></div>
-                <input class="form-control text-right" type="text" style="width: 6em"
+                <input class="form-control text-right" type="text" style="width: 5em"
                        data-bind="attr: {value: qty()},
                                   visible: isEditing">
             </td>
@@ -198,6 +215,9 @@ TODO:
         </tr>
     </tbody>
   </table>
+    <h1 data-bind="visible: isLoading">
+        <i class="fa fa-cog fa-spin"></i> Loading...
+    </h1>
 
     <% if (res.locals.cogroup) { %>
         <%- partial ('modal.shipment.ejs') %>
