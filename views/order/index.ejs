@@ -132,25 +132,36 @@ TODO:
                 </div>
             </td>
             <% if (res.locals.cogroup) { %>
-            <td class="text-center">
-                <span data-bind="text: seller"></span>
-                <i class="fa fa-arrow-right fa-fw"></i>
-                <span data-bind="text: buyer"></span>
-                <div class="input-group" width="10em">
-                    <select class="form-control" style="width: 30%"
-                            data-bind="visible: !id(),
-                                       options: $parent.products,
-                                       optionsText: function (item) {return item.inventory_name() + ' : $' + item.curr_price()},
-                                       optionsValue: 'MPN',
+            <td has-input="seller-buyer" class="text-center has-success" style="width: 10em">
+                <div>
+                    <span data-bind="text: seller"></span>
+                    <i class="fa fa-arrow-right fa-fw"></i>
+                    <span data-bind="text: buyer"></span>
+                </div>
+                <div class="input-group" width="10em"
+                     data-bind="visible: isEditing">
+                    <!-- ko if: is_purchase -->
+                    <select class="form-control" style="width: 50%"
+                            data-bind="options: <%= JSON.stringify(cogroup.branches) %>,
+                                       optionsText: 'name',
+                                       optionsValue: 'name',
                                        optionsCaption: '選別的...'">
                     </select>
-                    <select class="form-control" style="width: 30%"
-                            data-bind="visible: !id(),
-                                       options: $parent.products,
-                                       optionsText: function (item) {return item.inventory_name() + ' : $' + item.curr_price()},
-                                       optionsValue: 'MPN',
+                    <!-- /ko -->
+                    <select class="form-control" style="width: 50%"
+                            data-bind="options: [{name: '台茂'},{name: '富茂'},{name: '永茂'}],
+                                       optionsText: 'name',
+                                       optionsValue: 'name',
                                        optionsCaption: '選別的...'">
                     </select>
+                    <!-- ko ifnot: is_purchase -->
+                    <select class="form-control" style="width: 50%"
+                            data-bind="options: <%= JSON.stringify(cogroup.branches) %>,
+                                       optionsText: 'name',
+                                       optionsValue: 'name',
+                                       optionsCaption: '選別的...'">
+                    </select>
+                    <!-- /ko -->
                 </div>
             </td>
             <% } else {  // No cogroup selected %>

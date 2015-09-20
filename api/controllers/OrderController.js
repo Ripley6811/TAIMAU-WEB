@@ -10,18 +10,12 @@ module.exports = {
     /**
      * For the new (2015-9-14) comprehensive PO page.
      * "req" parameters:
-     * limit - max recs to return
      * co - Retrieve records for a specific group
-     * po - Retrieve record with this value
-     * mpn - Retrieve all records with product ID
      */
     index: function (req, res) {
         var search_params = {};
 
-//        if (parseInt(req.param('id')) !== NaN) search_params.order_id = req.param('id');
         if (req.param('co')) search_params.group = req.param('co');
-//        if (req.param('mpn')) search_params.MPN = req.param('mpn');
-//        if (req.param('po')) search_params.orderID = req.param('po');
 
         if (search_params.group) {
             Cogroup.findOne(search_params.group)

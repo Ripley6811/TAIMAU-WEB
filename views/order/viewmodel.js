@@ -177,7 +177,7 @@ viewModel.OrdersVM = {
     },
 
     /**
-     * Saves new values to an object and passes it to update function.
+     * Saves new values to an object and passes it to update or create function.
      * @param {Object} el    HTML button element calling this function.
      * @param {Number} index Index of record in Orders KO Array.
      */
@@ -220,15 +220,22 @@ viewModel.OrdersVM = {
                 updates["ordernote"] = value;
             } else if (inputType === "MPN" && !ko_rec.id()) {
                 var value = inputChild.value;
-                console.log('select value', value);
                 if (value) {
                     updates["MPN"] = value;
+                }
+            } else if (inputType === "seller-buyer") {
+                var valueSeller = inputChild.children[0].value;
+                var valueBuyer = inputChild.children[1].value;
+                if (valueSeller) {
+                    updates["seller"] = valueSeller;
+                }
+                if (valueBuyer) {
+                    updates["buyer"] = valueBuyer;
                 }
             }
         }
 
         if (ko_rec.id()) {
-//        this.orders()[index].isEditing(false);
             this.updateRecord(ko_rec, updates);
         } else {
             this.createRecord(ko_rec, updates);
