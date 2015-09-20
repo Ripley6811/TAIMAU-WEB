@@ -3,6 +3,28 @@
 var orderdata = eval('<%- JSON.stringify(orders) %>');  // Kept separate because it messes up formatting and syntax coloring
 
 /**
+ * Order ViewModel
+ * Ensure MPN is populated
+ * @param   {Object} data Order+Product data from database.
+ * @returns {Object} Order ViewModel.
+ */
+var orderModel = function (data) {
+    var self = ko.mapping.fromJS(data);
+    console.log('orderModel this', self);
+    // Set extra UI control variables
+    self.isSelected = ko.observable(false);
+    self.isEditing = ko.observable(false);
+    self.isConfirmingDelete = ko.observable(false);
+    self.errorMessage = ko.observable();
+    self.qtyRequested = ko.observable();
+    self.qtyMeasure = ko.computed(function () {
+        var p = self.MPN;  // Product object
+        return p.units() === 1 ? p.UM() : p.SKU();
+    });
+    return self;
+}
+
+/**
  * @namespace
  */
 viewModel.OrdersVM = {
@@ -12,21 +34,16 @@ viewModel.OrdersVM = {
     init: function () {
         var self = this;
 
-        self.orders = ko.mapping.fromJS(orderdata);
+        self.orders = ko.observableArray();
+        self.nOrders = 0;
         self.products = ko.observableArray();
         self.loadProducts();
         self.isPurchase = ko.observable(null);
         self.shipment_no = ko.observable();
         // Add additional observables
         for (var i=0; i<orderdata.length; i++) {
-            var order = self.orders()[i],
-                prod = self.orders()[i].MPN;
-            order.isSelected = ko.observable(false);
-            order.isEditing = ko.observable(false);
-            order.isConfirmingDelete = ko.observable(false);
-            order.errorMessage = ko.observable();
-            order.qtyRequested = ko.observable();
-            order.qtyMeasure = prod.units() === 1 ? prod.UM() : prod.SKU();
+            self.orders.push(orderModel(orderdata[i]));
+            self.nOrders += 1;
         }
 
         document.onkeydown = function(evt) {
@@ -194,7 +211,7 @@ viewModel.OrdersVM = {
         if (order.id()) {
             order.isEditing(false);
         } else {
-            // Remove this unsaved new entry.
+            // Remove if not saved (no DB id).
             this.orders.remove(order);
         }
     },
@@ -392,7 +409,6 @@ viewModel.formatDate = function (datestr) {
         var date = new Date(datestr),
             outstr = '';
 
-        outstr += date.getFullYear() + ' - ';
         outstr += date.getMonth()+1 < 10 ? ' ' : '';
         outstr += date.getMonth()+1 + '月 ';
         outstr += date.getDate() < 10 ? ' ' : '';
@@ -407,4 +423,14 @@ viewModel.formatDate = function (datestr) {
 $(function () {
     $('[data-toggle="dropdown"]').dropdown()
     $('[data-toggle="tooltip"]').tooltip()
+
+
+//    var $win = $(window),
+//        $doc = $(document);
+//    $win.scroll(function () {
+//        if ($win.height() + $win.scrollTop()
+//                    == $doc.height()) {
+//            alert('Scrolled to Page Bottom');
+//        }
+//    });
 })
