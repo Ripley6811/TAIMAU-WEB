@@ -1,8 +1,9 @@
 <!--
 TODO:
     Add way to update seller/buyer and product dropdown for new entries (keep prefilled with latest rec)
-    Set the current selected product and think about how price will work
+    Think about adding auto-filling price when selecting product
     Add way to see manifest list. maybe popup when mouseover delivered amt.
+    Load fewer entries and extend when scrolled to bottom.
 -->
 <div data-bind="with: OrdersVM">
     <div style="position: fixed; right: 0px">
@@ -22,7 +23,9 @@ TODO:
     <thead>
         <th>選</th>
         <th>日期</th>
-        <th class="text-center">賣家 <i class="fa fa-arrow-right fa-fw"></i> 買主</th>
+        <th class="text-center">
+            賣家 <i class="fa fa-arrow-right fa-fw"></i> 買主
+        </th>
         <th>PO#</th>
         <th>品名</th>
         <th class="text-center">訂量</th>
@@ -61,10 +64,11 @@ TODO:
                             </button>
                             <% } %>
                             <button class="btn btn-success" style="text-align: left"
-                                data-bind="click: function (data) { $parent.editButton($index(), data); }">
+                                    data-bind="click: function (data) { $parent.editButton($index(), data); }">
                                 <i class="fa fa-pencil-square-o fa-fw fa-lg"></i> 編輯訂單
                             </button>
-                            <button disabled class="btn btn-success" style="text-align: left">
+                            <button class="btn btn-success" style="text-align: left"
+                                    data-bind="click: function () {window.location='/order/show/'+id();}">
                                 <i class="fa fa-list-alt fa-fw fa-lg"></i> 看出貨單
                             </button>
                             <% if (res.locals.cogroup) { %>
@@ -103,7 +107,9 @@ TODO:
                 </div>
             </td>
             <td has-input="orderdate" class="has-success">
-                <div data-bind="text: $root.formatDate(orderdate())"></div>
+                <div data-bind="text: $root.formatDate(orderdate()),
+                                attr: {title: (new Date(orderdate())).getFullYear() + '年'}"
+                     data-toggle="tooltip" data-placement="right"></div>
                 <input class="form-control" type="text" style="width: 10em"
                        data-bind="attr: {value: (new Date(orderdate())).toLocaleDateString()},
                                   visible: isEditing">
