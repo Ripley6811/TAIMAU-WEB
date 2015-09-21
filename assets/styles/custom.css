@@ -377,3 +377,7 @@ input, select {
     padding: 3px 5px !important;
     height: 25px !important;
 }
+
+.alert-text {
+    color: red;
+}

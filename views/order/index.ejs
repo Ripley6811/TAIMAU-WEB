@@ -41,6 +41,7 @@ TODO:
                        click: function (data, event) { $parent.rowClick(event, $index()); return true; },
                        <% } %>
                        css: {'archived-row': !is_open() && !isSelected(),
+                       'alert-text': is_open() && parseInt(qty()) <= parseInt(qty_shipped()),
                        <% if (res.locals.cogroup) { %>
                        'highlight-row': is_open && isSelected,
                        'highlight-archived-row': !is_open() && isSelected,
