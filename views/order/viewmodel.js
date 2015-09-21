@@ -280,11 +280,17 @@ viewModel.OrdersVM = {
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState !== 4) return;
 
+            if (xmlhttp.status === 403) {
+                alert(xmlhttp.response);
+            }
+
             var data = JSON.parse(xmlhttp.response);
             // Update view if successful
             for (var property in updates) {
                 ko_rec[property](data[property]);
             }
+            // This does not work. Why?
+//            ko.mapping.fromJS(data, ko_rec);
         };
         xmlhttp.open('PUT', '/order/update', true);
         xmlhttp.setRequestHeader('Content-type', 'application/json');
@@ -319,8 +325,6 @@ viewModel.OrdersVM = {
             var data = JSON.parse(xmlhttp.response);
             // Update view if successful
             ko.mapping.fromJS(data, ko_rec);
-            var prod = ko_rec.MPN;
-//            ko_rec.qtyMeasure = prod.units() === 1 ? prod.UM() : prod.SKU();
         };
         xmlhttp.open('POST', '/order/createOne', true);
         xmlhttp.setRequestHeader('Content-type', 'application/json');
@@ -364,7 +368,6 @@ viewModel.OrdersVM = {
      * Retrieves an available shipment number from database.
      */
     computeAvailableNumber: function () {
-        console.log('this what', this);
         if (this.isPurchase() === false) {
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function () {

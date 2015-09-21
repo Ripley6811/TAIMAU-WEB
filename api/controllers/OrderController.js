@@ -236,19 +236,20 @@ module.exports = {
         var id = req.param('id'),
             updates = req.param('updates');
 
-        console.log(req.params.all());
+//        console.log(req.params.all());
         Invoiceitem.count({order_id: id})
         .exec(function (err, nrecs) {
-            // Do not update price and tax if invoices exist
-            if (nrecs > 0) {
-                delete updates['applytax']
-                delete updates['price']
-            }
             // Update record
             Order.findOne(id)
             .populate('MPN')
             .exec( function (err, order) {
                 if (err) { res.send(err); return; }
+
+                // Do not update price and tax if invoices exist
+                if (nrecs > 0) {
+                    delete updates['applytax']
+                    delete updates['price']
+                }
 
                 for (var prop in updates) {
                     order[prop] = updates[prop];
@@ -364,6 +365,16 @@ module.exports = {
             .populate('MPN')
             .exec(function (err, recPlusMPN) {
                 if (err) {res.send(err); return;}
+
+                // Check that Product is_supply and Order is_supply match
+                // Swap buyer / seller if product type changes
+                if (recPlusMPN.MPN.is_supply !== recPlusMPN.is_purchase) {
+                    recPlusMPN.is_purchase = recPlusMPN.MPN.is_supply;
+                    var tmp = recPlusMPN.seller;
+                    recPlusMPN.seller = recPlusMPN.buyer;
+                    recPlusMPN.buyer = tmp;
+                    recPlusMPN.save();
+                }
 
                 res.json(recPlusMPN);
             });
