@@ -62,8 +62,15 @@
                     <div class="col-md-5">
                         <div class="form-group">
                             <label class="col-md-4 control-label">貨單編號</label>
-                            <div class="col-md-8 has-success">
+                            <div class="col-md-8 has-success input-group">
                                 <input type="text" class="form-control" maxlength="15" placeholder="" name="shipment_no" data-bind="textInput: shipment_no">
+
+                                <span class="input-group-btn">
+                                    <button class="btn btn-custom" type="button" style="padding: 3px"
+                                            data-bind="click: function () {computeAvailableNumber()}">
+                                        新編號
+                                    </button>
+                                </span>
                             </div>
                         </div>
                     </div>

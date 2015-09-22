@@ -54,7 +54,7 @@ viewModel.OrdersVM = {
                 if (noneSelected) {
                     $('#helpModal').modal('show');
                 } else {
-                    self.computeAvailableNumber();
+                    //self.computeAvailableNumber();
                     $('#createShipmentModal').modal('show');
                 }
             }
@@ -368,7 +368,8 @@ viewModel.OrdersVM = {
      * Retrieves an available shipment number from database.
      */
     computeAvailableNumber: function () {
-        if (this.isPurchase() === false) {
+        var self = this;
+        if (self.isPurchase() === false) {
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function () {
                 if (xmlhttp.readyState !== 4) return;
@@ -378,12 +379,12 @@ viewModel.OrdersVM = {
                     return;
                 }
 
-                this.shipment_no(xmlhttp.responseText);
+                self.shipment_no(xmlhttp.responseText);
             };
             xmlhttp.open('GET', '/shipment/availableNumber', true);
             xmlhttp.send();
         } else {
-            this.shipment_no('');
+            self.shipment_no('');
         }
     },
 
