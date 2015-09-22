@@ -5,168 +5,72 @@ Reviewed: 2015, Sep 14
 <div class="panel panel-success" style="margin: 0px" data-bind="with: ShipmentsVM">
     <div class="panel-heading" style="padding-bottom: 0px">
         <div class="row">
-            <div class="col-sm-7 col-sm-push-3 text-center">
+            <div class="col-sm-12 text-center">
                 <button class="btn btn-lg btn-success" data-bind="click: showModal">用選擇創造出貨單 <span class="badge">Enter</span></button>
-                <button class="btn btn-lg btn-danger"
-                        data-bind="click: setAsArchived, visible: po_tab">
-                    把選擇標記為不再用
-                </button>
-            </div>
-            <div class="col-sm-3 col-sm-pull-7">
-                <ul class="nav nav-tabs">
-                    <li id="tab" class="text-center" style="background: lightgrey"
-                        data-bind="css: {active: po_tab}">
-                        <a href="#" style="padding-bottom: 0px"
-                           data-bind="click: togglePO">
-                            <strong style="font-size: 26px">訂單</strong>
-                            <br>
-                            <div class="badge" data-bind="text: orders().length"></div>
-                        </a>
-                    </li>
-                    <li id="tab" class="text-center" style="background: lightgrey"
-                        data-bind="css: {active: prod_tab}">
-                        <a href="#" style="padding-bottom: 0px"
-                           data-bind="click: toggleProd">
-                            <strong style="font-size: 26px">產品</strong>
-                            <br>
-                            <div class="badge" data-bind="text: products().length"></div>
-                        </a>
-                    </li>
-                </ul>
             </div>
         </div>
     </div>
-    <div class="tab-content">
-        <div data-bind="visible: po_tab"
-             style="padding: 0px; overflow-y:scroll; height:84vh;">
-            <table class="table table-condensed table-striped table-bordered">
-                <thead class="text-uppercase">
-                    <tr>
-                        <th>選</th>
-                        <th>
-                            訂單編號
-                        </th>
-                        <th>
-                            品名
-                            <span class="label label-primary">產品備註</span>
-                        </th>
-                        <th class="text-center">
-                            價格
-                        </th>
-                        <th class="text-center">
-                            數量 容器
-                        </th>
-                        <th class="text-center">
-                            已經送出
-                        </th>
-                        <th class="text-center">
-                            備註
-                        </th>
-                    </tr>
-                </thead>
-                <tbody data-bind="foreach: orders">
-                    <tr data-bind="style: {color: qty_shipped >= qty() ? 'coral' : 'black'}">
-            <!--        Product Manifest selection    -->
-                        <td style="width: 30px" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply ? null : '#b0b0b0'}">
-                            <input style="margin: 0px; width:26px; height:26px; vertical-align: top;"
-                                   type="checkbox"
-                                   name="purchaseorder"
-                                   data-bind="checked: selected,
-                                              enable: ($parent.isPurchase() === null || $parent.isPurchase() === is_supply)">
-                        </td>
 
-            <!--        Product Order name and id    -->
-                        <td style="padding: 3px 3px" class="text-right" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply ? null : '#b0b0b0'}">
-                            <a style="padding: 2px 10px; width: 100%" class="btn btn-custom" data-bind="attr: {href: '/order/show/' + id}">
-                                <div class="text-right">
-                                    <strong data-bind="text: orderID"></strong>
-                                    <span class="badge" data-bind="text: id"></span>
-                                    <i class="fa fa-fw fa-truck fa-flip-horizontal"></i>
-                                    <i class="fa fa-fw fa-truck fa-flip-horizontal"></i>
-                                </div>
-                            </a>
-                        </td>
-                        <td data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply ? null : '#b0b0b0'}">
-                            <span data-bind="text: label"></span> <span class="label label-primary" data-bind="text: id_note"></span>
-                        </td>
-                        <td class="text-center" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply ? null : '#b0b0b0'}">
-                            $ <span data-bind="text: price"></span> <span data-bind="text: pricing"></span>
-                        </td>
-                        <td class="text-center"  data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply ? null : '#b0b0b0'}">
-                            <span data-bind="text: qty"></span> <span data-bind="text: sku"></span>
-                        </td>
-                        <td class="text-center"
-                            data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply ? null : '#b0b0b0'}">
-                            <span data-bind="text: qty_shipped"></span>
-                            <span data-bind="text: sku"></span>
-                        </td>
-                        <td data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply ? null : '#b0b0b0'}">
-                            <span class="label label-primary" data-bind="text: ordernote"></span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div data-bind="visible: prod_tab" style="padding: 0px; overflow-y:scroll; height:84vh;">
-            <table class="table table-condensed table-striped table-bordered">
-                <thead class="text-uppercase">
-                    <tr>
-                        <th class="text-center">
-                            品名
-                        </th>
-                        <th class="text-center">
-                            容量 / 容器
-                        </th>
-                        <th>選</th>
-                        <th class="text-center">
-                            價格 / 單位
-                        </th>
-                        <th>
-                            <span class="label label-primary">備註</span>
-                            <span class="badge">標籤</span>
-                            <span class="label label-success">英文</span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody data-bind="foreach: products">
-                    <tr>
 
-            <!--        Product inventory name    -->
-                        <td class="text-center"
-                            data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
-                            <span data-bind="text: inventory_name"></span>
-                        </td>
-                        <td class="text-center" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
-                            <span data-bind="text: units() + ' ' + UM()"></span> / <span data-bind="text: SKU"></span>
-                        </td>
-            <!--        Product Manifest selection    -->
-                        <td data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
-                            <input style="margin: 0px; width:26px; height:26px; vertical-align: top;"
-                                   type="checkbox"
-                                   name="product"
-                                   data-bind="checked: selected, enable: $parent.isPurchase() === null || $parent.isPurchase() === is_supply()">
-                            <button style="padding: 3px 6px; vertical-align: top;" class="btn btn-sm btn-custom" data-bind="click: $parent.showMEModal">
-<!--                                    <i class="fa fa-truck fa-flip-horizontal"></i><i class="fa fa-truck fa-flip-horizontal"></i>-->
 
-                                <i class="fa fa-fw fa-ambulance" data-bind="visible: is_supply"></i>
-                                <i class="fa fa-fw fa-ambulance" data-bind="visible: is_supply"></i>
-                                <i class="fa fa-fw fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
-                                <i class="fa fa-fw fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
-                            </button>
-                        </td>
-                        <td class="text-center" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
-                            $ <span data-bind="text: curr_price"></span> <span data-bind="text: pricing"></span>
-                        </td>
-                        <td data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
-                            <span class="label label-primary" data-bind="text: note"></span>
-                            <label class="badge" data-bind="text: product_label"></label>
-                            <span style="white-space: normal;" class="label label-success" data-bind="text: english_name"></span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+
+    <table class="table table-condensed table-striped table-bordered">
+        <thead class="text-uppercase">
+            <tr>
+                <th class="text-center">
+                    品名
+                </th>
+                <th class="text-center">
+                    容量 / 容器
+                </th>
+                <th>選</th>
+                <th class="text-center">
+                    價格 / 單位
+                </th>
+                <th>
+                    <span class="label label-primary">備註</span>
+                    <span class="badge">標籤</span>
+                    <span class="label label-success">英文</span>
+                </th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: products">
+            <tr>
+
+    <!--        Product inventory name    -->
+                <td class="text-center"
+                    data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
+                    <span data-bind="text: inventory_name"></span>
+                </td>
+                <td class="text-center" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
+                    <span data-bind="text: units() + ' ' + UM()"></span> / <span data-bind="text: SKU"></span>
+                </td>
+    <!--        Product Manifest selection    -->
+                <td data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
+                    <input style="margin: 0px; width:26px; height:26px; vertical-align: top;"
+                           type="checkbox"
+                           name="product"
+                           data-bind="checked: selected, enable: $parent.isPurchase() === null || $parent.isPurchase() === is_supply()">
+                    <button style="padding: 3px 6px; vertical-align: top;" class="btn btn-sm btn-custom" data-bind="click: $parent.showMEModal">
+<!--                        <i class="fa fa-truck fa-flip-horizontal"></i><i class="fa fa-truck fa-flip-horizontal"></i>-->
+
+                        <i class="fa fa-fw fa-ambulance" data-bind="visible: is_supply"></i>
+                        <i class="fa fa-fw fa-ambulance" data-bind="visible: is_supply"></i>
+                        <i class="fa fa-fw fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
+                        <i class="fa fa-fw fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
+                    </button>
+                </td>
+                <td class="text-center" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
+                    $ <span data-bind="text: curr_price"></span> <span data-bind="text: pricing"></span>
+                </td>
+                <td data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
+                    <span class="label label-primary" data-bind="text: note"></span>
+                    <label class="badge" data-bind="text: product_label"></label>
+                    <span style="white-space: normal;" class="label label-success" data-bind="text: english_name"></span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 
@@ -305,7 +209,7 @@ Reviewed: 2015, Sep 14
                     <div class="row">
                         <div class="col-md-12 text-center">
                             <button type="button" class="btn btn-lg btn-danger" data-bind="click: exitModal">回到列表 <span class="badge">Esc</span></button>
-                            <input type="submit" class="btn btn-lg btn-medium btn-success" name="make_po_shipment" value="創造新出貨單">
+                            <button type="submit" class="btn btn-lg btn-medium btn-success" name="make_po_shipment" value="創造新出貨單">創造新出貨單</button>
                             <input type="hidden" name="_csrf" value="<%= _csrf %>" />
                             <input type="hidden" name="group" value="<%= cogroup.name %>" />
                         </div>
@@ -376,21 +280,9 @@ viewModel.ShipmentsVM = new (function () {
         }
     };
 
-    self.po_tab = ko.observable(true);
-    self.prod_tab = ko.observable(false);
+    self.po_tab = ko.observable(false);
+    self.prod_tab = ko.observable(true);
 
-
-    self.toggleProd = function () {
-        self.po_tab(false);
-        self.prod_tab(true);
-        self.clearSelections();
-    };
-
-    self.togglePO = function () {
-        self.prod_tab(false);
-        self.po_tab(true);
-        self.clearSelections();
-    };
 
     self.clearSelections = function () {
         for (var i=0; i<self.orders().length; i++) {
@@ -450,11 +342,6 @@ viewModel.ShipmentsVM = new (function () {
                 if (db_records[i].is_open) {
                     self.orders.push(new KO_PurchaseOrder(db_records[i].MPN, db_records[i]));
                 }
-            }
-            // If no orders then set view to product list.
-            if (self.orders().length == 0) {
-                self.prod_tab(true);
-                self.po_tab(false);
             }
         };
         xmlhttp.open('POST', '/order/getOpen', true);
