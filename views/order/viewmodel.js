@@ -449,6 +449,10 @@ viewModel.OrdersVM = {
         };
         xmlhttp.open('GET', '/product/get/<%= res.locals.cogroup ? cogroup.name : null %>', true);
         xmlhttp.send();
+    },
+
+    dblclick: function (id) {
+        window.location = '/order/show/'+id;
     }
 }
 viewModel.OrdersVM.init();

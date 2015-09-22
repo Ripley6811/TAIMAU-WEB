@@ -37,7 +37,8 @@ TODO:
         <th>備註</th>
     </thead>
     <tbody data-bind="foreach: orders">
-        <tr data-bind="<% if (res.locals.cogroup) { %>
+        <tr data-bind="event: {dblclick: function (data) {$parent.dblclick(data.id())}},
+                       <% if (res.locals.cogroup) { %>
                        click: function (data, event) { $parent.rowClick(event, $index()); return true; },
                        <% } %>
                        css: {'archived-row': !is_open() && !isSelected(),
