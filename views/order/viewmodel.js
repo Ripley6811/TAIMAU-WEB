@@ -373,7 +373,6 @@ viewModel.OrdersVM = {
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function () {
                 if (xmlhttp.readyState !== 4) return;
-                console.log(xmlhttp);
                 if (!xmlhttp.response) {
                     alert("Response is empty");
                     return;
