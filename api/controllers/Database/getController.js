@@ -55,6 +55,7 @@ module.exports = {
     */
     products: function (req, res) {
         if (req.param('id') != undefined) {
+            // Retrieve all products for a company
             Product
             .find({group: req.param('id')})
             .sort('inventory_name')
@@ -63,6 +64,7 @@ module.exports = {
                 res.send(records);
             });
         } else if(req.param('filter') != '' && req.param('filter') != undefined) {
+            // Retrieve all products related to filter keyword
             var term = req.param('filter');
             Product
             .find().where({or:[{product_label: {'contains': term}},
@@ -75,6 +77,7 @@ module.exports = {
                 res.send(records);
             });
         } else {
+            // Retrieve all products in database
             Product
             .find()
             .sort('inventory_name')
