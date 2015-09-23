@@ -1,110 +1,164 @@
-<!--Table view of all products ordered by product names
-
-Reviewed: 2015, Sep. 14 - Checked for dependencies
-
-TODO: Try to merge "index" and "showall"
+<!--
+TODO:
+    Think about adding auto-filling price when selecting product
+    Add way to see manifest list. maybe popup when mouseover delivered amt.
 -->
-<div class="row-fluid" data-bind="with: ProductsVM">
-    <div class="col-md-4 h2">
-        <strong>產品和服務</strong>
+<div data-bind="with: ProductsVM">
+    <div style="position: fixed; right: 0px">
+        <button class="btn btn-success"
+                data-bind="click: function () {createNewRecord();}"
+                data-toggle="tooltip" data-placement="bottom" title="Alt+N">
+            新訂單
+        </button>
+        <button class="btn btn-success"
+                onclick="$('#helpModal').modal('show');"
+                data-toggle="tooltip" data-placement="bottom" title="F1">
+            Help (F1)
+        </button>
     </div>
-    <div class="col-md-8">
-        <div class="input-group has-success">
-            <div class="input-group-addon">
-                搜尋
-            </div>
-            <input class="form-control" type="text" placeholder="全部" data-bind="textInput: searchTerm">
-        </div>
-    </div>
-</div>
 
-<table class="table table-condensed table-striped table-bordered" data-bind="with: ProductsVM">
-    <thead class="text-uppercase">
-        <tr>
-            <th>內用品名 <span class="badge">標籤品名</span><span class="label label-default">English</span></th>
-            <th>價格</th>
-            <th><abbr title="桶, 包, 瓶, 等...">容器</abbr></th>
-    <!--
-            <th><abbr title="# of kg, L, gal per container">容量</abbr></th>
-            <th><abbr title="kg, L, gal, etc.">單位</abbr></th>
-    -->
-            <th>公司</th>
-            <th>包裝描述</th>
-            <th>備註</th>
-        </tr>
+  <table class="table table-condensed table-striped">
+    <thead>
+        <th>選</th>
+        <th>買/賣</th>
+        <th>品名</th>
+        <th>單位量</th>
+        <th>價格</th>
+        <th>備註</th>
     </thead>
     <tbody data-bind="foreach: products">
-        <tr>
-            <td>
-                <span data-bind="text: inventory_name"></span>
-                <br>
-                <span class="badge" data-bind="text: product_label"></span>
-                <span class="label label-default" data-bind="text: english_name"></span>
-            </td>
-            <td>
-                <strong data-bind="text: '$' + curr_price() + pricing"></strong>
-            </td>
-            <td>
-                <div class="text-center" style="padding: 0px">
-                    <strong data-bind="text: units, visible: SKU() != '槽車'"></strong>
-                    <strong data-bind="text: UM, visible: SKU() != '槽車'"></strong>
-                    <strong data-bind="visible: SKU() != '槽車'">/</strong>
-                    <strong data-bind="text: SKU"></strong>
+        <tr data-bind="<% if (res.locals.cogroup) { %>
+                       click: function (data, event) { $parent.rowClick(event, $index()); return true; },
+                       <% } %>
+                       css: {'archived-row': discontinued() && !isSelected(),
+                       <% if (res.locals.cogroup) { %>
+                       'highlight-row': !discontinued() && isSelected,
+                       'highlight-archived-row': discontinued() && isSelected,
+                       <% } %>}">
+            <!-- Edit button and dropdown list of options -->
+            <td style="width: 2em">
+                <div class="dropdown">
+                    <button class="btn btn-custom btn-xs dropdown-toggle"
+                            data-bind="attr: {id: 'dropdown' + $index()},
+                                       visible: !isEditing()"
+                            data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false"
+                            role="button">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <div class="dropdown-menu"
+                        data-bind="attr: {'aria-labelledby': 'dropdown' + $index()}">
+                        <div class="btn-group-vertical">
+                            <% if (res.locals.cogroup) { %>
+                            <button class="btn btn-success" style="text-align: left"
+                                data-bind="click: function () { $parent.toggleSelection($index()) }">
+                                <i class="fa fa-hand-pointer-o fa-fw fa-lg"></i> 切換選擇 (Ctrl+左鍵)
+                            </button>
+                            <% } %>
+                            <button class="btn btn-success" style="text-align: left"
+                                    data-bind="click: function (data) { $parent.editButton($index(), data); }">
+                                <i class="fa fa-pencil-square-o fa-fw fa-lg"></i> 編輯產品
+                            </button>
+                            <% if (res.locals.cogroup) { %>
+                            <button class="btn btn-success" style="text-align: left"
+                                    data-bind="click: function (data) { $parent.createFromTemplate(data); }">
+                                <i class="fa fa-files-o fa-fw fa-lg"></i> 複製產品訊息
+                            </button>
+                            <% } %>
+                            <button class="btn btn-success" style="text-align: left"
+                                    data-bind="visible: discontinued(), click: function () {$parent.toggleOpen($index())}">
+                                <i class="fa fa-refresh fa-fw fa-lg"></i> 再開啟產品 (Ctrl+Alt+左鍵)
+                            </button>
+                            <button class="btn btn-warning" style="text-align: left"
+                                    data-bind="visible: !discontinued(), click: function () {$parent.toggleOpen($index())}">
+                                <i class="fa fa-ban fa-fw fa-lg"></i> 結束產品並歸檔 (Ctrl+Alt+左鍵)
+                            </button>
+                            <button class="btn btn-danger" style="text-align: left"
+                                data-bind="click: function (data) {data.isConfirmingDelete(true)}">
+                                <i class="fa fa-trash fa-fw fa-lg"></i> 刪除產品
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group-vertical btn-group-sm"
+                     data-bind="visible: isEditing">
+                    <button class="btn btn-danger has-tooltip"
+                            data-bind="click: function () {$parent.editCancelButton($index())}"
+                            data-toggle="tooltip" data-placement="top" title="關閉編輯視窗">
+                        <i class="fa fa-close fa-lg"></i>
+                    </button>
+                    <button class="btn btn-primary has-tooltip"
+                            data-bind="attr: {onclick: 'viewModel.OrdersVM.editSaveButton(this,' + $index() + ')'}"
+                            data-toggle="tooltip" data-placement="bottom" title="儲存更改">
+                        <i class="fa fa-floppy-o fa-lg"></i>
+                    </button>
                 </div>
             </td>
-            <td>
-                <a class="btn btn-custom" style="width: 100%; padding: 2px 10px; font-size: 16px" data-bind="attr: {href: '/shipment/new/'+group()}">
-                    <span data-bind="text: group"></span>
-                </button>
-            </td>
-            <td>
-                <span data-bind="text: SKUlong"></span>
-            </td>
-            <td>
-                <span data-bind="text: note"></span>
+
+            <td align="center" style="width: 4em">
+                <div>
+                    <span class="fa fa-fw"
+                          data-bind="css: {'fa-ambulance': is_supply}">
+                    </span>
+                    <span class="fa fa-fw"
+                          data-bind="css: {'fa-truck fa-flip-horizontal': !is_supply()}">
+                    </span>
+                </div>
+                <input type="checkbox" class="form-control" style="width: 2em"
+                       data-bind="checked: is_supply,
+                                  visible: isEditing">
             </td>
 
+            <td class="has-success" style="width: 15em">
+                <span data-bind="visible: !isEditing(),
+                                 text: inventory_name,
+                                 attr: {title: product_label() ? '標籤: ' + product_label() : ''}"
+                      data-toggle="tooltip" data-placement="right">
+                </span>
+                <div data-bind="visible: isEditing">
+                    <div class="input-group">
+                        <div class="input-group-addon">內用</div>
+                        <input type="text" class="form-control" disabled
+                               data-bind="textInput: inventory_name">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">標籤</div>
+                        <input type="text" class="form-control"
+                               data-bind="textInput: product_label">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">英文</div>
+                        <input type="text" class="form-control"
+                               data-bind="textInput: english_name">
+                    </div>
 
+                </div>
+            </td>
+
+            <td>
+                <span data-bind="text: units() + ' ' + UM() + (SKU() && SKU() != '槽車' ? ' / ' + SKU() : '')">
+                </span>
+            </td>
+
+            <td>
+                <span data-bind="text: '$' + curr_price() + ' / ' + (unitpriced() ? UM() : SKU()),
+                                 attr: {title: units() > 1 && unitpriced() ? '$' + (units() * curr_price()) + ' / ' + SKU() : ''}"
+                     data-toggle="tooltip" data-placement="left">
+                </span>
+            </td>
+
+            <td>
+                <span data-bind="text: note">
+                </span>
+            </td>
         </tr>
-        </tbody>
-</table>
+    </tbody>
+  </table>
+    <h1 data-bind="visible: isLoading">
+        <i class="fa fa-cog fa-spin"></i> Loading...
+    </h1>
 
-<script>
-var viewModel = viewModel || {};
-var _csrf = viewModel._csrf = '<%= _csrf %>';
+</div><!--End of "with" div-->
 
-function ProductsVM() {
-    'use strict';
-    var self = this;
 
-    self.products = ko.observableArray([]);
-    self.searchTerm = ko.observable();
-
-    /**
-     * Load all products in database. Filter term is optional.
-     * @param {String} filterWord Return results containing filter text.
-     */
-    self.loadProducts = function(filterWord) {
-        var params = {
-            _csrf: _csrf,
-            filter: filterWord || '',
-        };
-        var callback = function(products) {
-            self.products.removeAll();
-            for (var i=0; i<products.length; i++) {
-                self.products.push(new KO_Product(products[i]));
-            }
-        };
-        post('/database/get/products', params, callback);
-    };
-
-    ko.computed(function() {
-        console.log(self.searchTerm());
-        // Activate when search field entry changes.
-        var term = self.searchTerm();
-        self.loadProducts(term);
-    });
-}
-
-viewModel.ProductsVM = new ProductsVM();
-</script>
+<script><%- partial ('viewmodel.js') %></script>

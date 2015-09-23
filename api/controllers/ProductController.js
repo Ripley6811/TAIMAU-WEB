@@ -42,22 +42,24 @@ module.exports = {
                 res.redirect('/product/edit/' + productObj.MPN);
             });
     },
-    // Sort and show all products by inventory_name.
+    // Load company if name is provided and show page.
     'index': function (req, res) {
-        var group = req.param('id'),
-            query = Product;
-        // Is this necessary? Will undefined return all records?
-        query = group ? query.find({group: group}) : query.find();
+        var search_params = {};
 
-        query.populate('group')
-        .sort('inventory_name')
-        .exec(function (err, products) {
-            if (err) res.json({
-                error: err.message
-            }, 400);
+        if (req.param('co')) search_params.group = req.param('co');
 
-            res.view({ products: products });
-        });
+        if (search_params.group) {
+            Cogroup.findOne(search_params.group)
+            .populate('branches')
+            .populate('contacts')
+            .exec(function (err, group) {
+                if (err) res.json(err);
+
+                res.view({cogroup: group});
+            });
+        } else {
+            res.view();
+        }
     },
     // Show products for a specific company.
     show: function (req, res) {
@@ -151,26 +153,30 @@ module.exports = {
 
     // Submit product updates to database.
     update: function (req, res) {
-        var id = req.param('MPN'),
-            updates = {
-                inventory_name: req.param('inventory_name'),
-                product_label: req.param('product_label'),
-                english_name: req.param('english_name'),
-                SKUlong: req.param('SKUlong'),
-                SKU: req.param('SKU'),
-                note: req.param('note'),
-                json: req.param('json')
-            };
+        var id = req.param('id'),
+            updates = req.param('updates');
 
-        if (id && updates.inventory_name != '') {
-            Product.update(id, updates)
-                .exec(function(err, product) {
-                    if (err) return err;
+//        console.log(req.params.all());
+        Order.count({MPN: id})
+        .exec(function (err, nrecs) {
+            // Update record
+            Product.findOne(id)
+            .exec( function (err, product) {
+                if (err) { res.send(err); return; }
 
-                    req.flash('message', 'Record Updated!');
-                    res.redirect('/product/edit/' + id.replace('%','-percent-'));
-                });
-        }
+                // Do not update price related fieldsif invoices exist
+                if (nrecs > 0) {
+                    delete updates['units']
+                    delete updates['unitpriced']
+                }
+
+                for (var prop in updates) {
+                    product[prop] = updates[prop];
+                }
+                product.save();
+                res.json(product);
+            });
+        });
     },
     // Toggle the 'discontinued' boolean and redirect back to edit page.
     toggle_discontinued: function (req, res) {
