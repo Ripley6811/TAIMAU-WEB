@@ -44,8 +44,12 @@ module.exports = {
     },
     // Sort and show all products by inventory_name.
     'index': function (req, res) {
-        Product.find()
-        .populate('group')
+        var group = req.param('id'),
+            query = Product;
+        // Is this necessary? Will undefined return all records?
+        query = group ? query.find({group: group}) : query.find();
+
+        query.populate('group')
         .sort('inventory_name')
         .exec(function (err, products) {
             if (err) res.json({
