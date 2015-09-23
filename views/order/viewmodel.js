@@ -75,9 +75,11 @@ viewModel.OrdersVM = {
         $win.scroll(function () {
             if ($win.height() + $win.scrollTop()
                         == $doc.height()) {
+                self.isLoading(true);
                 self.retrieveOrderRecords();
             }
         });
+        // Load first page of records
         self.retrieveOrderRecords();
         self.sortOrderDate();
     },
@@ -88,16 +90,13 @@ viewModel.OrdersVM = {
     retrieveOrderRecords : function () {
         var self = this,
             callback = function (orderdata) {
-                if (orderdata.length === 0) {
-                    self.isLoading(false);
-                    return;
-                }
                 self.ordersPage += 1;
                 orderdata.forEach(function (order) {
                     self.orders.push(orderModel(order));
                 })
                 // Activate year & other tooltips (opt-in function).
                 $('[data-toggle="tooltip"]').tooltip();
+                self.isLoading(false);
             },
             params = {
                 _csrf: '<%= _csrf %>',
