@@ -31,6 +31,7 @@ TODO:
         <th>PO#</th>
         <th>品名</th>
         <th class="text-center">訂量</th>
+        <th></th>
         <th class="text-center">已送</th>
         <th class="text-center">價格</th>
         <th>納稅</th>
@@ -110,9 +111,9 @@ TODO:
                 </div>
             </td>
             <td has-input="orderdate" class="has-success">
-                <div data-bind="text: $root.formatDate(orderdate()),
+                <span data-bind="text: $root.formatDate(orderdate()),
                                 attr: {title: (new Date(orderdate())).getFullYear() + '年'}"
-                     data-toggle="tooltip" data-placement="right"></div>
+                     data-toggle="tooltip" data-placement="right"></span>
                 <input class="form-control" type="text" style="width: 6em" maxlength="10"
                        data-bind="attr: {value: (new Date(orderdate())).toLocaleDateString()},
                                   visible: isEditing">
@@ -189,9 +190,7 @@ TODO:
                      data-bind="visible: !id()">本紀錄還沒儲存!</div>
             </td>
             <td has-input="MPN" class="has-success">
-                <div data-bind="text: MPN.inventory_name,
-                                attr: {title: MPN.units() + ' ' + MPN.UM() + ' / ' + MPN.SKU()}"
-                     data-toggle="tooltip" data-placement="left"></div>
+                <div data-bind="text: MPN.inventory_name"></div>
                 <select class="form-control" style="width: auto"
                         data-bind="visible: !id(),
                                    options: $parent.products,
@@ -201,12 +200,25 @@ TODO:
                 </select>
             </td>
             <td has-input="qty" class="has-success" align="right">
-                <div data-bind="text: qty() + ' ' + qtyMeasure(),
+                <span data-bind="text: qty() + ' ' + qtyMeasure(),
                                 attr: {title: MPN.units() === 1 ? '' : (qty() * MPN.units()) + ' ' + MPN.UM()}"
-                     data-toggle="tooltip" data-placement="right"></div>
+                     data-toggle="tooltip" data-placement="left"></span>
                 <input class="form-control text-right" type="text" style="width: 5em"
                        data-bind="attr: {value: qty()},
                                   visible: isEditing">
+            </td>
+            <td>
+                <span data-bind="attr: {title: MPN.units() === 1 ? '' : MPN.units() + ' ' + MPN.UM() + ' / ' + MPN.SKU()}"
+                     data-toggle="tooltip" data-placement="right">
+                    <img alt="sack" src="/fonts/sack.svg" height="20"
+                         data-bind="visible: MPN.SKU() == '包'">
+                    <img alt="jerrycan" src="/fonts/jerrycan.svg" height="20"
+                         data-bind="visible: MPN.SKU() == '桶' && MPN.units() < 100">
+                    <img alt="barrel" src="/fonts/barrel.svg" height="22"
+                         data-bind="visible: MPN.SKU() == '桶' && MPN.units() >= 100">
+                    <img class="fa-flip-horizontal" alt="tanker" src="/fonts/tanker.svg" height="26"
+                         data-bind="visible: MPN.SKU() == '槽車'">
+                </span>
             </td>
             <td align="right">
                 <div data-bind="text: qty_shipped() + ' ' + qtyMeasure()"></div>
