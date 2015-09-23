@@ -189,7 +189,9 @@ TODO:
                      data-bind="visible: !id()">本紀錄還沒儲存!</div>
             </td>
             <td has-input="MPN" class="has-success">
-                <div data-bind="text: MPN.inventory_name"></div>
+                <div data-bind="text: MPN.inventory_name,
+                                attr: {title: MPN.units() + ' ' + MPN.UM() + ' / ' + MPN.SKU()}"
+                     data-toggle="tooltip" data-placement="left"></div>
                 <select class="form-control" style="width: auto"
                         data-bind="visible: !id(),
                                    options: $parent.products,
@@ -199,16 +201,20 @@ TODO:
                 </select>
             </td>
             <td has-input="qty" class="has-success" align="right">
-                <div data-bind="text: qty"></div>
+                <div data-bind="text: qty() + ' ' + qtyMeasure(),
+                                attr: {title: MPN.units() === 1 ? '' : (qty() * MPN.units()) + ' ' + MPN.UM()}"
+                     data-toggle="tooltip" data-placement="right"></div>
                 <input class="form-control text-right" type="text" style="width: 5em"
                        data-bind="attr: {value: qty()},
                                   visible: isEditing">
             </td>
             <td align="right">
-                <div data-bind="text: qty_shipped"></div>
+                <div data-bind="text: qty_shipped() + ' ' + qtyMeasure()"></div>
             </td>
             <td has-input="price" class="has-success" align="right">
-                <div data-bind="text: '$' + price()"></div>
+                <div data-bind="text: '$' + price(),
+                                attr: {title: '/ ' + (MPN.unitpriced() ? MPN.UM() : MPN.SKU())}"
+                     data-toggle="tooltip" data-placement="right"></div>
                 <input class="form-control text-right" type="text" style="width: 6em"
                        data-bind="attr: {value: price()},
                                   visible: isEditing()">
