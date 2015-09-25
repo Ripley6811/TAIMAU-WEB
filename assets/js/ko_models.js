@@ -406,7 +406,7 @@ function KO_ShipmentListRow(item) {
     self.truck = ko.observable(item.truck || '');
 
     self.invoice_no = item.invoice_no;
-    self.invoicedate = item.invoicedate ? item.invoicedate.substring(0,10) : '';
+    self.invoicedate = item.invoicedate ? (new Date(item.invoicedate)).toLocaleDateString() : '';
     self.paid = ko.observable(item.paid);
     self.check_no = ko.observable(item.check_no || '');
 
