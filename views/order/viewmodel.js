@@ -7,31 +7,6 @@ var keyCode = {
 }
 
 /**
- * Order ViewModel
- * Ensure MPN is populated
- * @param   {Object} data Order+Product data from database.
- * @returns {Object} Order ViewModel.
- */
-var orderModel = function (data) {
-    if (typeof data.MPN !== "object") {
-        console.log('HELP');
-    }
-    // Convert data to KO observable object.
-    var self = ko.mapping.fromJS(data);
-    // Set extra UI control observables.
-    self.isSelected = ko.observable(false);
-    self.isEditing = ko.observable(false);
-    self.isConfirmingDelete = ko.observable(false);
-    self.errorMessage = ko.observable();
-    self.qtyRequested = ko.observable();
-    self.qtyMeasure = function () {
-        var p = this.MPN;  // Product object
-        return p.units() === 1 ? p.UM() : p.SKU();
-    };
-    return self;
-};
-
-/**
  * @namespace
  */
 viewModel.OrdersVM = {
@@ -124,7 +99,7 @@ viewModel.OrdersVM = {
             callback = function (orderdata) {
                 self.ordersPage += 1;
                 orderdata.forEach(function (order) {
-                    self.orders.push(orderModel(order));
+                    self.orders.push(models.Order(order));
                 })
                 // Activate year & other tooltips (opt-in function).
                 $('[data-toggle="tooltip"]').tooltip();

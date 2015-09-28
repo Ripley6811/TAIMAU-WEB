@@ -3,6 +3,39 @@
  */
 
 /**
+ * @namespace
+ */
+var models = {
+    /**
+     * Order ViewModel
+     * Ensure MPN is a product object.
+     * Used on order/index page.
+     * @param   {Object} data Order+Product data from database.
+     * @returns {Object} Order ViewModel.
+     */
+    Order: function (data) {
+        // Assert MPN is a product object.
+        if (typeof data.MPN !== "object") {
+            alert('MPN is not an object');
+        }
+        // Convert data to KO observable object.
+        var self = ko.mapping.fromJS(data);
+        // Set extra UI control observables.
+        self.isSelected = ko.observable(false);
+        self.isEditing = ko.observable(false);
+        self.isConfirmingDelete = ko.observable(false);
+        self.errorMessage = ko.observable();
+        self.qtyRequested = ko.observable();
+        self.qtyMeasure = function () {
+            var p = this.MPN;  // Product object
+            return p.units() === 1 ? p.UM() : p.SKU();
+        };
+        return self;
+    },
+
+}
+
+/**
  * Cogroup model
  * @constructor
  * @param   {Object} [data={}] - Add data for existing cogroup.
