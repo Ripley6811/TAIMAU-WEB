@@ -186,18 +186,21 @@ module.exports = {
         Shipment.find({shipmentdate: { '>=': d_cutoff}})
         .exec(function (err, recs) {
             var used_nos = [];
-            recs.forEach(function (each) {used_nos.push(each.shipment_no)})
+            recs.forEach(function (each) {
+                // Only interested in non-lettered shipment IDs
+                used_nos.push(parseInt(each.shipment_no));
+            });
 //            console.log(used_nos);
             var new_number = null;
             var counter = 0;
             while (new_number === null) {
                 counter += 1;
-                var test_no = [
-                    d.getYear()-11,
-                    ('0000' + counter).slice(-4)
-                ].join('');
+                var test_no = parseInt([
+                        d.getYear()-11,
+                        ('0000' + counter).slice(-4)
+                    ].join(''));
                 if (used_nos.indexOf(test_no) < 0) {
-                    new_number = test_no;
+                    new_number = test_no.toString();
                 }
             }
             res.send(new_number);
