@@ -1,5 +1,11 @@
 "use strict";
 
+var keyCode = {
+    ENTER: 13,
+    F1: 112,
+    N: 78
+}
+
 /**
  * Order ViewModel
  * Ensure MPN is populated
@@ -7,6 +13,9 @@
  * @returns {Object} Order ViewModel.
  */
 var orderModel = function (data) {
+    if (typeof data.MPN !== "object") {
+        console.log('HELP');
+    }
     // Convert data to KO observable object.
     var self = ko.mapping.fromJS(data);
     // Set extra UI control observables.
@@ -15,71 +24,94 @@ var orderModel = function (data) {
     self.isConfirmingDelete = ko.observable(false);
     self.errorMessage = ko.observable();
     self.qtyRequested = ko.observable();
-    self.qtyMeasure = ko.computed(function () {
-        var p = self.MPN;  // Product object
+    self.qtyMeasure = function () {
+        var p = this.MPN;  // Product object
         return p.units() === 1 ? p.UM() : p.SKU();
-    });
+    };
     return self;
-}
+};
 
 /**
  * @namespace
  */
 viewModel.OrdersVM = {
+    /**
+     * KO Array holding 'Order' records using 'orderModel' model.
+     */
+    orders: ko.observableArray(),
+    /**
+     * KO Array holding 'Product' records using ko.mapping.
+     */
+    products: ko.observableArray(),
+    /**
+     * Boolean to show/hide loading message on page.
+     */
     isLoading: ko.observable(true),
+    /**Integer for next page or Order records to load from database.
+     */
+    ordersPage: 1,
+    /**
+     * Boolean to designate a new shipment as purchase or sale.
+     */
+    isPurchase: ko.observable(null),
+    /**
+     * String for a new shipment/manifest number.
+     */
+    shipment_no: ko.observable(),
     /**
      * Creates the Orders KO Array and adds extra observables.
      */
     init: function () {
         var self = this;
 
-        self.orders = ko.observableArray();
-        self.ordersPage = 1;
-        self.products = ko.observableArray();
-        self.loadProducts();
-        self.isPurchase = ko.observable(null);
-        self.shipment_no = ko.observable();
-
+        // Add keypress options to page
         document.onkeydown = function(evt) {
-            if (evt.keyCode == 13) {
-                var orders = self.orders(),
-                    noneSelected = true;
-                for (var i=0; i<orders.length; i++) {
-                    if (orders[i].isSelected()) {
-                        noneSelected = false;
-                        self.isPurchase(orders[i].is_purchase());
+            switch(evt.keyCode) {
+                // ENTER: Creates shipment from selected items.
+                case keyCode.ENTER:
+                    var orders = self.orders(),
+                        noneSelected = true;
+                    for (var i=0; i<orders.length; i++) {
+                        if (orders[i].isSelected()) {
+                            noneSelected = false;
+                            self.isPurchase(orders[i].is_purchase());
+                        }
                     }
-                }
-                // Opens help window if none is selected.
-                if (noneSelected) {
+                    // Opens help window if none is selected.
+                    if (noneSelected) {
+                        $('#helpModal').modal('show');
+                    } else {
+                        $('#createShipmentModal').modal('show');
+                    }
+                    return false;
+                // F1: Shows help modal showing hotkeys.
+                case keyCode.F1:
                     $('#helpModal').modal('show');
-                } else {
-                    //self.computeAvailableNumber();
-                    $('#createShipmentModal').modal('show');
-                }
-            }
-            // Opens help window if F1 is pressed.
-            if (evt.keyCode == 112) {
-                $('#helpModal').modal('show');
-                return false;
-            }
-            // Opens new PO window when Alt+N is pressed
-            if (evt.keyCode == 78 && evt.altKey) {
-                self.createNewOrder();
-                return false;
+                    return false;
+                // N+Alt: Creates a new record row at top.
+                case keyCode.N:
+                    if (evt.altKey) {
+                        self.createNewOrder();
+                    }
+                    return false;
             }
         };
+
         // Adds window listener to load more records when scroll hits bottom.
         var $win = $(window),
             $doc = $(document);
         $win.scroll(function () {
             if ($win.height() + $win.scrollTop()
                         == $doc.height()) {
+                // Display loading message.
                 self.isLoading(true);
                 self.retrieveOrderRecords();
             }
         });
-        // Load first page of records
+
+        // Load list of products into ko array.
+        self.loadProducts();
+        // Load first page of records into ko array.
         self.retrieveOrderRecords();
         self.sortOrderDate();
     },
@@ -305,7 +337,7 @@ viewModel.OrdersVM = {
         var newRec = ko.toJS(ko_rec);
         // Delete the null ID.
         delete newRec.id;
-        // Change product object to product ID
+        // Change product object to product ID, whether updates includes MPN or not.
         newRec.MPN = newRec.MPN.MPN;
         // Update properties from inputs
         for (var prop in updates) {
@@ -323,7 +355,10 @@ viewModel.OrdersVM = {
 
             var data = JSON.parse(xmlhttp.response);
             // Update view if successful
+            console.log(data);
+            console.log(ko.toJS(ko_rec));
             ko.mapping.fromJS(data, ko_rec);
+//            ko.mapping.fromJS(data.MPN, ko_rec.MPN);
         };
         xmlhttp.open('POST', '/order/createOne', true);
         xmlhttp.setRequestHeader('Content-type', 'application/json');
@@ -453,7 +488,7 @@ viewModel.OrdersVM = {
     dblclick: function (id) {
         window.location = '/order/show/'+id;
     }
-}
+};
 viewModel.OrdersVM.init();
 
 /**
