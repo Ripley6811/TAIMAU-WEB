@@ -354,5 +354,18 @@ module.exports = {
             res.json(records[0] ? records[0].price : null);
         });
     },
+
+
+    /**
+    * `Database/ProductController.restricted()`
+    */
+    isrestricted: function (req, res) {
+        Order
+        .count({MPN: req.param('id')})
+        .exec(function (err, nRecs) {
+            if (err) { res.send(err); return; }
+            res.json(nRecs > 0 ? 'true' : 'false');
+        });
+    },
 };
 

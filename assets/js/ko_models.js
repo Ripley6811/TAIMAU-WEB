@@ -14,6 +14,7 @@ var models = {
      * @returns {Object} Order ViewModel.
      */
     Order: function (data) {
+        'use strict';
         // Assert MPN is a product object.
         if (typeof data.MPN !== "object") {
             alert('MPN is not an object');
@@ -33,6 +34,65 @@ var models = {
         return self;
     },
 
+    /**
+     * Product ViewModel
+     * Used on product/index page.
+     * @param   {Object} data Product data from database.
+     * @returns {Object} Product ViewModel.
+     */
+    Product: function (data) {
+        'use strict';
+        // Convert data to KO observable object.
+        var self = ko.mapping.fromJS(data);
+        // Set extra UI control observables.
+        self.isSelected = ko.observable(false);
+        self.isEditing = ko.observable(false);
+        self.isConfirmingDelete = ko.observable(false);
+        self.errorMessage = ko.observable();
+        self.qtyRequested = ko.observable();
+        self.requestUM = function () {
+            return this.units() === 1 ? this.UM() : this.SKU();
+        };
+        self.restrictEditing = ko.observable(true);
+
+        // Ask database if editing should be restricted.
+        ko.computed(function () {
+            var self = this,
+                xhr = new XMLHttpRequest();
+            if (self.MPN()) {
+                xhr.open('GET', '/product/isrestricted/' + encodeURI(self.MPN()), true);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState !== 4) return;
+
+                    var res = xhr.responseText;
+                    if (res === 'false') {
+                        self.restrictEditing(false);
+                    }
+                };
+                xhr.send();
+            }
+        }, self)
+
+        // Ask database for the latest used price.
+        ko.computed(function () {
+            var self = this,
+                xhr = new XMLHttpRequest();
+            if (self.MPN()) {
+                xhr.open('GET', '/product/price/' + encodeURI(self.MPN()), true);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState !== 4) return;
+
+                    var res = parseFloat(xhr.responseText);
+                    if (!isNaN(res)) {
+                        self.curr_price(res);
+                    }
+                };
+                xhr.send();
+            }
+        }, self)
+
+        return self;
+    }
 };
 
 /**

@@ -1,84 +1,63 @@
 "use strict";
 
 /**
- * Product ViewModel
- * @param   {Object} data Product data from database.
- * @returns {Object} Product ViewModel.
- */
-var productModel = function (data) {
-    // Convert data to KO observable object.
-    var self = ko.mapping.fromJS(data);
-//    // Set extra UI control observables.
-    self.isSelected = ko.observable(false);
-    self.isEditing = ko.observable(false);
-    self.isConfirmingDelete = ko.observable(false);
-    self.errorMessage = ko.observable();
-    self.qtyRequested = ko.observable();
-    self.qtyMeasure = ko.computed(function () {
-        return self.units() === 1 ? self.UM() : self.SKU();
-    });
-    return self;
-}
-
-/**
  * @namespace
  */
 viewModel.ProductsVM = {
-    products: ko.observableArray(),
-    isLoading: ko.observable(true),
-    pagesLoaded: 0,
     /**
-     * Creates the Orders KO Array and adds extra observables.
+     * KO Array holding 'Product' records using 'model.Product' model.
+     */
+    products: ko.observableArray(),
+    /**
+     * Boolean to show/hide loading message on page.
+     */
+    isLoading: ko.observable(true),
+    /**
+     * Boolean to designate a new shipment as purchase or sale.
+     */
+    isPurchase: ko.observable(null),
+    /**
+     * String for a new shipment/manifest number.
+     */
+    shipment_no: ko.observable(),
+    /**
+     * Initiate data loading and adds page listeners.
      */
     init: function () {
         var self = this;
-//
-//        self.orders = ko.observableArray();
-//        self.ordersPage = 1;
-//        self.products = ko.observableArray();
         self.loadProducts();
-//        self.isPurchase = ko.observable(null);
-//        self.shipment_no = ko.observable();
 //
-//        document.onkeydown = function(evt) {
-//            if (evt.keyCode == 13) {
-//                var orders = self.orders(),
-//                    noneSelected = true;
-//                for (var i=0; i<orders.length; i++) {
-//                    if (orders[i].isSelected()) {
-//                        noneSelected = false;
-//                        self.isPurchase(orders[i].is_purchase());
-//                    }
-//                }
-//                // Opens help window if none is selected.
-//                if (noneSelected) {
-//                    $('#helpModal').modal('show');
-//                } else {
-//                    //self.computeAvailableNumber();
-//                    $('#createShipmentModal').modal('show');
-//                }
-//            }
-//            // Opens help window if F1 is pressed.
-//            if (evt.keyCode == 112) {
-//                $('#helpModal').modal('show');
-//                return false;
-//            }
-//            // Opens new PO window when Alt+N is pressed
-//            if (evt.keyCode == 78 && evt.altKey) {
-//                self.createNewOrder();
-//                return false;
-//            }
-//        };
-    },
-
-    /**
-     * Sorts orders by date with newest at top.
-     */
-    sortOrderDate: function () {
-//        this.orders.sort(function (a, b) {
-//            var p = 'orderdate';
-//            return b[p]() === a[p]() ? 0 : (b[p]() < a[p]() ? -1 : 1);
-//        });
+        document.onkeydown = function(evt) {
+            switch(evt.keyCode) {
+            // ENTER: Creates shipment from selected items.
+            case keyCode.ENTER:
+                var products = self.products(),
+                    noneSelected = true;
+                for (var i=0; i<products.length; i++) {
+                    if (products[i].isSelected()) {
+                        noneSelected = false;
+                        self.isPurchase(products[i].is_supply());
+                    }
+                }
+                // Opens help window if none is selected.
+                if (noneSelected) {
+                    $('#helpModal').modal('show');
+                } else {
+                    $('#createShipmentModal').modal('show');
+                }
+                return false;
+            // F1: Shows help modal showing hotkeys.
+            case keyCode.F1:
+                $('#helpModal').modal('show');
+                return false;
+            // N+Alt: Creates a new record row at top.
+            case keyCode.N:
+                if (evt.altKey) {
+                    self.createNewOrder();
+                }
+                return false;
+            }
+        };
     },
 
     /**
@@ -205,13 +184,13 @@ viewModel.ProductsVM = {
      * @param {Number} index Index of record in the Orders KO Array.
      */
     editCancelButton: function (index) {
-//        var order = this.orders()[index];
-//        if (order.id()) {
-//            order.isEditing(false);
-//        } else {
-//            // Remove if not saved (no DB id).
-//            this.orders.remove(order);
-//        }
+        var product = this.products()[index];
+        if (product.id()) {
+            product.isEditing(false);
+        } else {
+            // Remove if not saved (no DB id).
+            this.products.remove(product);
+        }
     },
 
     /**
@@ -224,17 +203,17 @@ viewModel.ProductsVM = {
                 id: ko_rec.MPN(),
                 updates: updates,
                 _csrf: viewModel._csrf,
-            };
+            },
+            xhr = new XMLHttpRequest();
+        xhr.open('PUT', '/product/update', true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== 4) return;
 
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState !== 4) return;
-
-            if (xmlhttp.status === 403) {
-                alert(xmlhttp.response);
+            if (xhr.status === 403) {
+                alert(xhr.response);
             }
 
-            var data = JSON.parse(xmlhttp.response);
+            var data = JSON.parse(xhr.response);
             // Update view if successful
             for (var property in updates) {
                 ko_rec[property](data[property]);
@@ -242,9 +221,8 @@ viewModel.ProductsVM = {
             // This does not work. Why?
 //            ko.mapping.fromJS(data, ko_rec);
         };
-        xmlhttp.open('PUT', '/product/update', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON(params));
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.send(ko.toJSON(params));
     },
 
     /**
@@ -318,23 +296,23 @@ viewModel.ProductsVM = {
      * Retrieves an available shipment number from database.
      */
     computeAvailableNumber: function () {
-//        var self = this;
-//        if (self.isPurchase() === false) {
-//            var xmlhttp = new XMLHttpRequest();
-//            xmlhttp.onreadystatechange = function () {
-//                if (xmlhttp.readyState !== 4) return;
-//                if (!xmlhttp.response) {
-//                    alert("Response is empty");
-//                    return;
-//                }
-//
-//                self.shipment_no(xmlhttp.responseText);
-//            };
-//            xmlhttp.open('GET', '/shipment/availableNumber', true);
-//            xmlhttp.send();
-//        } else {
-//            self.shipment_no('');
-//        }
+        var self = this,
+            xhr = new XMLHttpRequest();
+        if (self.isPurchase() === false) {
+            xhr.open('GET', '/shipment/availableNumber', true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState !== 4) return;
+                if (!xhr.response) {
+                    alert("Response is empty");
+                    return;
+                }
+
+                self.shipment_no(xhr.responseText);
+            };
+            xhr.send();
+        } else {
+            self.shipment_no('');
+        }
     },
 
     /**
@@ -383,28 +361,33 @@ viewModel.ProductsVM = {
      */
     loadProducts: function () {
         var self = this,
-            xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState !== 4) return;
+            xhr = new XMLHttpRequest();
+        xhr.open('GET', '/product/get/<%= res.locals.cogroup ? cogroup.name : null %>', true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== 4) return;
 
-            if (!xmlhttp.response) {
+            if (!xhr.response) {
                 alert("Response is empty");
                 return;
             }
 
-            var products = ko.mapping.fromJSON(xmlhttp.response);
+            var products = ko.mapping.fromJSON(xhr.response);
             for (var i=0; i<products().length; i++) {
-                self.products.push(productModel(products()[i]));
+                self.products.push(models.Product(products()[i]));
             }
-            // Activate year & other tooltips (opt-in function).
+            // Activate Bootstrap's tooltips (opt-in function).
             $('[data-toggle="tooltip"]').tooltip();
             self.isLoading(false);
         };
-        xmlhttp.open('GET', '/product/get/<%= res.locals.cogroup ? cogroup.name : null %>', true);
-        xmlhttp.send();
+        xhr.send();
     },
 
-    dblclick: function (id) {
+    /**
+     * Action when double-clicking on a table row.
+     * @param {Number} index Row in orders array.
+     */
+    dblclick: function (index) {
+        this.editButton(index);
     }
 }
 viewModel.ProductsVM.init();

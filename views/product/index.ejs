@@ -17,17 +17,20 @@ TODO:
         </button>
     </div>
 
-  <table class="table table-condensed table-striped">
+  <table class="table table-condensed">
     <thead>
         <th>選</th>
         <th>買/賣</th>
         <th>品名</th>
+        <th></th>
         <th>單位量</th>
-        <th>價格</th>
+        <th>最近價格</th>
+        <th>包裝描述</th>
         <th>備註</th>
     </thead>
     <tbody data-bind="foreach: products">
-        <tr data-bind="<% if (res.locals.cogroup) { %>
+        <tr data-bind="event: {dblclick: function (data) {$parent.dblclick($index())}},
+                       <% if (res.locals.cogroup) { %>
                        click: function (data, event) { $parent.rowClick(event, $index()); return true; },
                        <% } %>
                        css: {'archived-row': discontinued() && !isSelected(),
@@ -88,7 +91,7 @@ TODO:
                         <i class="fa fa-close fa-lg"></i>
                     </button>
                     <button class="btn btn-primary has-tooltip"
-                            data-bind="attr: {onclick: 'viewModel.OrdersVM.editSaveButton(this,' + $index() + ')'}"
+                            data-bind="attr: {onclick: 'viewModel.ProductsVM.editSaveButton(this,' + $index() + ')'}"
                             data-toggle="tooltip" data-placement="bottom" title="儲存更改">
                         <i class="fa fa-floppy-o fa-lg"></i>
                     </button>
@@ -98,10 +101,12 @@ TODO:
             <td align="center" style="width: 4em">
                 <div>
                     <span class="fa fa-fw"
-                          data-bind="css: {'fa-ambulance': is_supply}">
+                          data-bind="css: {'fa-ambulance': is_supply}"
+                          data-toggle="tooltip" data-placement="right" title="進貨材料">
                     </span>
                     <span class="fa fa-fw"
-                          data-bind="css: {'fa-truck fa-flip-horizontal': !is_supply()}">
+                          data-bind="css: {'fa-truck fa-flip-horizontal': !is_supply()}"
+                          data-toggle="tooltip" data-placement="right" title="出貨產品">
                     </span>
                 </div>
                 <input type="checkbox" class="form-control" style="width: 2em"
@@ -109,18 +114,22 @@ TODO:
                                   visible: isEditing">
             </td>
 
-            <td class="has-success" style="width: 15em">
-                <span data-bind="visible: !isEditing(),
-                                 text: inventory_name,
-                                 attr: {title: product_label() ? '標籤: ' + product_label() : ''}"
-                      data-toggle="tooltip" data-placement="right">
+            <td class="has-success" style="width: 18em">
+                <span data-bind="text: inventory_name">
+                </span>
+                <span class="label btn-success"
+                      data-bind="visible: product_label() && product_label() !== inventory_name(),
+                                 attr: {title: product_label()}"
+                      data-toggle="tooltip" data-placement="top">
+                    標籤
+                </span>
+                <span class="label btn-success"
+                      data-bind="visible: english_name(),
+                                 attr: {title: english_name()}"
+                      data-toggle="tooltip" data-placement="top">
+                    英文
                 </span>
                 <div data-bind="visible: isEditing">
-                    <div class="input-group">
-                        <div class="input-group-addon">內用</div>
-                        <input type="text" class="form-control" disabled
-                               data-bind="textInput: inventory_name">
-                    </div>
                     <div class="input-group">
                         <div class="input-group-addon">標籤</div>
                         <input type="text" class="form-control"
@@ -131,25 +140,79 @@ TODO:
                         <input type="text" class="form-control"
                                data-bind="textInput: english_name">
                     </div>
-
                 </div>
             </td>
 
-            <td>
-                <span data-bind="text: units() + ' ' + UM() + (SKU() && SKU() != '槽車' ? ' / ' + SKU() : '')">
+            <td style="width: 2em">
+                <span>
+                    <img alt="sack" src="/fonts/sack.svg" height="20"
+                         data-bind="visible: SKU() == '包'">
+                    <img alt="jerrycan" src="/fonts/jerrycan.svg" height="20"
+                         data-bind="visible: SKU() == '桶' && units() < 100">
+                    <img alt="barrel" src="/fonts/barrel.svg" height="22"
+                         data-bind="visible: SKU() == '桶' && units() >= 100">
+                    <img class="fa-flip-horizontal" alt="tanker" src="/fonts/tanker.svg" height="26"
+                         data-bind="visible: SKU() == '槽車'">
                 </span>
             </td>
 
-            <td>
+            <td style="width: 7em">
+                <span data-bind="text: units() + ' ' + UM() + (units() > 1 ? ' / ' + SKU() : '')">
+                </span>
+            </td>
+
+            <td style="width: 7em">
                 <span data-bind="text: '$' + curr_price() + ' / ' + (unitpriced() ? UM() : SKU()),
                                  attr: {title: units() > 1 && unitpriced() ? '$' + (units() * curr_price()) + ' / ' + SKU() : ''}"
                      data-toggle="tooltip" data-placement="left">
                 </span>
             </td>
 
+            <td class="has-success" style="width: 12em">
+                <span data-bind="visible: !isEditing(),
+                                 text: SKUlong"></span>
+                <div data-bind="visible: isEditing">
+                    <div class="input-group">
+                        <div class="input-group-addon">包裝</div>
+                        <input type="text" class="form-control"
+                               data-bind="textInput: SKUlong">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">PN</div>
+                        <input type="text" class="form-control"
+                               placeholder="(ASE)"
+                               data-bind="textInput: ASE_PN">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">RT</div>
+                        <input type="text" class="form-control"
+                               placeholder="(ASE)"
+                               data-bind="textInput: ASE_RT">
+                    </div>
+                </div>
+            </td>
+
             <td>
-                <span data-bind="text: note">
+                <span class="label btn-success"
+                      data-bind="visible: ASE_PN(),
+                                 attr: {title: ASE_PN()}"
+                      data-toggle="tooltip" data-placement="top">
+                    PN
                 </span>
+                <span class="label btn-success"
+                      data-bind="visible: ASE_RT(),
+                                 attr: {title: ASE_RT()}"
+                      data-toggle="tooltip" data-placement="top">
+                    RT
+                </span>
+                <span data-bind="visible: !isEditing(),
+                                 text: note"></span>
+                <div class="has-success"
+                     data-bind="visible: isEditing">
+                    <textarea placeholder="備註" class="form-control"
+                              rows="3"
+                              data-bind="textInput: note"></textarea>
+                </div>
             </td>
         </tr>
     </tbody>
@@ -161,4 +224,4 @@ TODO:
 </div><!--End of "with" div-->
 
 
-<script><%- partial ('viewmodel.js') %></script>
+<script><%- partial ('vm.product.index.js') %></script>

@@ -1,11 +1,5 @@
 "use strict";
 
-var keyCode = {
-    ENTER: 13,
-    F1: 112,
-    N: 78
-}
-
 /**
  * @namespace
  */
@@ -22,9 +16,10 @@ viewModel.OrderIndex = {
      * Boolean to show/hide loading message on page.
      */
     isLoading: ko.observable(true),
-    /**Integer for next page or Order records to load from database.
+    /**
+     * Integer for next page or Order records to load from database.
      */
-    ordersPage: 1,
+    loadPage: 1,
     /**
      * Boolean to designate a new shipment as purchase or sale.
      */
@@ -34,10 +29,16 @@ viewModel.OrderIndex = {
      */
     shipment_no: ko.observable(),
     /**
-     * Creates the Orders KO Array and adds extra observables.
+     * Initiate data loading and adds page listeners.
      */
     init: function () {
         var self = this;
+
+        // Load list of products into ko array.
+        self.loadProducts();
+        // Load first page of records into ko array.
+        self.retrieveOrderRecords();
+        self.sortOrderDate();
 
         // Add keypress options to page
         document.onkeydown = function(evt) {
@@ -83,12 +84,6 @@ viewModel.OrderIndex = {
                 self.retrieveOrderRecords();
             }
         });
-
-        // Load list of products into ko array.
-        self.loadProducts();
-        // Load first page of records into ko array.
-        self.retrieveOrderRecords();
-        self.sortOrderDate();
     },
 
     /**
@@ -97,18 +92,18 @@ viewModel.OrderIndex = {
     retrieveOrderRecords : function () {
         var self = this,
             callback = function (orderdata) {
-                self.ordersPage += 1;
+                self.loadPage += 1;
                 orderdata.forEach(function (order) {
                     self.orders.push(models.Order(order));
                 })
-                // Activate year & other tooltips (opt-in function).
+                // Activate Bootstrap's tooltips (opt-in function).
                 $('[data-toggle="tooltip"]').tooltip();
                 self.isLoading(false);
             },
             params = {
                 _csrf: '<%= _csrf %>',
                 co: '<%= res.locals.cogroup ? cogroup.name : "" %>',
-                page: self.ordersPage
+                page: self.loadPage
             },
             xhr = new XMLHttpRequest();
 
@@ -417,7 +412,7 @@ viewModel.OrderIndex = {
         this.orders.unshift(ko.mapping.fromJS(newData));
         this.orders()[0].isEditing(true);
         this.orders()[0].isSelected(false);
-        // Activate year & other tooltips (opt-in function).
+        // Activate Bootstrap's tooltips (opt-in function).
         $('[data-toggle="tooltip"]').tooltip();
         // Scroll page to top.
         window.scrollTo(0, 0);
