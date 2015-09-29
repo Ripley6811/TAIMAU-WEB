@@ -219,10 +219,8 @@ TODO:
             <td align="right">
                 <div data-bind="text: qty_shipped() + ' ' + qtyMeasure()"></div>
             </td>
-            <td has-input="price" class="has-success" align="right">
-                <div data-bind="text: '$' + price(),
-                                attr: {title: '/ ' + (MPN.unitpriced() ? MPN.UM() : MPN.SKU())}"
-                     data-toggle="tooltip" data-placement="right"></div>
+            <td has-input="price" class="has-success" align="center">
+                <div data-bind="text: '$' + price() + ' /' + (MPN.unitpriced() ? MPN.UM() : MPN.SKU())"></div>
                 <input class="form-control text-right" type="text" style="width: 6em"
                        data-bind="attr: {value: price()},
                                   visible: isEditing()">
