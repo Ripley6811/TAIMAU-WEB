@@ -33,7 +33,7 @@ var models = {
         return self;
     },
 
-}
+};
 
 /**
  * Cogroup model

@@ -9,9 +9,9 @@ var keyCode = {
 /**
  * @namespace
  */
-viewModel.OrdersVM = {
+viewModel.OrderIndex = {
     /**
-     * KO Array holding 'Order' records using 'orderModel' model.
+     * KO Array holding 'Order' records using 'model.Order' model.
      */
     orders: ko.observableArray(),
     /**
@@ -110,21 +110,21 @@ viewModel.OrdersVM = {
                 co: '<%= res.locals.cogroup ? cogroup.name : "" %>',
                 page: self.ordersPage
             },
-            xmlhttp = new XMLHttpRequest();
+            xhr = new XMLHttpRequest();
 
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState !== 4) return;
-            if (!xmlhttp.response) {
+        xhr.open('POST', '/order/page', true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== 4) return;
+            if (!xhr.response) {
                 alert("Response is empty");
                 return;
             }
 
-            var res = JSON.parse(xmlhttp.response);
+            var res = JSON.parse(xhr.response);
             callback(res.orders);
         };
-        xmlhttp.open('POST', '/order/page', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON(params));
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.send(ko.toJSON(params));
     },
 
     /**
@@ -282,15 +282,16 @@ viewModel.OrdersVM = {
                 _csrf: viewModel._csrf,
             };
 
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState !== 4) return;
+        var xhr = new XMLHttpRequest();
+        xhr.open('PUT', '/order/update', true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== 4) return;
 
-            if (xmlhttp.status === 403) {
-                alert(xmlhttp.response);
+            if (xhr.status === 403) {
+                alert(xhr.response);
             }
 
-            var data = JSON.parse(xmlhttp.response);
+            var data = JSON.parse(xhr.response);
             // Update view if successful
             for (var property in updates) {
                 ko_rec[property](data[property]);
@@ -298,9 +299,8 @@ viewModel.OrdersVM = {
             // This does not work. Why?
 //            ko.mapping.fromJS(data, ko_rec);
         };
-        xmlhttp.open('PUT', '/order/update', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON(params));
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.send(ko.toJSON(params));
     },
 
     /**
@@ -324,20 +324,20 @@ viewModel.OrdersVM = {
                 _csrf: viewModel._csrf,
             };
 
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState !== 4) return;
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/order/createOne', true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== 4) return;
 
-            var data = JSON.parse(xmlhttp.response);
+            var data = JSON.parse(xhr.response);
             // Update view if successful
             console.log(data);
             console.log(ko.toJS(ko_rec));
             ko.mapping.fromJS(data, ko_rec);
 //            ko.mapping.fromJS(data.MPN, ko_rec.MPN);
         };
-        xmlhttp.open('POST', '/order/createOne', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON(params));
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.send(ko.toJSON(params));
     },
 
     /**
@@ -352,25 +352,25 @@ viewModel.OrdersVM = {
                 _csrf: viewModel._csrf,
             };
 
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState !== 4) return;
+        var xhr = new XMLHttpRequest();
+        xhr.open('DELETE', '/order/delete', true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== 4) return;
 
             // Remove record from array if successful
-            if (xmlhttp.status === 204) {
+            if (xhr.status === 204) {
                 orders_KOA.remove(ko_rec);
                 return true;
             }
             // Display error
-            var data = JSON.parse(xmlhttp.response);
+            var data = JSON.parse(xhr.response);
             if (data.error && data.raw.code === 'ER_ROW_IS_REFERENCED_2') {
                 ko_rec.errorMessage("不能刪除 - 訂單已經出貨.");
                 return false;
             }
         };
-        xmlhttp.open('DELETE', '/order/delete', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON(params));
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.send(ko.toJSON(params));
     },
 
     /**
@@ -379,18 +379,18 @@ viewModel.OrdersVM = {
     computeAvailableNumber: function () {
         var self = this;
         if (self.isPurchase() === false) {
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange = function () {
-                if (xmlhttp.readyState !== 4) return;
-                if (!xmlhttp.response) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/shipment/availableNumber', true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState !== 4) return;
+                if (!xhr.response) {
                     alert("Response is empty");
                     return;
                 }
 
-                self.shipment_no(xmlhttp.responseText);
+                self.shipment_no(xhr.responseText);
             };
-            xmlhttp.open('GET', '/shipment/availableNumber', true);
-            xmlhttp.send();
+            xhr.send();
         } else {
             self.shipment_no('');
         }
@@ -442,45 +442,30 @@ viewModel.OrdersVM = {
      */
     loadProducts: function () {
         var self = this,
-            xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState !== 4) return;
+            xhr = new XMLHttpRequest();
+        xhr.open('GET', '/product/get/<%= res.locals.cogroup ? cogroup.name : null %>', true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== 4) return;
 
-            if (!xmlhttp.response) {
+            if (!xhr.response) {
                 alert("Response is empty");
                 return;
             }
 
-            var products = ko.mapping.fromJSON(xmlhttp.response);
+            var products = ko.mapping.fromJSON(xhr.response);
             for (var i=0; i<products().length; i++) {
                 self.products.push(products()[i]);
             }
         };
-        xmlhttp.open('GET', '/product/get/<%= res.locals.cogroup ? cogroup.name : null %>', true);
-        xmlhttp.send();
+        xhr.send();
     },
 
-    dblclick: function (id) {
-        window.location = '/order/show/'+id;
+    /**
+     * Action when double-clicking on a table row.
+     * @param {Number} index Row in orders array.
+     */
+    dblclick: function (index) {
+        this.editButton(index);
     }
 };
-viewModel.OrdersVM.init();
-
-/**
- * Convert date string to "YYYY - M月 D日" format.
- * @param   {String} datestr ISO date string
- * @returns {String} Formatted date string
- */
-viewModel.formatDate = function (datestr) {
-        var date = new Date(datestr),
-            outstr = '';
-
-        outstr += date.getMonth()+1 < 10 ? ' ' : '';
-        outstr += date.getMonth()+1 + '月 ';
-        outstr += date.getDate() < 10 ? ' ' : '';
-        outstr += date.getDate() + '日';
-
-        return outstr;
-};
-
-
+viewModel.OrderIndex.init();

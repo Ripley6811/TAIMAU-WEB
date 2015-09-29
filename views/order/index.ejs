@@ -3,7 +3,7 @@ TODO:
     Think about adding auto-filling price when selecting product
     Add way to see manifest list. maybe popup when mouseover delivered amt.
 -->
-<div data-bind="with: OrdersVM">
+<div data-bind="with: OrderIndex">
     <div style="position: fixed; right: 0px">
         <button class="btn btn-success"
                 data-bind="click: function () {createNewOrder();}"
@@ -34,7 +34,7 @@ TODO:
         <th>備註</th>
     </thead>
     <tbody data-bind="foreach: orders">
-        <tr data-bind="event: {dblclick: function (data) {$parent.dblclick(data.id())}},
+        <tr data-bind="event: {dblclick: function (data) {$parent.dblclick($index())}},
                        <% if (res.locals.cogroup) { %>
                        click: function (data, event) { $parent.rowClick(event, $index()); return true; },
                        <% } %>
@@ -65,7 +65,7 @@ TODO:
                             <% } %>
                             <button class="btn btn-success" style="text-align: left"
                                     data-bind="click: function (data) { $parent.editButton($index(), data); }">
-                                <i class="fa fa-pencil-square-o fa-fw fa-lg"></i> 編輯訂單
+                                <i class="fa fa-pencil-square-o fa-fw fa-lg"></i> 編輯訂單 (左鍵兩次)
                             </button>
                             <button class="btn btn-success" style="text-align: left"
                                     data-bind="click: function () {window.location='/order/show/'+id();}">
@@ -96,11 +96,11 @@ TODO:
                      data-bind="visible: isEditing">
                     <button class="btn btn-danger has-tooltip"
                             data-bind="click: function () {$parent.editCancelButton($index())}"
-                            data-toggle="tooltip" data-placement="top" title="關閉編輯視窗">
+                            data-toggle="tooltip" data-placement="top" title="關閉編輯模式">
                         <i class="fa fa-close fa-lg"></i>
                     </button>
                     <button class="btn btn-primary has-tooltip"
-                            data-bind="attr: {onclick: 'viewModel.OrdersVM.editSaveButton(this,' + $index() + ')'}"
+                            data-bind="attr: {onclick: 'viewModel.OrderIndex.editSaveButton(this,' + $index() + ')'}"
                             data-toggle="tooltip" data-placement="bottom" title="儲存更改">
                         <i class="fa fa-floppy-o fa-lg"></i>
                     </button>
@@ -253,4 +253,4 @@ TODO:
 </div><!--End of "with" div-->
 
 
-<script><%- partial ('viewmodel.js') %></script>
+<script><%- partial ('vm.order.index.js') %></script>

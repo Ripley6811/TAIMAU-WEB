@@ -60,6 +60,7 @@
     <script src="/js/ko_ajax.js"></script>
     <script src="/js/ko_extenders.js"></script>
     <script src="/js/ko_models.js"></script>
+    <script src="/js/viewModel.main.js"></script>
     <!--SCRIPTS END-->
 
 
@@ -73,6 +74,11 @@
         <%- body %>
     </div>
 
+    <script>
+        var viewModel = viewModel || {};
+        viewModel._csrf = '<%= _csrf %>';
+        viewModel.co_name = '<%= res.locals.cogroup ? cogroup.name : "" %>';
+    </script>
 
     <!--
     Client-side Templates
@@ -98,15 +104,6 @@
     <!--TEMPLATES-->
     
     <!--TEMPLATES END-->
-    <script>
-        // Adds the KnockoutJS viewmodel to page
-        // Add sub-models to the `viewModel` namespace
-        var viewModel = viewModel || {};
-        viewModel._csrf = '<%= _csrf %>';
-        viewModel.co_name = '<%= res.locals.cogroup ? cogroup.name : "" %>';
-        console.dir(viewModel);
-        ko.applyBindings(viewModel, document.getElementById('body'));
-    </script>
 </body>
 
 </html>
