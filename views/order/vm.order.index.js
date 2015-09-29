@@ -42,33 +42,33 @@ viewModel.OrderIndex = {
         // Add keypress options to page
         document.onkeydown = function(evt) {
             switch(evt.keyCode) {
-                // ENTER: Creates shipment from selected items.
-                case keyCode.ENTER:
-                    var orders = self.orders(),
-                        noneSelected = true;
-                    for (var i=0; i<orders.length; i++) {
-                        if (orders[i].isSelected()) {
-                            noneSelected = false;
-                            self.isPurchase(orders[i].is_purchase());
-                        }
+            // ENTER: Creates shipment from selected items.
+            case keyCode.ENTER:
+                var orders = self.orders(),
+                    noneSelected = true;
+                for (var i=0; i<orders.length; i++) {
+                    if (orders[i].isSelected()) {
+                        noneSelected = false;
+                        self.isPurchase(orders[i].is_purchase());
                     }
-                    // Opens help window if none is selected.
-                    if (noneSelected) {
-                        $('#helpModal').modal('show');
-                    } else {
-                        $('#createShipmentModal').modal('show');
-                    }
-                    return false;
-                // F1: Shows help modal showing hotkeys.
-                case keyCode.F1:
+                }
+                // Opens help window if none is selected.
+                if (noneSelected) {
                     $('#helpModal').modal('show');
-                    return false;
-                // N+Alt: Creates a new record row at top.
-                case keyCode.N:
-                    if (evt.altKey) {
-                        self.createNewOrder();
-                    }
-                    return false;
+                } else {
+                    $('#createShipmentModal').modal('show');
+                }
+                return false;
+            // F1: Shows help modal showing hotkeys.
+            case keyCode.F1:
+                $('#helpModal').modal('show');
+                return false;
+            // N+Alt: Creates a new record row at top.
+            case keyCode.N:
+                if (evt.altKey) {
+                    self.createNewOrder();
+                }
+                return false;
             }
         };
 
@@ -165,10 +165,15 @@ viewModel.OrderIndex = {
      * @param {Number} index Index of record in Orders KO Array.
      */
     rowClick: function (event, index) {
-        if (event.ctrlKey && event.altKey) {
-            this.toggleOpen(index);
-        } else if (event.ctrlKey) {
-            this.toggleSelection(index);
+        if (event.ctrlKey) {
+            switch(event.altKey) {
+            case true:
+                this.toggleOpen(index);
+                break;
+            case false:
+                this.toggleSelection(index);
+                break;
+            }
         }
     },
 
