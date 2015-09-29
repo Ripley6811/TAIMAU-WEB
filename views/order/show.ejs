@@ -6,7 +6,7 @@
         <div class="panel-heading lightgreen-blend text-center">
             <div class="form-group form-group-lg">
                 <label class="control-label">訂單 </label>
-                <input type="text" placeholder="(<%= order.id %>)" class="form-control" name="orderID" value="<%= order.orderID %>">
+                <input disabled type="text" placeholder="(<%= order.id %>)" class="form-control" name="orderID" value="<%= order.orderID %>">
             </div>
                 <div class="form-group form-group-lg">
                     <label for="item_name" class="control-label">產品名稱 </label>
@@ -25,10 +25,10 @@
                                         has-error">
                                     <% } %>
                                 <div class="input-group-addon">$</div>
-                                <input type="number" step="0.001" class="form-control" name="price" value="<%= order.price %>">
+                                <input disabled type="number" step="0.001" class="form-control" name="price" value="<%= order.price %>">
                                 <div class="input-group-addon">
-                                    <input type="radio" name="applytax" value="true" <% if (order.applytax === true) { %> checked <% } %>>應稅
-                                    <input type="radio" name="applytax" value="false" <% if (order.applytax !== true) { %> checked <% } %>>無稅
+                                    <input disabled type="radio" name="applytax" value="true" <% if (order.applytax === true) { %> checked <% } %>>應稅
+                                    <input disabled type="radio" name="applytax" value="false" <% if (order.applytax !== true) { %> checked <% } %>>無稅
 
                             </div>
                         </div>
@@ -41,7 +41,7 @@
                     <div class="row-fluid form-group has-success">
                         <div><label class="control-label">訂單件數 - 出貨件數 = 剩下件數</label></div>
                         <div class="input-group">
-                            <input class="form-control text-right" min="1" type="number" name="qty" value="<%= order.qty %>">
+                            <input disabled class="form-control text-right" min="1" type="number" name="qty" value="<%= order.qty %>">
                             <div class="input-group-addon input-warning"><span class="glyphicon glyphicon-minus"></span></div>
                             <input type="text" size="14" disabled class="form-control text-center" value="<%= order.qty_shipped() %>">
                             <div class="input-group-addon"><span class="glyphicon glyphicon-chevron-right"></span></div>
@@ -54,7 +54,7 @@
             <div class="row text-center">
                 <div class="form-group">
                     <label class="control-label">備註</label>
-                    <input type="text" size="100%" class="form-control" name="ordernote" value="<%= order.ordernote %>">
+                    <input disabled type="text" size="100%" class="form-control" name="ordernote" value="<%= order.ordernote %>">
 
                 </div>
             </div>
