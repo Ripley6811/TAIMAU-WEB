@@ -85,7 +85,7 @@ table {
 
 
 
-.table-striped>thead>tr>th {
+th {
   color:rgb(255, 230, 140);
   background-color: hsl(110, 56%, 16%) !important;
   background-repeat: repeat-x;
@@ -101,11 +101,16 @@ table {
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.33);
   -webkit-font-smoothing: antialiased;
 }
+/*
 .table-striped>tbody>tr:nth-child(odd)>td {
    background-color: rgb(255, 245, 211);
 }
 .table-striped>tbody>tr:nth-child(even)>td {
    background-color: rgb(210, 232, 212);
+}
+*/
+tr {
+    background-color: rgb(254, 255, 225);
 }
 
 
