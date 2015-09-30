@@ -164,9 +164,21 @@ TODO:
                 </span>
             </td>
 
-            <td style="width: 7em">
+            <td class="has-success" style="width: 7em">
                 <span data-bind="text: units() + ' ' + UM() + (units() > 1 ? ' / ' + SKU() : '')">
                 </span>
+                <div data-bind="visible: isEditing">
+                    <div class="input-group">
+                        <div class="input-group-addon">單位</div>
+                        <input type="text" class="form-control" maxlength="10"
+                               data-bind="textInput: UM">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">包裝</div>
+                        <input type="text" class="form-control" maxlength="10"
+                               data-bind="textInput: SKU">
+                    </div>
+                </div>
             </td>
 
             <td style="width: 7em">
@@ -230,6 +242,11 @@ TODO:
         <i class="fa fa-cog fa-spin"></i> Loading...
     </h1>
 
+    <!-- Add create shipment option if a company is selected -->
+    <% if (res.locals.cogroup) { %>
+        <%- partial ('modal.shipment.ejs') %>
+    <% } %>
+    <%- partial ('modal.help.ejs') %>
 </div><!--End of "with" div-->
 
 

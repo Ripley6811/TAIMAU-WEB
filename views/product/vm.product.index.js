@@ -128,64 +128,15 @@ viewModel.ProductsVM = {
 
         for (var field in updates) {
             updates[field] = ko_rec[field]();
-
         }
 
         console.log(updates);
 
-
-//        // Get list of cell (TD) elements
-//        var td_list = el.children,
-//            updates = {};
-//        // Look for "has-input" tags and get values
-//        for (var i=0; i<td_list.length; i++) {
-//            var inputType = td_list[i].getAttribute("has-input"),
-//                inputChild = td_list[i].children[1];
-////            console.log(inputType, inputChild);
-//            // Convert and validate value type
-//            if (inputType === "orderdate") {
-//                var value = new Date(inputChild.value);
-//                if (!isNaN(value.getDate()))
-//                    updates["orderdate"] = value;
-//            } else if (inputType === "orderID") {
-//                var value = inputChild.value;
-//                updates["orderID"] = value;
-//            } else if (inputType === "qty") {
-//                var value = parseInt(inputChild.value);
-//                if (!isNaN(value))
-//                    updates["qty"] = value;
-//            } else if (inputType === "price") {
-//                var value = parseFloat(inputChild.value);
-//                if (!isNaN(value))
-//                    updates["price"] = value;
-//            } else if (inputType === "applytax") {
-//                var value = inputChild.checked;
-//                updates["applytax"] = value;
-//            } else if (inputType === "ordernote") {
-//                var value = inputChild.value;
-//                updates["ordernote"] = value;
-//            } else if (inputType === "MPN" && !ko_rec.id()) {
-//                var value = inputChild.value;
-//                if (value) {
-//                    updates["MPN"] = value;
-//                }
-//            } else if (inputType === "seller-buyer") {
-//                var valueSeller = inputChild.children[0].value;
-//                var valueBuyer = inputChild.children[1].value;
-//                if (valueSeller) {
-//                    updates["seller"] = valueSeller;
-//                }
-//                if (valueBuyer) {
-//                    updates["buyer"] = valueBuyer;
-//                }
-//            }
-//        }
-//
-//        if (ko_rec.id()) {
-//            this.updateRecord(ko_rec, updates);
-//        } else {
-//            this.createRecord(ko_rec, updates);
-//        }
+        if (ko_rec.MPN()) {
+            this.updateRecord(ko_rec, updates);
+        } else {
+            this.createRecord(ko_rec, updates);
+        }
     },
 
     /**

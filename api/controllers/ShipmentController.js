@@ -22,7 +22,7 @@ module.exports = {
 	create: function (req, res) {
         console.log('shipments/create/', req.params.all());
         var params = req.params.all();
-
+        // Convert data to arrays if not already (if single entry).
         if (!(params.PO instanceof Array)) {
             params.PO = [params.PO];
             params.MPN = [params.MPN];
@@ -34,6 +34,7 @@ module.exports = {
         var orderIDs = params.PO,
             qty = params.qty;
 
+        // Collect data for shipment
         var newShipment = {
             shipmentdate: params['shipmentdate'],
             shipment_no: params['shipment_no'],
@@ -42,7 +43,7 @@ module.exports = {
             group: params.group,
         };
 
-        // Create default order records for non-PO shipments
+        // Create default Order data for non-PO shipments
         defaultOrders = [];
         for (var i=0; i<orderIDs.length; i++) {
             var record = {
@@ -57,16 +58,12 @@ module.exports = {
                 applytax: true,
                 price: params.price[i],
                 orderdate: params.shipmentdate,
-                ordernote: '(auto-generated : 自動創造)',
+                ordernote: '',
                 orderID: '',
                 is_open: false,
             }
             defaultOrders.push(record);
         }
-
-        // Update prices in the product records
-
-
 
         // Create shipment
         Shipment.create(newShipment)
