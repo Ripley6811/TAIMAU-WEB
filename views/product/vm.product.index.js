@@ -108,15 +108,32 @@ viewModel.ProductsVM = {
     /**
      * Saves new values to an object and passes it to update or create function.
      * @param {Object} el    HTML button element calling this function.
-     * @param {Number} index Index of record in Orders KO Array.
+     * @param {Number} index Index of record in the KO Array.
      */
     editSaveButton: function (el, index) {
-//        var ko_rec = this.orders()[index];
-//        // Traverse up to row (TR) element
-//        while (el.tagName !== 'TR') {
-//            el = el.parentElement;
-//        }
-//
+        var ko_rec = this.products()[index],
+            updates = {
+                MPN: undefined,
+                product_label: undefined,
+                english_name: undefined,
+                is_supply: undefined,
+                SKUlong: undefined,
+                ASE_PN: undefined,
+                ASE_RT: undefined,
+                note: undefined,
+                curr_price: undefined,
+                UM: undefined,
+                SKU: undefined,
+            };
+
+        for (var field in updates) {
+            updates[field] = ko_rec[field]();
+
+        }
+
+        console.log(updates);
+
+
 //        // Get list of cell (TD) elements
 //        var td_list = el.children,
 //            updates = {};
@@ -389,5 +406,5 @@ viewModel.ProductsVM = {
     dblclick: function (index) {
         this.editButton(index);
     }
-}
+};
 viewModel.ProductsVM.init();

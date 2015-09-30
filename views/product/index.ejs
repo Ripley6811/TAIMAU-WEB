@@ -21,7 +21,7 @@ TODO:
     <thead>
         <th>選</th>
         <th>買/賣</th>
-        <th>品名</th>
+        <th class="text-center">品名</th>
         <th></th>
         <th>單位量</th>
         <th>最近價格</th>
@@ -114,21 +114,29 @@ TODO:
                                   visible: isEditing">
             </td>
 
-            <td class="has-success" style="width: 18em">
-                <span data-bind="text: inventory_name">
-                </span>
-                <span class="label btn-success"
-                      data-bind="visible: product_label() && product_label() !== inventory_name(),
-                                 attr: {title: product_label()}"
-                      data-toggle="tooltip" data-placement="top">
-                    標籤
-                </span>
-                <span class="label btn-success"
-                      data-bind="visible: english_name(),
-                                 attr: {title: english_name()}"
-                      data-toggle="tooltip" data-placement="top">
-                    英文
-                </span>
+            <td class="has-success" style="width: 18em; position: relative; overflow: hidden;">
+                <div class="slider-label slider-label-left lightgreen-blend"
+                     style="left: -92%"
+                     data-bind="visible: product_label() && product_label() !== inventory_name()">
+                    <span class="slider-tab" style="right: 6px">
+                        標籤
+                    </span>
+                    <span style="white-space: nowrap; margin: 5px 52px;"
+                          data-bind="text: product_label">
+                    </span>
+                </div>
+                <div class="slider-label slider-label-right lightorange-blend"
+                     style="left: 92%"
+                     data-bind="visible: english_name() && english_name() !== inventory_name()">
+                    <span class="slider-tab" style="left: 4px">
+                        英文
+                    </span>
+                    <span style="white-space: nowrap; margin: 5px 30px;"
+                          data-bind="text: english_name">
+                    </span>
+                </div>
+
+                <span style="margin-left: 23px;" data-bind="text: inventory_name"></span>
                 <div data-bind="visible: isEditing">
                     <div class="input-group">
                         <div class="input-group-addon">標籤</div>
