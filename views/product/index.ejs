@@ -194,18 +194,19 @@ TODO:
 
             <td>
                 <span class="label btn-success"
-                      data-bind="visible: ASE_PN(),
+                      data-bind="visible: !isEditing() && ASE_PN(),
                                  attr: {title: ASE_PN()}"
                       data-toggle="tooltip" data-placement="top">
                     PN
                 </span>
                 <span class="label btn-success"
-                      data-bind="visible: ASE_RT(),
+                      data-bind="visible: !isEditing() && ASE_RT(),
                                  attr: {title: ASE_RT()}"
                       data-toggle="tooltip" data-placement="top">
                     RT
                 </span>
-                <span data-bind="visible: !isEditing(),
+                <span style="padding-left: 4px"
+                      data-bind="visible: !isEditing(),
                                  text: note"></span>
                 <div class="has-success"
                      data-bind="visible: isEditing">
