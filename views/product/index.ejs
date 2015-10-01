@@ -60,7 +60,7 @@ TODO:
                             <% } %>
                             <button class="btn btn-success" style="text-align: left"
                                     data-bind="click: function (data) { $parent.editButton($index(), data); }">
-                                <i class="fa fa-pencil-square-o fa-fw fa-lg"></i> 編輯產品
+                                <i class="fa fa-pencil-square-o fa-fw fa-lg"></i> 編輯產品 (左鍵兩次)
                             </button>
                             <% if (res.locals.cogroup) { %>
                             <button class="btn btn-success" style="text-align: left"
@@ -296,12 +296,6 @@ TODO:
     <h1 data-bind="visible: isLoading">
         <i class="fa fa-cog fa-spin"></i> Loading...
     </h1>
-
-    <section class="alert">
-        <h1>TODO:</h1>
-        <p>- Shipment form add info and clean up appearance</p>
-        <p>- Multi-shipment button/function</p>
-    </section>
 
     <!-- Add create shipment option if a company is selected -->
     <% if (res.locals.cogroup) { %>
