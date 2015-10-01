@@ -72,6 +72,10 @@ TODO:
                                     data-bind="visible: discontinued(), click: function () {$parent.toggleOpen($index())}">
                                 <i class="fa fa-refresh fa-fw fa-lg"></i> 再開啟產品 (Ctrl+Alt+左鍵)
                             </button>
+                            <button disabled class="btn btn-success" style="text-align: left"
+                                    data-bind="click: function () {}">
+                                <i class="fa fa-photo fa-fw fa-lg"></i> 上傳產品照片
+                            </button>
                             <button class="btn btn-warning" style="text-align: left"
                                     data-bind="visible: !discontinued(), click: function () {$parent.toggleOpen($index())}">
                                 <i class="fa fa-ban fa-fw fa-lg"></i> 結束產品並歸檔 (Ctrl+Alt+左鍵)
@@ -136,8 +140,16 @@ TODO:
                     </span>
                 </div>
 
-                <span style="margin-left: 23px;" data-bind="text: inventory_name"></span>
+                <span style="margin-left: 23px;"
+                      data-bind="visible: MPN,
+                                 text: inventory_name"></span>
                 <div data-bind="visible: isEditing">
+                    <div class="input-group"
+                         data-bind="visible: !MPN()">
+                        <div class="input-group-addon">內用</div>
+                        <input type="text" class="form-control" required
+                               data-bind="textInput: inventory_name">
+                    </div>
                     <div class="input-group">
                         <div class="input-group-addon">標籤</div>
                         <input type="text" class="form-control"
@@ -183,9 +195,18 @@ TODO:
             </td>
 
             <td class="has-success" style="width: 7em">
-                <span data-bind="text: units() + ' ' + UM() + (units() > 1 ? ' / ' + SKU() : '')">
+                <span data-bind="visible: MPN,
+                                 text: units() + ' ' + UM() + (units() > 1 ? ' / ' + SKU() : '')">
                 </span>
                 <div data-bind="visible: isEditing">
+                    <div class="input-group"
+                         data-bind="visible: !MPN()"
+                         title="每一個包裝的數量"
+                         data-toggle="tooltip" data-placement="left">
+                        <div class="input-group-addon">裝量</div>
+                        <input type="text" class="form-control" maxlength="10"
+                               data-bind="textInput: units">
+                    </div>
                     <div class="input-group"
                          title="最小的單位或者價格用的單位. kg, L, gal, 個, 次, 等."
                          data-toggle="tooltip" data-placement="left">
@@ -205,7 +226,7 @@ TODO:
 
             <td style="width: 7em">
                 <span data-bind="text: '$' + curr_price() + ' / ' + (unitpriced() ? UM() : SKU()),
-                                 attr: {title: units() > 1 && unitpriced() ? '$' + (units() * curr_price()) + ' / ' + SKU() : ''}"
+                                 attr: {'data-original-title': units() > 1 && unitpriced() ? '$' + (units() * curr_price()) + ' / ' + SKU() : ''}"
                      data-toggle="tooltip" data-placement="left">
                 </span>
             </td>
@@ -237,13 +258,13 @@ TODO:
             <td>
                 <span class="label btn-success"
                       data-bind="visible: !isEditing() && ASE_PN(),
-                                 attr: {title: ASE_PN()}"
+                                 attr: {'data-original-title': ASE_PN()}"
                       data-toggle="tooltip" data-placement="top">
                     PN
                 </span>
                 <span class="label btn-success"
                       data-bind="visible: !isEditing() && ASE_RT(),
-                                 attr: {title: ASE_RT()}"
+                                 attr: {'data-original-title': ASE_RT()}"
                       data-toggle="tooltip" data-placement="top">
                     RT
                 </span>
@@ -266,8 +287,8 @@ TODO:
 
     <section class="alert">
         <h1>TODO:</h1>
-        <p>- Delete Record Method</p>
-        <p>- Create Record Method</p>
+        <p>- Delete Record Method: Needs testing</p>
+        <p>- Update Record Method check restricted</p>
         <p>- Copy as new Record Method</p>
         <p>- Shipment form add info and clean up appearance</p>
         <p>- Multi-shipment button/function</p>
