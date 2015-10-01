@@ -149,6 +149,24 @@ TODO:
                                data-bind="textInput: english_name">
                     </div>
                 </div>
+
+                <div class="alert alert-danger fade in text-center" role="alert"
+                     data-bind="visible: isConfirmingDelete">
+                    此動作無法回復<br>
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-primary"
+                                data-bind="click: function (data) {data.isConfirmingDelete(false)}">
+                            <i class="fa fa-backward fa-fw fa-lg"></i> 取消
+                        </button>
+                        <button type="button" class="btn btn-danger"
+                                data-bind="click: function (data) {$parent.deleteRecord(data); data.isConfirmingDelete(false)}">
+                            <i class="fa fa-trash fa-fw fa-lg"></i> 確認刪除
+                        </button>
+                    </div>
+                </div>
+                <div class="alert alert-danger fade in text-center" role="alert"
+                     data-bind="visible: errorMessage, text: errorMessage">
+                </div>
             </td>
 
             <td style="width: 2em">
@@ -168,12 +186,16 @@ TODO:
                 <span data-bind="text: units() + ' ' + UM() + (units() > 1 ? ' / ' + SKU() : '')">
                 </span>
                 <div data-bind="visible: isEditing">
-                    <div class="input-group">
+                    <div class="input-group"
+                         title="最小的單位或者價格用的單位. kg, L, gal, 個, 次, 等."
+                         data-toggle="tooltip" data-placement="left">
                         <div class="input-group-addon">單位</div>
                         <input type="text" class="form-control" maxlength="10"
                                data-bind="textInput: UM">
                     </div>
-                    <div class="input-group">
+                    <div class="input-group"
+                         title="最大的單位或者訂貨算法的單位. 桶, 包, 瓶, 等."
+                         data-toggle="tooltip" data-placement="left">
                         <div class="input-group-addon">包裝</div>
                         <input type="text" class="form-control" maxlength="10"
                                data-bind="textInput: SKU">
@@ -241,6 +263,15 @@ TODO:
     <h1 data-bind="visible: isLoading">
         <i class="fa fa-cog fa-spin"></i> Loading...
     </h1>
+
+    <section class="alert">
+        <h1>TODO:</h1>
+        <p>- Delete Record Method</p>
+        <p>- Create Record Method</p>
+        <p>- Copy as new Record Method</p>
+        <p>- Shipment form add info and clean up appearance</p>
+        <p>- Multi-shipment button/function</p>
+    </section>
 
     <!-- Add create shipment option if a company is selected -->
     <% if (res.locals.cogroup) { %>
