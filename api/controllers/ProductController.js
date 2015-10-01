@@ -369,5 +369,21 @@ module.exports = {
             res.json(nRecs > 0 ? 'true' : 'false');
         });
     },
+
+    /**
+     * Creates a single new product record
+     * Used in "product?co=CO" page.
+     */
+    createOne: function (req, res) {
+        var data = req.param('data');
+        data.MPN = String(Math.round(Math.random()*100000000));
+
+        Product.create(data)
+        .exec(function (err, rec) {
+            if (err) {res.send(err); return;}
+
+            res.json(rec);
+        });
+    }
 };
 

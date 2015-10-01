@@ -121,21 +121,20 @@ viewModel.ProductsVM = {
                 ASE_PN: undefined,
                 ASE_RT: undefined,
                 note: undefined,
-                curr_price: undefined,
                 UM: undefined,
                 SKU: undefined,
+                units: undefined,
+                curr_price: undefined,
             };
 
         for (var field in updates) {
             updates[field] = ko_rec[field]();
         }
 
-        console.log(updates);
-
         if (ko_rec.MPN()) {
             this.updateRecord(ko_rec, updates);
         } else {
-            this.createRecord(ko_rec, updates);
+            this.createRecord(ko_rec);
         }
     },
 
@@ -194,37 +193,35 @@ viewModel.ProductsVM = {
     },
 
     /**
-     * Creates an Order record in database.
-     * @param {Object} ko_rec  Record in the Orders KO Array.
-     * @param {Object} updates Key-values pairs for properties to update.
+     * Creates a new record in database.
+     * @param {Object} ko_rec  Record in the KO Array.
      */
-    createRecord: function (ko_rec, updates) {
-//        var newRec = ko.toJS(ko_rec);
-//        // Delete the null ID.
-//        delete newRec.id;
-//        // Change product object to product ID
-//        newRec.MPN = newRec.MPN.MPN;
-//        // Update properties from inputs
-//        for (var prop in updates) {
-//            newRec[prop] = updates[prop];
-//        }
-//
-//        var params = {
-//                data: newRec,
-//                _csrf: viewModel._csrf,
-//            };
-//
-//        var xmlhttp = new XMLHttpRequest();
-//        xmlhttp.onreadystatechange = function () {
-//            if (xmlhttp.readyState !== 4) return;
-//
-//            var data = JSON.parse(xmlhttp.response);
-//            // Update view if successful
-//            ko.mapping.fromJS(data, ko_rec);
-//        };
-//        xmlhttp.open('POST', '/order/createOne', true);
-//        xmlhttp.setRequestHeader('Content-type', 'application/json');
-//        xmlhttp.send(ko.toJSON(params));
+    createRecord: function (ko_rec) {
+        var newRec = ko.toJS(ko_rec);
+        // Delete the null ID.
+        delete newRec.id;
+        delete newRec.MPN;
+
+        if (newRec.inventory_name.length < 3) {
+            ko_rec.errorMessage('品名太短');
+            return false;
+        }
+
+        var params = {
+                data: newRec,
+                _csrf: viewModel._csrf,
+            },
+            xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== 4) return;
+
+            var data = JSON.parse(xhr.response);
+            // Update view if successful
+            ko.mapping.fromJS(data, ko_rec);
+        };
+        xhr.open('POST', '/product/createOne', true);
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.send(ko.toJSON(params));
     },
 
     /**
@@ -289,31 +286,42 @@ viewModel.ProductsVM = {
      * @param {Object} [data=this.orders()[0]] Data from old PO to copy.
      */
     createFromTemplate: function (data) {
-//        var newData = ko.toJS(data || this.orders()[0]);
-//        // Reset some attributes for new entry.
-//        delete newData['shipments'];
-//        newData['id'] = undefined;
-//        newData['qty_shipped'] = 0;
-//        newData['is_open'] = true;
-//        newData['orderdate'] = new Date();
-//        // Add entry to first position and enable editing.
-//        this.orders.unshift(ko.mapping.fromJS(newData));
-//        this.orders()[0].isEditing(true);
-//        this.orders()[0].isSelected(false);
-//        // Activate year & other tooltips (opt-in function).
-//        $('[data-toggle="tooltip"]').tooltip();
-//        // Scroll page to top.
-//        window.scrollTo(0, 0);
-//        return this.orders()[0];
+        // Create new record model from data or use first rec in array.
+        var newData = ko.toJS(data || this.products()[0]);
+        // Reset some attributes for new entry.
+        newData['id'] = undefined;
+        newData['MPN'] = undefined;
+        newData['discontinued'] = false;
+        // Add entry to first position and enable editing.
+        this.products.unshift(ko.mapping.fromJS(newData));
+        var newRec = this.products()[0];
+        newRec.isEditing(true);
+        newRec.isSelected(false);
+        newRec.isConfirmingDelete(false);
+        newRec.errorMessage('');
+        newRec.restrictEditing(false);
+        // Activate year & other tooltips (opt-in function).
+        $('[data-toggle="tooltip"]').tooltip();
+        // Scroll page to top.
+        window.scrollTo(0, 0);
+        return newRec;
     },
 
     /**
-     * Create a new PO based, add to array and enable editing.
+     * Create a new record with default values and add to array.
      */
     createNewRecord: function () {
-//        var ko_rec = this.createFromTemplate();
-//        ko_rec.qty(0);
-//        ko_rec.ordernote('');
+        var ko_rec = this.createFromTemplate();
+        ko_rec.qtyRequested(0);
+        ko_rec.UM('kg');
+        ko_rec.SKU('桶');
+        ko_rec.SKUlong('');
+        ko_rec.note('');
+        ko_rec.inventory_name('');
+        ko_rec.product_label('');
+        ko_rec.english_name('');
+        ko_rec.ASE_PN('');
+        ko_rec.ASE_RT('');
     },
 
     /**
