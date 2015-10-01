@@ -3,27 +3,16 @@
 Reviewed: 2015, Sep 14
 -->
 <div class="panel panel-success" style="margin: 0px" data-bind="with: ShipmentsVM">
-    <div class="panel-heading" style="padding-bottom: 0px">
-        <div class="row">
-            <div class="col-sm-12 text-center">
-                <button class="btn btn-lg btn-success" data-bind="click: showModal">用選擇創造出貨單 <span class="badge">Enter</span></button>
-            </div>
-        </div>
-    </div>
-
-
-
-
     <table class="table table-condensed table-striped table-bordered">
         <thead class="text-uppercase">
             <tr>
                 <th class="text-center">
                     品名
                 </th>
+                <th>輸入幾次</th>
                 <th class="text-center">
                     容量 / 容器
                 </th>
-                <th>選</th>
                 <th class="text-center">
                     價格 / 單位
                 </th>
@@ -42,23 +31,26 @@ Reviewed: 2015, Sep 14
                     data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
                     <span data-bind="text: inventory_name"></span>
                 </td>
-                <td class="text-center" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
-                    <span data-bind="text: units() + ' ' + UM()"></span> / <span data-bind="text: SKU"></span>
-                </td>
     <!--        Product Manifest selection    -->
                 <td data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
+<!--
                     <input style="margin: 0px; width:26px; height:26px; vertical-align: top;"
                            type="checkbox"
                            name="product"
                            data-bind="checked: selected, enable: $parent.isPurchase() === null || $parent.isPurchase() === is_supply()">
-                    <button style="padding: 3px 6px; vertical-align: top;" class="btn btn-sm btn-custom" data-bind="click: $parent.showMEModal">
-<!--                        <i class="fa fa-truck fa-flip-horizontal"></i><i class="fa fa-truck fa-flip-horizontal"></i>-->
-
+-->
+                    <button style="padding: 3px 6px; vertical-align: top;" class="btn btn-sm btn-custom form-control" data-bind="click: $parent.showMEModal">
                         <i class="fa fa-fw fa-ambulance" data-bind="visible: is_supply"></i>
                         <i class="fa fa-fw fa-ambulance" data-bind="visible: is_supply"></i>
+                        <i class="fa fa-fw fa-ambulance" data-bind="visible: is_supply"></i>
+                        &emsp;
+                        <i class="fa fa-fw fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
                         <i class="fa fa-fw fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
                         <i class="fa fa-fw fa-truck fa-flip-horizontal" data-bind="visible: !is_supply()"></i>
                     </button>
+                </td>
+                <td class="text-center" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
+                    <span data-bind="text: units() + ' ' + UM()"></span> / <span data-bind="text: SKU"></span>
                 </td>
                 <td class="text-center" data-bind="style: {backgroundColor: $parent.isPurchase() === null || $parent.isPurchase() === is_supply() ? null : '#b0b0b0'}">
                     $ <span data-bind="text: curr_price"></span> <span data-bind="text: pricing"></span>
