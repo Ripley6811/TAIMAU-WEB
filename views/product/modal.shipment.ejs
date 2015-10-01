@@ -88,26 +88,43 @@
 
                 <table class="table table-condensed">
                     <thead>
-                        <td></td>
-                        <td>品名</td>
-                        <td align="center">出貨量</td>
+                        <th class="text-center">品名</th>
+                        <th class="text-center">出貨量</th>
+                        <th class="text-center">單位數量</th>
+                        <th class="text-center">價格</th>
                     </thead>
                     <tbody data-bind="foreach: products">
                         <tr class="vertical-middle" data-bind="if: isSelected">
-                            <td>
+                            <td style="width: 25%">
                                 <input type="hidden" name="PO" data-bind="value: 'default'">
                                 <input type="hidden" name="is_supply" data-bind="value: is_supply">
                                 <input type="hidden" name="MPN" data-bind="value: MPN">
-                                <input type="hidden" name="price" data-bind="value: curr_price">
+                                <div data-bind="text: inventory_name">
+                                </div>
                             </td>
-                            <td data-bind="text: inventory_name"></td>
-                            <td align="center">
-                                <div class="input-group">
+                            <td style="width: 30%" align="center">
+                                <div class="input-group has-success">
                                     <input name="qty" type="text" required
                                            class="form-control text-right"
-                                           style="width: 8em; font-size: 16px"
+                                           style="font-size: 16px"
                                            data-bind="textInput: qtyRequested">
-                                    <div class="input-group-addon">kg</div>
+                                    <div class="input-group-addon"
+                                         data-bind="text: units() === 1 ? UM() : SKU()"></div>
+                                </div>
+                            </td>
+                            <td style="width: 15%" align="center">
+                                <span data-bind="visible: units() > 1,
+                                                 text: (units() * qtyRequested() || '0') + ' ' + UM()"></span>
+                            </td>
+                            <td style="width: 30%" align="center">
+                                <div class="input-group has-success">
+                                    <div class="input-group-addon">$</div>
+                                    <input name="price" type="text" required
+                                           class="form-control text-right"
+                                           style="font-size: 16px"
+                                           data-bind="textInput: curr_price">
+                                    <div class="input-group-addon"
+                                         data-bind="text: unitpriced() ? '/ ' + UM() : '/ ' + SKU()"></div>
                                 </div>
                             </td>
                         </tr>
