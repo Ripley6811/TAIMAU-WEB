@@ -195,12 +195,12 @@ TODO:
             </td>
 
             <td class="has-success" style="width: 7em">
-                <span data-bind="visible: MPN,
+                <span data-bind="visible: !isEditing() || (MPN() && restrictEditing() && isEditing()),
                                  text: units() + ' ' + UM() + (units() > 1 ? ' / ' + SKU() : '')">
                 </span>
                 <div data-bind="visible: isEditing">
                     <div class="input-group"
-                         data-bind="visible: !MPN()"
+                         data-bind="visible: !MPN() || !restrictEditing()"
                          title="每一個包裝的數量"
                          data-toggle="tooltip" data-placement="left">
                         <div class="input-group-addon">裝量</div>
@@ -224,11 +224,23 @@ TODO:
                 </div>
             </td>
 
-            <td style="width: 7em">
+            <td class="has-success" style="width: 7em">
                 <span data-bind="text: '$' + curr_price() + ' / ' + (unitpriced() ? UM() : SKU()),
                                  attr: {'data-original-title': units() > 1 && unitpriced() ? '$' + (units() * curr_price()) + ' / ' + SKU() : ''}"
                      data-toggle="tooltip" data-placement="left">
                 </span>
+                <div data-bind="visible: isEditing() && !restrictEditing()">
+                    <div class="input-group">
+                        <div class="input-group-addon">價格</div>
+                        <input type="text" class="form-control"
+                               data-bind="textInput: curr_price">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon" data-bind="text: '/ ' + UM()"></div>
+                        <input type="checkbox" class="form-control"
+                               data-bind="checked: unitpriced">
+                    </div>
+                </div>
             </td>
 
             <td class="has-success" style="width: 12em">

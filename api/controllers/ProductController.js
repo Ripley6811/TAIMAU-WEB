@@ -366,7 +366,7 @@ module.exports = {
         .count({MPN: req.param('id')})
         .exec(function (err, nRecs) {
             if (err) { res.send(err); return; }
-            res.json(nRecs > 0 ? 'true' : 'false');
+            res.json(nRecs > 0 ? true : false);
         });
     },
 
