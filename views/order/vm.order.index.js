@@ -69,7 +69,7 @@ viewModel.OrderIndex = {
                 if (evt.altKey) {
                     self.createNewOrder();
                 }
-                return false;
+                return true;  // Let bubble
             }
         };
 

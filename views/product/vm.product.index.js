@@ -55,7 +55,7 @@ viewModel.ProductsVM = {
                 if (evt.altKey) {
                     self.createNewOrder();
                 }
-                return false;
+                return true;  // Let bubble
             }
         };
     },
@@ -123,10 +123,15 @@ viewModel.ProductsVM = {
                 note: undefined,
                 UM: undefined,
                 SKU: undefined,
-                units: undefined,
-                curr_price: undefined,
             };
-
+        // If unrestricted then allow editing sensitive fields (price-related)
+        // Should be restricted if POs and connected records exist.
+        if (!ko_rec.restrictEditing()) {
+            updates.units = undefined;
+            updates.curr_price = undefined;
+            updates.unitpriced = undefined;
+        }
+        // Copy the current data from record model
         for (var field in updates) {
             updates[field] = ko_rec[field]();
         }
@@ -152,7 +157,7 @@ viewModel.ProductsVM = {
      */
     editCancelButton: function (index) {
         var product = this.products()[index];
-        if (product.id()) {
+        if (product.MPN()) {
             product.isEditing(false);
         } else {
             // Remove if not saved (no DB id).
@@ -216,6 +221,7 @@ viewModel.ProductsVM = {
             if (xhr.readyState !== 4) return;
 
             var data = JSON.parse(xhr.response);
+            console.log(data);
             // Update view if successful
             ko.mapping.fromJS(data, ko_rec);
         };
@@ -316,6 +322,8 @@ viewModel.ProductsVM = {
         ko_rec.UM('kg');
         ko_rec.SKU('桶');
         ko_rec.SKUlong('');
+        ko_rec.curr_price(0);
+        ko_rec.unitpriced(true);
         ko_rec.note('');
         ko_rec.inventory_name('');
         ko_rec.product_label('');
