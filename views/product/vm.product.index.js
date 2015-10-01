@@ -221,7 +221,6 @@ viewModel.ProductsVM = {
             if (xhr.readyState !== 4) return;
 
             var data = JSON.parse(xhr.response);
-            console.log(data);
             // Update view if successful
             ko.mapping.fromJS(data, ko_rec);
         };
