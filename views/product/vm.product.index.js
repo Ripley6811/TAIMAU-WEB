@@ -323,6 +323,7 @@ viewModel.ProductsVM = {
         ko_rec.SKUlong('');
         ko_rec.curr_price(0);
         ko_rec.unitpriced(true);
+        ko_rec.units(1);
         ko_rec.note('');
         ko_rec.inventory_name('');
         ko_rec.product_label('');
