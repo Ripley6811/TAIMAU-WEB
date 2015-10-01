@@ -196,27 +196,27 @@ function ProductsVM() {
         viewModel.productModalVM.edit(product.MPN(), self.productsGet);
     };
     self.removeProduct= function(product) {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-                var response = JSON.parse(xmlhttp.response);
-                console.log(typeof response, response);
-                if (response.status !== 400 && response.group === co_name) {
-                    product.MPN(null);
-                    product.saved(false);
-                    self.products.remove(product);
-                } else {
-                    alert(JSON.stringify(response, null, '  '));
-                }
-            }
-        };
-        xmlhttp.open('POST', '/product/destroy', true);
-        xmlhttp.setRequestHeader('Content-type', 'application/json');
-        xmlhttp.send(ko.toJSON({
-            _csrf: _csrf,
-            co_name: co_name,
-            MPN: product.MPN
-        }));
+//        var xmlhttp = new XMLHttpRequest();
+//        xmlhttp.onreadystatechange = function() {
+//            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+//                var response = JSON.parse(xmlhttp.response);
+//                console.log(typeof response, response);
+//                if (response.status !== 400 && response.group === co_name) {
+//                    product.MPN(null);
+//                    product.saved(false);
+//                    self.products.remove(product);
+//                } else {
+//                    alert(JSON.stringify(response, null, '  '));
+//                }
+//            }
+//        };
+//        xmlhttp.open('POST', '/product/destroy', true);
+//        xmlhttp.setRequestHeader('Content-type', 'application/json');
+//        xmlhttp.send(ko.toJSON({
+//            _csrf: _csrf,
+//            co_name: co_name,
+//            MPN: product.MPN
+//        }));
     };
 
     self.saveProduct = function(product) {

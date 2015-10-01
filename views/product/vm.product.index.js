@@ -228,36 +228,37 @@ viewModel.ProductsVM = {
     },
 
     /**
-     * Deletes an Order record from the database.
+     * Deletes a record from the database.
      * @param   {Object}  ko_rec A KO mapped record object.
      * @returns {Boolean} Deletion succeeded or not.
      */
     deleteRecord: function (ko_rec) {
-//        var orders_KOA = this.orders,
-//            params = {
-//                id: ko_rec.id(),
-//                _csrf: viewModel._csrf,
-//            };
-//
-//        var xmlhttp = new XMLHttpRequest();
-//        xmlhttp.onreadystatechange = function () {
-//            if (xmlhttp.readyState !== 4) return;
-//
-//            // Remove record from array if successful
-//            if (xmlhttp.status === 204) {
-//                orders_KOA.remove(ko_rec);
-//                return true;
-//            }
-//            // Display error
-//            var data = JSON.parse(xmlhttp.response);
-//            if (data.error && data.raw.code === 'ER_ROW_IS_REFERENCED_2') {
-//                ko_rec.errorMessage("不能刪除 - 訂單已經出貨.");
-//                return false;
-//            }
-//        };
-//        xmlhttp.open('DELETE', '/order/delete', true);
-//        xmlhttp.setRequestHeader('Content-type', 'application/json');
-//        xmlhttp.send(ko.toJSON(params));
+        var products_KOA = this.products,
+            params = {
+                MPN: ko_rec.MPN(),
+                co_name: ko_rec.group(),
+                _csrf: viewModel._csrf,
+            },
+            xhr = new XMLHttpRequest();
+
+        xhr.open('DELETE', '/product/destroy', true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== 4) return;
+
+            // Remove record from array if successful
+            if (xhr.status === 204) {
+                products_KOA.remove(ko_rec);
+                return true;
+            }
+            // Display error
+            var data = JSON.parse(xhr.response);
+            if (data.error && data.raw.code === 'ER_ROW_IS_REFERENCED_2') {
+                ko_rec.errorMessage("不能刪除 - 已經開了訂單.");
+                return false;
+            }
+        };
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.send(ko.toJSON(params));
     },
 
     /**

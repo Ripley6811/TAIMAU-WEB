@@ -241,6 +241,7 @@ module.exports = {
      *
      * Returns status 500 error if product cannot be deleted due to linked
      * records.
+     * Used by "product/index" page.
      * @param   {String}   co_name Name of company group.
      * @param   {String}   MPN Database id for record.
      */
@@ -248,17 +249,18 @@ module.exports = {
         var co_name = req.param('co_name'),
             MPN = req.param('MPN');
 
-        Product.destroy({MPN: MPN, group: co_name})
-        .exec(function (err, recs) {
-            if (err) {
-                console.log('PRODUCT DESTROY:');
-                console.log(JSON.stringify(err, null, '   '));
-                res.send(err);
-                return false;
-            }
-            console.log('PRODUCT DESTROY:', typeof recs, recs);
-            res.send(recs[0]);
-        });
+        Product.findOne(MPN)
+        .exec(function (err, rec) {
+            if (err) {res.json(err); return;}
+
+            rec.destroy(function (err) {
+                if (err) {
+                    res.json(err);
+                } else {
+                    res.send(204);
+                }
+            });
+        })
     },
 
     // Retrieve all products for a company.
