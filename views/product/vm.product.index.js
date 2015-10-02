@@ -26,24 +26,30 @@ viewModel.ProductsVM = {
     init: function () {
         var self = this;
         self.loadProducts();
-//
+
         document.onkeydown = function(evt) {
+            console.log(evt.keyCode, evt);
             switch(evt.keyCode) {
             // ENTER: Creates shipment from selected items.
             case keyCode.ENTER:
                 var products = self.products(),
-                    noneSelected = true;
+                    nSelected = 0;
                 for (var i=0; i<products.length; i++) {
                     if (products[i].isSelected()) {
-                        noneSelected = false;
+                        nSelected += 1;
                         self.isPurchase(products[i].is_supply());
                     }
                 }
+                // Open multiple shipment modal if +SHIFT and one item.
+                if (nSelected === 1 && evt.shiftKey) {
+                    console.log("Multiple ship modal not implemented")
+                    return false;
+                }
                 // Opens help window if none is selected.
-                if (noneSelected) {
-                    $('#helpModal').modal('show');
-                } else {
+                if (nSelected > 0) {
                     $('#createShipmentModal').modal('show');
+                } else {
+                    $('#helpModal').modal('show');
                 }
                 return false;
             // F1: Shows help modal showing hotkeys.
@@ -53,7 +59,14 @@ viewModel.ProductsVM = {
             // N+Alt: Creates a new record row at top.
             case keyCode.N:
                 if (evt.altKey) {
-                    self.createNewOrder();
+                    self.createNewRecord();
+                }
+                return true;  // Let bubble
+            // Esc: Deselect all.
+            case keyCode.ESC:
+                var products = self.products();
+                for (var i=0; i<products.length; i++) {
+                    products[i].isSelected(false);
                 }
                 return true;  // Let bubble
             }
@@ -73,13 +86,13 @@ viewModel.ProductsVM = {
     },
 
     /**
-     * Sorts the orders array with open/active ones at top.
+     * Sorts the products array with discontinued ones at bottom.
      */
-    sortOrderOpen: function () {
-//        this.orders.sort(function (a, b) {
-//            var p = 'is_open';
-//            return a[p]() === b[p]() ? 0 : (a[p]() > b[p]() ? -1 : 1);
-//        });
+    sortDiscontinued: function () {
+        this.products.sort(function (a, b) {
+            var p = 'discontinued';
+            return a[p]() === b[p]() ? 0 : (a[p]() < b[p]() ? -1 : 1);
+        });
     },
 
     /**
@@ -362,6 +375,8 @@ viewModel.ProductsVM = {
             }
             // Activate Bootstrap's tooltips (opt-in function).
             $('[data-toggle="tooltip"]').tooltip();
+
+            self.sortDiscontinued();
             self.isLoading(false);
         };
         xhr.send();
