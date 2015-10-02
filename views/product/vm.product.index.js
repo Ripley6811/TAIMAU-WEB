@@ -446,14 +446,14 @@ viewModel.ProductsVM.multiModalVM = {
             }
         }
         var params = {
-            _csrf: _csrf,
+            _csrf: viewModel._csrf,
             co_name: viewModel.co_name,
             items: items
         };
         post('/database/save/multipleshipments', params, function(res) {
             //console.log(res);
             if ('error' in res) alert(res);
-            else window.location = '../showall/'+viewModel.co_name;
+            else window.location = '/shipment/showall/'+viewModel.co_name;
         });
     },
 
