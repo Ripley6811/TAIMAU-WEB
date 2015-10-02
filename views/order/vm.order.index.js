@@ -46,8 +46,9 @@ viewModel.OrderIndex = {
             // ENTER: Creates shipment from selected items.
             case keyCode.ENTER:
                 var orders = self.orders(),
+                    len = orders.length,
                     noneSelected = true;
-                for (var i=0; i<orders.length; i++) {
+                for (var i=0; i<len; i++) {
                     if (orders[i].isSelected()) {
                         noneSelected = false;
                         self.isPurchase(orders[i].is_purchase());
@@ -72,8 +73,9 @@ viewModel.OrderIndex = {
                 return true;  // Let bubble
             // Esc: Deselect all.
             case keyCode.ESC:
-                var orders = self.orders();
-                for (var i=0; i<orders.length; i++) {
+                var orders = self.orders(),
+                    len = orders.length;
+                for (var i=0; i<len; i++) {
                     orders[i].isSelected(false);
                 }
                 return true;  // Let bubble
