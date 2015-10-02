@@ -366,7 +366,7 @@ hr {
 }
 
 .tooltip-inner {
-    width: 120px;
+    white-space: pre-wrap;
 }
 
 .alert {
