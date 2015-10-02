@@ -70,6 +70,13 @@ viewModel.OrderIndex = {
                     self.createNewOrder();
                 }
                 return true;  // Let bubble
+            // Esc: Deselect all.
+            case keyCode.ESC:
+                var orders = self.orders();
+                for (var i=0; i<orders.length; i++) {
+                    orders[i].isSelected(false);
+                }
+                return true;  // Let bubble
             }
         };
 
