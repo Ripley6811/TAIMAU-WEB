@@ -28,7 +28,6 @@ viewModel.ProductsVM = {
         self.loadProducts();
 
         document.onkeydown = function(evt) {
-            console.log(evt.keyCode, evt);
             switch(evt.keyCode) {
             // ENTER: Creates shipment from selected items.
             case keyCode.ENTER:
@@ -43,14 +42,16 @@ viewModel.ProductsVM = {
                 // Open multiple shipment modal if +SHIFT and one item.
                 if (nSelected === 1 && evt.shiftKey) {
                     console.log("Multiple ship modal not implemented")
+                    $('#shipMultiModal').modal('show');
                     return false;
                 }
                 // Opens help window if none is selected.
                 if (nSelected > 0) {
                     $('#createShipmentModal').modal('show');
-                } else {
-                    $('#helpModal').modal('show');
+                    return false;
                 }
+
+                $('#helpModal').modal('show');
                 return false;
             // F1: Shows help modal showing hotkeys.
             case keyCode.F1:
@@ -74,18 +75,6 @@ viewModel.ProductsVM = {
     },
 
     /**
-     * Sorts the orders array by order number. Blanks at bottom.
-     */
-    sortOrderID: function () {
-//        this.orders.sort(function (a, b) {
-//            var p = 'orderID',
-//                a = a[p]() ? a[p]().toUpperCase() : 'zzz',
-//                b = b[p]() ? b[p]().toUpperCase() : 'zzz';
-//            return a === b ? 0 : (a < b ? -1 : 1);
-//        });
-    },
-
-    /**
      * Sorts the products array with discontinued ones at bottom.
      */
     sortDiscontinued: function () {
@@ -101,7 +90,11 @@ viewModel.ProductsVM = {
      * @param {Number} index Index of record in Orders KO Array.
      */
     rowClick: function (event, index) {
-        if (event.ctrlKey && event.altKey) {
+        console.log(index);
+        if (event.shiftKey) {
+            this.multiModalVM.setMultiShipmentProduct(ko.toJS(this.products()[index]));
+            $('#shipMultiModal').modal('show');
+        } else if (event.ctrlKey && event.altKey) {
             this.toggleOpen(index);
         } else if (event.ctrlKey) {
             this.toggleSelection(index);
@@ -360,7 +353,7 @@ viewModel.ProductsVM = {
     loadProducts: function () {
         var self = this,
             xhr = new XMLHttpRequest();
-        xhr.open('GET', '/product/get/<%= res.locals.cogroup ? cogroup.name : null %>', true);
+        xhr.open('GET', '/product/get/<%= res.locals.cogroup ? cogroup.name : "all" %>', true);
         xhr.onreadystatechange = function () {
             if (xhr.readyState !== 4) return;
 
@@ -391,3 +384,89 @@ viewModel.ProductsVM = {
     }
 };
 viewModel.ProductsVM.init();
+
+
+viewModel.ProductsVM.multiModalVM = {
+    productData: new KO_Product(),
+    us: ko.observable(),
+    them: ko.observable(),
+
+    /**
+     * Copy product info into modal productData variable.
+     * @param {Object} product Product data object.
+     */
+    setMultiShipmentProduct: function(product) {
+        for (var key in this.productData) {
+            try {
+                this.productData[key](product[key]);
+            }
+            catch(err) {
+
+            }
+        }
+    },
+
+    /**
+     * Array of user-entered shipments data.
+     */
+    shipments: ko.observableArray([new KO_ShipmentItem()]),
+
+    /**
+     * Form submit function.
+     */
+    doSubmit: function() {
+        var self = this;
+        // Number of rows should be greater than 1. Last one is always incomplete.
+        if (self.shipments().length == 1) {
+            alert('Enter at least one quantity to submit');
+            return;
+        }
+
+        var items = [];
+        for (var i=0; i<self.shipments().length; i++) {
+            var shipmentItem = self.shipments()[i];
+            if (shipmentItem.qty() != '') {
+                items.push({
+                    orderID: '',
+                    ordernote: '',
+                    group: viewModel.co_name,
+                    MPN: self.productData.MPN(),
+                    is_purchase: self.productData.is_supply(),
+                    is_sale: !self.productData.is_supply(),
+                    seller: self.productData.is_supply() ? self.them() : self.us(),
+                    buyer: self.productData.is_supply() ? self.us() : self.them(),
+                    qty: shipmentItem.qty(),
+                    price: self.productData.curr_price(),
+                    shipmentdate: new Date(shipmentItem.shipdate().replace(/-/g, "/")),
+                    orderdate: new Date(shipmentItem.shipdate().replace(/-/g, "/")),
+                    shipment_no: shipmentItem.shipment_no() || '',
+                    shipmentnote: shipmentItem.shipmentnote() || '',
+                    is_open: false,
+                });
+            }
+        }
+        var params = {
+            _csrf: _csrf,
+            co_name: viewModel.co_name,
+            items: items
+        };
+        post('/database/save/multipleshipments', params, function(res) {
+            //console.log(res);
+            if ('error' in res) alert(res);
+            else window.location = '../showall/'+viewModel.co_name;
+        });
+    },
+
+    /**
+     * If last line qty is filled in then add a new line for another entry.
+     */
+    init: function () {
+        ko.computed(function() {
+            if (this()[this().length - 1].qty() != '') {
+                this.push(new KO_ShipmentItem());
+                this()[this().length - 1].qty(); // Force listener update.
+            }
+        }, this.shipments);
+    },
+};
+viewModel.ProductsVM.multiModalVM.init();

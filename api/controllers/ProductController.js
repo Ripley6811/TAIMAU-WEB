@@ -43,7 +43,7 @@ module.exports = {
             });
     },
     // Load company if name is provided and show page.
-    'index': function (req, res) {
+    index: function (req, res) {
         var search_params = {};
 
         if (req.param('co')) search_params.group = req.param('co');
@@ -265,9 +265,12 @@ module.exports = {
 
     // Retrieve all products for a company.
     get: function (req, res) {
-        var co_name = req.param('id'),
+        var params = {group: req.param('id')},
             counter = 0;
-        Product.find({group: co_name}, function (err, products) {
+        if (req.param('id') === 'all') {
+            params = {};
+        }
+        Product.find(params, function (err, products) {
             // Check and update rank values.
             products.forEach(function (rec) {
                 if (rec.json === undefined || rec.json === null) rec.json = {};

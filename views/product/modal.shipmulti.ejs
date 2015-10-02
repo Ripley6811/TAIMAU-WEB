@@ -1,0 +1,93 @@
+<!--START: Multi-Shipment form-->
+<div data-bind="with: multiModalVM">
+    <div class="modal fade" id="shipMultiModal" tabindex="-1" role="dialog" aria-labelledby="shipMultiModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-header lightgreen-blend" data-bind="with: productData">
+                <h2 class="text-center">出貨 - <span data-bind="text: inventory_name"></span> - $ <span data-bind="text: curr_price"></span></h2>
+            </div>
+            <form class="form-horizontal" autocomplete="off"
+                  data-bind="submit: doSubmit">
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">台茂</label>
+                                <div class="col-md-9 has-success">
+                                    <select class="form-control" data-bind="value: us" required>
+                                        <option value="台茂">台茂</option>
+                                        <option value="永茂">永茂</option>
+                                        <option value="富茂">富茂</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">客戶</label>
+                                <div class="col-md-9 has-success">
+                                    <select class="form-control" data-bind="value: them" required>
+                                    <% cogroup.branches.forEach(function(branch) { %>
+                                    <option value="<%= branch.name %>"><%= branch.name %> : <%= branch.tax_id %> : <%= branch.fullname %></option>
+                                    <% }); %>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <table class="table table-condensed table-striped">
+                        <thead class="text-uppercase">
+                            <tr>
+                                <th>#</th>
+                                <th class="text-center">日期</th>
+                                <th class="text-center">出貨單編號</th>
+                                <th class="text-center">件數</th>
+                                <th class="text-center">出貨資訊</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: shipments">
+                            <tr>
+                                <td data-bind="text: $index() + 1"></td>
+                                <td class="text-left has-success">
+                                    <input type="date" class="form-control" data-bind="value: shipdate, attr: {required: qty() != '' ? true : false}">
+                                </td>
+                                <td class="text-center has-success">
+                                    <input type="text" class="form-control" maxlength="10" placeholder="" data-bind="textInput: shipment_no">
+                                </td>
+                                <td style="width: 20%">
+                                    <div class="input-group has-success">
+                                        <!--Using "tel" prevent scrollwheel changes to number and have number pad on device-->
+                                        <input type="tel" min=1 class="form-control text-right" data-bind="textInput: qty">
+                                        <div class="input-group-addon" data-bind="text: $parent.productData.SKU"></div>
+                                    </div>
+                                </td>
+                                <td class="has-success">
+                                    <input type="text" class="form-control" data-bind="textInput: shipmentnote">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="modal-footer lightorange-blend">
+
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+                            <input type="hidden" name="group" value="<%= cogroup.name %>" />
+                            <button type="button" class="btn btn-lg btn-danger" data-dismiss="modal">回到列表 <span class="badge">Esc</span></button>
+                            <input type="submit" class="btn btn-lg btn-medium btn-success" name="make_po_shipment" value="創造新出貨單">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--END: Multi-Shipment form-->
