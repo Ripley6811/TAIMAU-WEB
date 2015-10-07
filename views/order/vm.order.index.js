@@ -432,9 +432,39 @@ viewModel.OrderIndex = {
      * Create a new PO based, add to array and enable editing.
      */
     createNewOrder: function () {
-        var ko_rec = this.createFromTemplate();
-        ko_rec.qty(0);
-        ko_rec.ordernote('');
+        if (this.products().length === 0) {
+            alert('先加產品!');
+            return false;
+        }
+        var prod = this.products()[0],
+            us = '台茂',
+            them = '<%= res.locals.cogroup ? cogroup.name : "" %>'
+        var ko_rec = models.Order({
+            MPN: prod,
+            applytax: true,
+            duedate: null,
+            buyer: prod.is_supply() ? us : them,
+            group: them,
+            id: undefined,
+            is_open: true,
+            is_purchase: prod.is_supply(),
+            is_sale: !prod.is_supply(),
+            orderID: '',
+            orderdate: new Date(),
+            ordernote: '',
+            price: 0,
+            qty: 0,
+            qty_shipped: 0,
+            seller: prod.is_supply() ? them : us,
+        });
+        // Add entry to first position and enable editing.
+        ko_rec.isEditing(true);
+        this.orders.unshift(ko_rec);
+        // Activate tooltips (opt-in function).
+        $('[data-toggle="tooltip"]').tooltip();
+        // Scroll page to top.
+        window.scrollTo(0, 0);
+        return ko_rec;
     },
 
     /**
