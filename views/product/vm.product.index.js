@@ -213,7 +213,7 @@ viewModel.ProductsVM = {
         delete newRec.id;
         delete newRec.MPN;
 
-        if (newRec.inventory_name.length < 3) {
+        if (newRec.inventory_name.length < 2) {
             ko_rec.errorMessage('品名太短');
             return false;
         }
