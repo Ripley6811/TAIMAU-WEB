@@ -147,17 +147,20 @@ TODO:
                     <div class="input-group"
                          data-bind="visible: !MPN()">
                         <div class="input-group-addon">內用</div>
-                        <input type="text" class="form-control" required
+                        <input type="text" class="form-control"
+                               required placeholder="台茂用的品名(需要)"
                                data-bind="textInput: inventory_name">
                     </div>
                     <div class="input-group">
                         <div class="input-group-addon">標籤</div>
                         <input type="text" class="form-control"
+                               placeholder="客戶用的品名(別名)"
                                data-bind="textInput: product_label">
                     </div>
                     <div class="input-group">
                         <div class="input-group-addon">英文</div>
                         <input type="text" class="form-control"
+                               placeholder="English name"
                                data-bind="textInput: english_name">
                     </div>
                 </div>
