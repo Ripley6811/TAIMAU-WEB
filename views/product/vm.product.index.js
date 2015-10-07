@@ -41,7 +41,6 @@ viewModel.ProductsVM = {
                 }
                 // Open multiple shipment modal if +SHIFT and one item.
                 if (nSelected === 1 && evt.shiftKey) {
-                    console.log("Multiple ship modal not implemented")
                     $('#shipMultiModal').modal('show');
                     return false;
                 }
@@ -90,7 +89,6 @@ viewModel.ProductsVM = {
      * @param {Number} index Index of record in Orders KO Array.
      */
     rowClick: function (event, index) {
-        console.log(index);
         if (event.shiftKey) {
             this.multiModalVM.setMultiShipmentProduct(ko.toJS(this.products()[index]));
             $('#shipMultiModal').modal('show');
@@ -346,7 +344,6 @@ viewModel.ProductsVM = {
         });
         ko_rec.isEditing(true);
         ko_rec.restrictEditing(false);
-        console.log(ko.toJS(ko_rec));
         // Add entry to first position and enable editing.
         this.products.unshift(ko_rec);
         // Activate tooltips (opt-in function).
@@ -469,7 +466,6 @@ viewModel.ProductsVM.multiModalVM = {
             items: items
         };
         post('/database/save/multipleshipments', params, function(res) {
-            //console.log(res);
             if ('error' in res) alert(res);
             else window.location = '/shipment/showall/'+viewModel.co_name;
         });
