@@ -216,6 +216,8 @@ viewModel.ProductsVM = {
         if (newRec.inventory_name.length < 2) {
             ko_rec.errorMessage('品名太短');
             return false;
+        } else {
+            ko_rec.errorMessage('');
         }
 
         var params = {
@@ -311,7 +313,7 @@ viewModel.ProductsVM = {
         newRec.isConfirmingDelete(false);
         newRec.errorMessage('');
         newRec.restrictEditing(false);
-        // Activate year & other tooltips (opt-in function).
+        // Activate tooltips (opt-in function).
         $('[data-toggle="tooltip"]').tooltip();
         // Scroll page to top.
         window.scrollTo(0, 0);
@@ -322,20 +324,35 @@ viewModel.ProductsVM = {
      * Create a new record with default values and add to array.
      */
     createNewRecord: function () {
-        var ko_rec = this.createFromTemplate();
-        ko_rec.qtyRequested(0);
-        ko_rec.UM('kg');
-        ko_rec.SKU('桶');
-        ko_rec.SKUlong('');
-        ko_rec.curr_price(0);
-        ko_rec.unitpriced(true);
-        ko_rec.units(1);
-        ko_rec.note('');
-        ko_rec.inventory_name('');
-        ko_rec.product_label('');
-        ko_rec.english_name('');
-        ko_rec.ASE_PN('');
-        ko_rec.ASE_RT('');
+        var ko_rec = models.Product({
+            ASE_PN: '',
+            ASE_RT: '',
+            MPN: undefined,
+            SKU: '槽車',
+            SKUlong: '',
+            UM: 'kg',
+            curr_price: 0,
+            discontinued: false,
+            english_name: '',
+            group: '<%= res.locals.cogroup ? cogroup.name : "" %>',
+            id: undefined,
+            inventory_name: '',
+            is_supply: true,
+            json: {},
+            note: '',
+            product_label: '',
+            unitpriced: true,
+            units: 1,
+        });
+        ko_rec.isEditing(true);
+        console.log(ko.toJS(ko_rec));
+        // Add entry to first position and enable editing.
+        this.products.unshift(ko_rec);
+        // Activate tooltips (opt-in function).
+        $('[data-toggle="tooltip"]').tooltip();
+        // Scroll page to top.
+        window.scrollTo(0, 0);
+        return ko_rec;
     },
 
     /**
