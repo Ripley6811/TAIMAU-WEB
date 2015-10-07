@@ -86,8 +86,14 @@ module.exports = {
                 // If error redirect back to creation page
                 return res.redirect('/cogroup/new/');
             }
+            // Add first branch with the same name as group.
+            Branch.create({group: cogroupObj.name, name: cogroupObj.name},
+                         function(err, branch) {
+                if (err) { res.send(err); return; }
 
-            res.redirect('/cogroup/show/' + cogroupObj.name);
+                res.redirect('/cogroup/show/' + cogroupObj.name);
+            })
+
         });
 
     },
