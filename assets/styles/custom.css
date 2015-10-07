@@ -341,6 +341,7 @@ hr {
 
 .archived-row > td {
     background-color: rgb(176, 176, 176) !important;
+    color: dimgray;
 }
 
 .highlight-archived-row > td {
