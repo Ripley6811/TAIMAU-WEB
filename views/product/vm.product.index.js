@@ -345,6 +345,7 @@ viewModel.ProductsVM = {
             units: 1,
         });
         ko_rec.isEditing(true);
+        ko_rec.restrictEditing(false);
         console.log(ko.toJS(ko_rec));
         // Add entry to first position and enable editing.
         this.products.unshift(ko_rec);
