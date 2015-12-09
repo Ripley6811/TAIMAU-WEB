@@ -100,12 +100,10 @@ viewModel.OrderIndex = {
 
         // Set up search box listener and action
         var filter = ko.computed(function () {
-            console.log(self);
             var orders = self.orders(),
                 text = self.filterText();
             if (text.length > 0) {
                 for (var i = 0; i < orders.length; i++) {
-                    console.log(orders[i].orderID(), orders[i].orderID().indexOf("505"))
                     if (orders[i].orderID().indexOf(text) >= 0) {
                         orders[i].isHidden(false);
                     } else {
