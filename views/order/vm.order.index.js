@@ -9,6 +9,10 @@ viewModel.OrderIndex = {
      */
     orders: ko.observableArray(),
     /**
+     * Search box text for finding a PO.
+     */
+    filterText: ko.observable(""),
+    /**
      * KO Array holding 'Product' records using ko.mapping.
      */
     products: ko.observableArray(),
@@ -93,6 +97,27 @@ viewModel.OrderIndex = {
                 self.retrieveOrderRecords();
             }
         });
+
+        // Set up search box listener and action
+        var filter = ko.computed(function () {
+            console.log(self);
+            var orders = self.orders(),
+                text = self.filterText();
+            if (text.length > 0) {
+                for (var i = 0; i < orders.length; i++) {
+                    console.log(orders[i].orderID(), orders[i].orderID().indexOf("505"))
+                    if (orders[i].orderID().indexOf(text) >= 0) {
+                        orders[i].isHidden(false);
+                    } else {
+                        orders[i].isHidden(true);
+                    }
+                }
+            } else {
+                for (var i = 0; i < orders.length; i++) {
+                    orders[i].isHidden(false);
+                }
+            }
+        }, self);
     },
 
     /**

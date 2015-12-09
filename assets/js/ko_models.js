@@ -24,6 +24,7 @@ var models = {
         // Set extra UI control observables.
         self.isSelected = ko.observable(false);
         self.isEditing = ko.observable(false);
+        self.isHidden = ko.observable(false);
         self.isConfirmingDelete = ko.observable(false);
         self.errorMessage = ko.observable();
         self.qtyRequested = ko.observable();

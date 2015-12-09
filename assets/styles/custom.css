@@ -344,6 +344,10 @@ hr {
     color: dimgray;
 }
 
+.hide-row {
+    display: none;
+}
+
 .highlight-archived-row > td {
     /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffff00+0,b0b0b0+100 */
     background: rgb(255,255,0); /* Old browsers */

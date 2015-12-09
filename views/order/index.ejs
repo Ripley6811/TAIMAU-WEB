@@ -24,7 +24,11 @@ TODO:
         <th class="text-center">
             賣家 <i class="fa fa-arrow-right fa-fw"></i> 買主
         </th>
-        <th>PO#</th>
+        <th>PO#
+            <input class="form-control"
+                   style="color: black; width: 80px; display: inline"
+                   data-bind="textInput: filterText">
+        </th>
         <th>品名</th>
         <th class="text-center">訂量</th>
         <th></th>
@@ -39,11 +43,13 @@ TODO:
                        click: function (data, event) { $parent.rowClick(event, $index()); return true; },
                        <% } %>
                        css: {'archived-row': !is_open() && !isSelected(),
-                       'alert-text': is_open() && parseInt(qty()) <= parseInt(qty_shipped()),
-                       <% if (res.locals.cogroup) { %>
-                       'highlight-row': is_open && isSelected,
-                       'highlight-archived-row': !is_open() && isSelected,
-                       <% } %>}">
+                           'hide-row': isHidden(),
+                           'alert-text': is_open() && parseInt(qty()) <= parseInt(qty_shipped()),
+                           <% if (res.locals.cogroup) { %>
+                           'highlight-row': is_open && isSelected,
+                           'highlight-archived-row': !is_open() && isSelected,
+                           <% } %>
+                       }">
             <td style="width: 2em">
                 <div class="dropdown">
                     <button class="btn btn-custom btn-xs dropdown-toggle"
