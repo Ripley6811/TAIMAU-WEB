@@ -477,7 +477,7 @@ viewModel.OrderIndex = {
     },
 
     /**
-     * Request list of products for new PO creation.
+     * Request list of available products for new PO creation.
      */
     loadProducts: function () {
         var self = this,
@@ -493,7 +493,9 @@ viewModel.OrderIndex = {
 
             var products = ko.mapping.fromJSON(xhr.response);
             for (var i=0; i<products().length; i++) {
-                self.products.push(products()[i]);
+                if (!products()[i].discontinued()) {
+                    self.products.push(products()[i]);
+                }
             }
         };
         xhr.send();
