@@ -476,6 +476,8 @@ function KO_ShipmentListRow(item) {
     self.invoiceitem_id = item.invoiceitem_id;
     self.invoice_id = item.invoice_id;
     self.group = item.group;
+    self.seller = item.seller;
+    self.buyer = item.buyer;
 
     self.orderID = item.orderID;
     self.price = item.price;

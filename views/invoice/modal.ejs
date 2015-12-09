@@ -282,6 +282,14 @@ function InvoiceModalVM() {
         for (var i=0; i<items.length; i++) {
             self.invoiceItems.push(new KO_ShipmentListRow(items[i]));
             self.invoiceItems()[i].shipmentitem_id = items[i].shipmentitem_id;
+            // Set the buyer and seller names
+            if (['台茂','富茂','永茂'].indexOf(items[i].buyer) >= 0) {
+                self.us(items[i].buyer);
+                self.them(items[i].seller);
+            } else {
+                self.us(items[i].seller);
+                self.them(items[i].buyer);
+            }
             // Fill in all fields if this is an edit to existing invoice.
             if (items[i].invoice_no != undefined) {
                 self.invoice_id(items[i].invoice_id);
@@ -292,13 +300,12 @@ function InvoiceModalVM() {
                 self.inv_year(date_today.getFullYear()-1911);
                 self.inv_month(date_today.getMonth()+1);
                 self.inv_day(date_today.getDate());
-                if (['台茂','富茂','永茂'].indexOf(items[i].buyer) >= 0) {
-                    self.us(items[i].buyer);
-                    self.them(items[i].seller);
-                } else {
-                    self.us(items[i].seller);
-                    self.them(items[i].buyer);
-                }
+            } else {
+                // Prefill with shipment date
+                var date_today = new Date(items[i].shipmentdate);
+                self.inv_year(date_today.getFullYear()-1911);
+                self.inv_month(date_today.getMonth()+1);
+                self.inv_day(date_today.getDate());
             }
         }
         if (self.invoiceItems().length == 0) return;
