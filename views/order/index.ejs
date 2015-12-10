@@ -24,8 +24,8 @@ TODO:
         <th class="text-center">
             賣家 <i class="fa fa-arrow-right fa-fw"></i> 買主
         </th>
-        <th>PO#
-            <input class="form-control" placeholder="Filter"
+        <th>
+            <input class="form-control" placeholder="PO#"
                    style="color: black; width: 80px; display: inline"
                    data-bind="textInput: filterText">
         </th>
@@ -182,7 +182,10 @@ TODO:
             </td>
             <% } %>
             <td has-input="orderID" class="has-success">
-                <div data-bind="visible: id, html: orderID() ? orderID : '<label class=\'badge\'>' + id() + '</label>'"></div>
+                <div data-toggle="tooltip" data-placement="left"
+                     data-bind="visible: id,
+                                html: orderID() ? orderID : '<label class=\'badge\'>' + id() + '</label>',
+                                attr: {'data-original-title': 'DB#: ' + id()}"></div>
                 <input class="form-control" type="text" style="width: 8em"
                        placeholder="PO#"
                        data-bind="attr: {value: orderID()},
