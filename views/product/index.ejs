@@ -17,7 +17,7 @@ TODO:
         </button>
     </div>
 
-  <table class="table table-condensed">
+  <table class="table table-condensed table-bordered">
     <thead>
         <th>選</th>
         <th>買/賣</th>
@@ -104,12 +104,20 @@ TODO:
 
             <td align="center" style="width: 4em">
                 <div>
-                    <span class="fa fa-fw"
-                          data-bind="css: {'fa-ambulance': is_supply}"
+                    <span class="fa fa-fw fa-ambulance"
+                          data-bind="visible: is_supply"
                           data-toggle="tooltip" data-placement="right" title="進貨材料">
                     </span>
                     <span class="fa fa-fw"
-                          data-bind="css: {'fa-truck fa-flip-horizontal': !is_supply()}"
+                          data-bind="visible: is_supply">
+                        進
+                    </span>
+                    <span class="fa fa-fw"
+                          data-bind="visible: !is_supply()">
+                        出
+                    </span>
+                    <span class="fa fa-fw fa-truck fa-flip-horizontal"
+                          data-bind="visible: !is_supply()"
                           data-toggle="tooltip" data-placement="right" title="出貨產品">
                     </span>
                 </div>
