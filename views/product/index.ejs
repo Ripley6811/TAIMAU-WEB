@@ -21,7 +21,10 @@ TODO:
     <thead>
         <th>選</th>
         <th>買/賣</th>
-        <th class="text-center">品名</th>
+        <th class="text-center">
+            <span class="badge">PN</span>
+            品名
+        </th>
         <th></th>
         <th>單位量</th>
         <th>最近價格</th>
@@ -147,9 +150,9 @@ TODO:
                           data-bind="text: english_name">
                     </span>
                 </div>
-
-                <span style="margin-left: 23px;"
-                      data-bind="visible: MPN,
+                <span style="margin-left: 23px;"></span>
+                <span class="badge" data-bind="text: ASE_PN"></span>
+                <span data-bind="visible: MPN,
                                  text: inventory_name"></span>
                 <div data-bind="visible: isEditing">
                     <div class="input-group"
