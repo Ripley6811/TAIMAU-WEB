@@ -74,12 +74,18 @@ viewModel.ProductsVM = {
     },
 
     /**
-     * Sorts the products array with discontinued ones at bottom.
+     * Sorts the products by PN if any with PNs at the top.
      */
-    sortDiscontinued: function () {
+    sortProducts: function () {
         this.products.sort(function (a, b) {
-            var p = 'discontinued';
-            return a[p]() === b[p]() ? 0 : (a[p]() < b[p]() ? -1 : 1);
+            var p = 'ASE_PN';
+            // Discontinued products straight to bottom
+            if (a['discontinued']()) return 1;
+            // Empty PN strings at end of list
+            if (a[p]().length < 1 && b[p]().length < 1) return 0;
+            if (a[p]().length < 1 || b[p]().length < 1) return (a[p]() > b[p]() ? -1 : 1);
+            // Else sort by PN
+            return (a[p]() < b[p]() ? -1 : 1);
         });
     },
 
@@ -384,7 +390,7 @@ viewModel.ProductsVM = {
             // Activate Bootstrap's tooltips (opt-in function).
             $('[data-toggle="tooltip"]').tooltip();
 
-            self.sortDiscontinued();
+            self.sortProducts();
             self.isLoading(false);
         };
         xhr.send();
