@@ -14,15 +14,15 @@
     <!--    <tbody data-bind="foreach: cogroups">-->
         <tbody data-bind="foreach: cogroups">
             <tr>
-                <td>
+                <td style="width: 150px">
                     <div class="btn-group" style="width: 100%">
                         <button class="btn btn-custom" style="width: 33%"
-                                data-bind="click: btn_new_order">
-                            <i class="fa fa-fw fa-file-powerpoint-o fa-lg"></i>
+                                data-bind="click: btn_product_page">
+                            <i class="fa fa-fw fa-flask fa-lg"></i>
                         </button>
                         <button class="btn btn-custom" style="width: 33%"
-                                data-bind="click: btn_new_shipment">
-                            <i class="fa fa-fw fa-truck fa-flip-horizontal fa-lg"></i>
+                                data-bind="click: btn_po_page">
+                            <i class="fa fa-fw fa-file-powerpoint-o fa-lg"></i>
                         </button>
                         <button class="btn btn-custom" style="width: 33%"
                                 data-bind="click: btn_all_shipments">
@@ -78,12 +78,12 @@
 var cogroups = ko.mapping.fromJS(<%- JSON.stringify(cogroups) %>);
 var _csrf = '<%= _csrf %>';
 
-var btn_new_order = function (group) {
-    window.location = "/order/new/" + group.name();
+var btn_product_page = function (group) {
+    window.location = "/product?co=" + group.name();
 };
 
-var btn_new_shipment = function (group) {
-    window.location = "/shipment/new/" + group.name();
+var btn_po_page = function (group) {
+    window.location = "/order?co=" + group.name();
 };
 
 var btn_all_shipments = function (group) {
