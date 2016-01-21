@@ -157,6 +157,23 @@ function draw_PDF(download) {
     // Signature area for receiver, driver and office bookkeeping
     var sig_offset = 106;
     doc.alttext(12, sig_offset, '備註', font_size());
+    console.dir(items);
+    var y = sig_offset;//+font_size();
+    var NOTE_LIMIT = 3;
+    var note_count = 0;
+    for (var i=0; i<items.length; i++) {
+        var item = items[i];
+        if (item.po_note && note_count < NOTE_LIMIT) {
+            y += 6;
+            var item_name = "";
+            if (items.length > 1) {
+                item_name = item.product_label ? item.product_label : item.inventory_name;
+                item_name += ": ";
+            }
+            doc.alttext(12, y, item_name + item.po_note, .8*font_size());
+            note_count += 1;
+        }
+    }
     doc.alttext(72, sig_offset, '司機', font_size());
     doc.alttext(132, sig_offset, '客戶簽收', font_size());
 

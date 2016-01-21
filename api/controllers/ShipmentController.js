@@ -145,7 +145,7 @@ module.exports = {
 
         // Gets recent shipments for a company. "SHIPMENT/SHOWALL"
         Shipmentitem.query(
-            "SELECT shipi.qty, sh.shipmentdate, sh.shipment_no, br.fullname as buyer, po.orderID, po.group, po.seller, prod.inventory_name, prod.product_label, prod.UM, prod.units, prod.SKU, prod.unitcounted"
+            "SELECT shipi.qty, sh.shipmentdate, sh.shipment_no, br.fullname as buyer, po.orderID, po.group, po.seller, po.ordernote as po_note, prod.inventory_name, prod.product_label, prod.UM, prod.units, prod.SKU, prod.unitcounted"
             + " FROM shipmentitem shipi "
             + " JOIN shipment sh ON sh.id = shipi.shipment_id "
             + " JOIN `order` po ON po.id = shipi.order_id "
