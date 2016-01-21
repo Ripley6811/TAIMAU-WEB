@@ -90,6 +90,20 @@ viewModel.ProductsVM = {
     },
 
     /**
+     * Sorts by the package or container.
+     * Used when clicking on the table header for resort.
+     */
+    sortByPackage: function() {
+        this.products.sort(function (a, b) {
+            var p = 'SKU';
+            // Discontinued products straight to bottom
+            if (a['discontinued']()) return 1;
+            // Else sort by PN
+            return (a[p]() < b[p]() ? -1 : 1);
+        });
+    },
+
+    /**
      * Adds or removes highlighting to a table row.
      * @param {Object} event Event object for click.
      * @param {Number} index Index of record in Orders KO Array.
