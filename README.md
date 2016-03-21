@@ -7,6 +7,8 @@ Browser based database management for TAIMAU.
 - **Bootstrap** css to bootstrap the front-end design
 - **Font-Awesome** icons
 
+![alt tag](https://dl.dropboxusercontent.com/u/49722688/images/taimau_screenshot.png)
+
 ## Page/Link Mapping
 ##### Main page links (`static/index`)
 - `shipment/showall/"CO"` (*see same link below*)
