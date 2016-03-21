@@ -80,7 +80,9 @@ TODO: Rename this as "index.ejs"
                                 </div>
                             </td>
                             <td style="padding: 3px 3px" class="text-center">
-                                <span data-bind="text: date"></span>
+                                <span data-bind="text: $root.formatDate(date),
+                                                attr: {'data-original-title': (new Date(date)).getFullYear() + '年'}"
+                                     data-toggle="tooltip" data-placement="right"></span>
                             </td>
                             <td style="padding: 3px 3px" class="text-right">
                                 <span data-bind="text: qty"></span>
@@ -219,6 +221,9 @@ viewModel.ShowAllShipmentsVM = new (function () {
             for (var i=0; i<response.length; i++) {
                 self.shipmentsItems.push(new KO_ShipmentListRow(response[i]));
             }
+
+            // Activate Bootstrap's tooltips (opt-in function).
+            $('[data-toggle="tooltip"]').tooltip();
         });
     });
 
