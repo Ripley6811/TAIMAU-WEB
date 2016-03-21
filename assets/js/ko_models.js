@@ -538,6 +538,8 @@ function KO_ShipmentListRow(item) {
 
     self.calc_string = ko.observable();
 
+    self.grand_total = ko.observable();
+
     ko.computed(function () {
         var val = self.price_ko() * self.qty_ko();
         self.calc_string("$" + self.price_ko() + " * " + self.qty_ko());
@@ -551,6 +553,8 @@ function KO_ShipmentListRow(item) {
 
         self.calc_string(self.calc_string() + " = $" + self.value_ko());
         self.calc_string(self.calc_string() + " ($" + Math.round(self.value_ko() * 1.05) + ")");
+
+        self.grand_total("$" + Math.round(self.value_ko() * 1.05))
     });
 
     self.old_driver = item.driver || '';

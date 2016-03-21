@@ -429,3 +429,8 @@ tr {
     font-size: 14px;
     line-height: 15px;
 }
+
+.cell-min {
+    padding: 0px 2px !important;
+    vertical-align: middle !important;
+}
