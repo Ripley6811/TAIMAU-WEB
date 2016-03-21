@@ -32,23 +32,56 @@
     <hr>
 
     <div class="row">
-        <a href="/cogroup" role="button" class="btn sharp btn-success btn-block">
-            <i class="fa fa-fw fa-book fa-lg"></i>&nbsp;
-            <strong class="hidden-sm hidden-xs h4">企業名錄</strong>
-        </a>
+        <div class="dropdown">
+            <button class="btn sharp btn-success btn-block dropdown-toggle"
+                    type="button" id="companyDropdown" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="true">
+                <i class="fa fa-fw fa-book fa-lg"></i>&nbsp;
+                <strong class="hidden-sm hidden-xs h4">企業名錄</strong>&nbsp;
+                <span class="caret"></span>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="companyDropdown"
+                 style="right: 0px; text-align: right; min-width: auto">
+                <div class="btn-group-vertical">
+                    <a class="btn lightgreen-blend" href="/cogroup">
+                        <i class="fa fa-fw fa-book fa-lg"></i>&nbsp;
+                        <strong class="hidden-sm hidden-xs h4">全部</strong>
+                    </a>
+                    <a class="btn lightgreen-blend" href="/cogroup/index/suppliers">
+                        <i class="fa fa-fw fa-lg fa-ambulance"></i>&nbsp;
+                        <strong class="hidden-sm hidden-xs h4">供應企業</strong>
+                    </a>
+                    <a class="btn lightgreen-blend" href="/cogroup/index/customers">
+                        <i class="fa fa-fw fa-lg fa-users"></i>&nbsp;
+                        <strong class="hidden-sm hidden-xs h4">客戶企業</strong>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
+
     <div class="row">
-        <a href="/cogroup/index/suppliers" role="button" class="btn sharp btn-success btn-block">
-            <i class="fa fa-fw fa-lg fa-ambulance"></i>&nbsp;
-            <strong class="hidden-sm hidden-xs h4">供應企業</strong>
-        </a>
+        <div class="dropdown">
+            <button class="btn sharp btn-success btn-block dropdown-toggle"
+                    type="button" id="recentDropdown" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="true">
+                <i class="fa fa-fw fa-clock-o fa-lg"></i>&nbsp;
+                <strong class="hidden-sm hidden-xs h4">近用公司</strong>&nbsp;
+                <span class="caret"></span>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="recentDropdown"
+                 style="right: 0px; text-align: right; min-width: auto">
+                <div class="btn-group-vertical"
+                     data-bind="foreach: recent_companies">
+                    <button class="btn lightgreen-blend" style="font-size: 18px"
+                            data-bind="click: $parent.loadCompany">
+                        <strong data-bind="text: $data"></strong>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="row">
-        <a href="/cogroup/index/customers" role="button" class="btn sharp btn-success btn-block">
-            <i class="fa fa-fw fa-lg fa-users"></i>&nbsp;
-            <strong class="hidden-sm hidden-xs h4">客戶企業</strong>
-        </a>
-    </div>
+
     <div class="row">
         <a href="/product" role="button" class="btn sharp btn-success btn-block">
             <i class="fa fa-fw fa-cubes fa-lg"></i>&nbsp;
@@ -206,7 +239,7 @@
                             style="width: 50%; border-radius: 0px; margin: 0px; padding: 2px"
                             class="btn btn-custom btn-lg"
                             data-bind="click: $parent.loadCompany">
-                        <strong data-bind="text: name"></strong>
+                        <strong data-bind="text: $data"></strong>
                     </button>
                 </div>
                 <div class="" data-bind="visible: company_list().length == 0">

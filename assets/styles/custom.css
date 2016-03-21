@@ -370,6 +370,10 @@ hr {
     padding: 0px;
 }
 
+.sidebar-dropdown-color {
+    background-color: #ffe98e;
+}
+
 .tooltip-inner {
     white-space: pre-wrap;
 }

@@ -23,6 +23,8 @@ viewModel.SidebarVM = new (function () {
         <%- res.locals.cogroup ? JSON.stringify(cogroup.branches) : "[]" %>
     );
 
+    self.recent_companies = ko.observableArray([]);
+
     self.showBranch = function (branch) {
         self.branchname(branch.name);
         self.fullname(branch.fullname);
@@ -52,17 +54,28 @@ viewModel.SidebarVM = new (function () {
 
     self.company_list = ko.observableArray([]);
 
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+        }
+        return "";
+    }
+
     // Populate company buttons if no company is selected
     if (self.company_id() === '') {
         // Get from 'co_list' cookie if exists else AJAJ and set cookie
-        var cookieStr = document.cookie;
+        var cookieStr = getCookie('co_list');
         var cl_index = cookieStr.indexOf('co_list');
-        if (cl_index >= 0) {
-            var res = JSON.parse(cookieStr.substring(cl_index+8));
+        if (cookieStr != '') {
+            var res = JSON.parse(cookieStr);
             // Show first few items
             self.company_list.removeAll();
             res.slice(0, 20).forEach(function(name) {
-                self.company_list.push({'name':name});
+                self.company_list.push(name);
             });
             // Use lines below to delete 'co_list' cookie
 //                var d = new Date();
@@ -83,7 +96,7 @@ viewModel.SidebarVM = new (function () {
                 // Show first few items
                 self.company_list.removeAll();
                 res.slice(0, 20).forEach(function(name) {
-                    self.company_list.push({'name':name});
+                    self.company_list.push(name);
                 });
             };
             xmlhttp.open('GET', '/cogroup/namelist', true);
@@ -91,7 +104,26 @@ viewModel.SidebarVM = new (function () {
         }
     }
 
+    // Populate recently used companies in sidebar list from cookie
+    var recentCompanyStr = 'recent_companies';
+    var cookieStr = getCookie(recentCompanyStr);
+    if (cookieStr != '') {
+        var res = JSON.parse(cookieStr);
+        self.recent_companies.removeAll();
+        res.slice(0, 10).forEach(function(name) {
+            self.recent_companies.push(name);
+        });
+    }
+
+    // Add currently open company to list
+    if (self.company_id() != '') {
+        self.recent_companies.remove(self.company_id());
+        self.recent_companies.unshift(self.company_id());
+        var path = '; path=/';
+        document.cookie = recentCompanyStr + "=" + ko.toJSON(self.recent_companies) + path;
+    }
+
     self.loadCompany = function (branch) {
-        window.location = '/shipment/showall/' + branch.name;
+        window.location = '/shipment/showall/' + branch;
     };
 });
