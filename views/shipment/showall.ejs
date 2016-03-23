@@ -64,21 +64,25 @@ TODO: Rename this as "index.ejs"
                             </td>
 
                             <td style="border-left: solid 2px #532929;"
-                                class="cell-min text-center">
+                                class="cell-min text-center"
+                                data-bind="attr: { rowspan: $parent.shipmentNoRowSpans()[$index()] }, visible: $parent.shipmentNoRowSpans()[$index()]">
                                 <div class="btn-group" style="width: 100%">
-                                    <button style="padding: 2px 10px; width: 75%" class="btn btn-custom"
-                                            data-bind="click: $parent.open_shipment_pdf">
+                                    <button style="padding: 2px 10px; width: 75%"
+                                            class="btn btn-custom"
+                                            data-bind="click: $parent.open_shipment_pdf, style: {height: 28 * $parent.shipmentNoRowSpans()[$index()] + 'px'}">
                                         <strong data-bind="text: shipment_no"></strong>
                                         <span class="badge"
                                               data-bind="visible: !shipment_no || $parent.debug, text: shipment_id"></span>
                                     </button>
-                                    <button style="padding: 2px 10px; width: 25%" class="btn btn-custom"
-                                            data-bind="click: $parent.open_shipment_pdf">
+                                    <button style="padding: 2px 10px; width: 25%"
+                                            class="btn btn-custom"
+                                            data-bind="click: $parent.open_shipment_pdf, style: {height: 28 * $parent.shipmentNoRowSpans()[$index()] + 'px'}">
                                         <span class="fa fa-fw fa-file-pdf-o"></span>
                                     </button>
                                 </div>
                             </td>
-                            <td class="cell-min text-center">
+                            <td class="cell-min text-center"
+                                data-bind="attr: { rowspan: $parent.shipmentNoRowSpans()[$index()] }, visible: $parent.shipmentNoRowSpans()[$index()]">
                                 <span data-bind="text: $root.formatDate(date),
                                                 attr: {'data-original-title': (new Date(date)).getFullYear() + '年'}"
                                      data-toggle="tooltip" data-placement="right"></span>
@@ -90,20 +94,23 @@ TODO: Rename this as "index.ejs"
 
                             <td style="border-left: solid 2px #532929;"
                                 class="cell-min text-center"
-                                data-bind="attr: { rowspan: $parent.rowSpans()[$index()] }, visible: $parent.rowSpans()[$index()]">
+                                data-bind="attr: { rowspan: $parent.invoiceNoRowSpans()[$index()] }, visible: $parent.invoiceNoRowSpans()[$index()]">
                                 <input style="margin: 0px; width:26px; height:26px; vertical-align: top;"
                                        type="checkbox"
                                        data-bind="visible: invoice_id == undefined, checked: selected;">
                                 <button style="padding: 2px 10px; width: 100%"
                                         class="btn btn-custom"
-                                        data-bind="visible: invoice_id != undefined, click: $parent.view_invoice, style: {height: 28 * $parent.rowSpans()[$index()] + 'px'}">
+                                        data-bind="visible: invoice_id != undefined, click: $parent.view_invoice, style: {height: 28 * $parent.invoiceNoRowSpans()[$index()] + 'px'}">
                                     <strong data-bind="text: invoice_no"></strong>
                                     <span class="badge" data-bind="visible: !invoice_no || $parent.debug, text: invoice_id"></span>
                                 </button>
                             </td>
                             <td class="cell-min text-center"
-                                data-bind="attr: { rowspan: $parent.rowSpans()[$index()] }, visible: $parent.rowSpans()[$index()]">
-                                <span data-bind="text: invoicedate"></span>
+                                data-bind="attr: { rowspan: $parent.invoiceNoRowSpans()[$index()] }, visible: $parent.invoiceNoRowSpans()[$index()]">
+<!--                                <span data-bind="text: invoicedate"></span>-->
+                                <span data-bind="text: $root.formatDate(invoicedate),
+                                                attr: {'data-original-title': (new Date(invoicedate)).getFullYear() + '年'}"
+                                     data-toggle="tooltip" data-placement="right"></span>
                             </td>
                             <td style="width: 120px" class="cell-min text-center">
                                 <div class="input-group has-success">
@@ -140,142 +147,4 @@ TODO: Rename this as "index.ejs"
 
 </div><!--END: container-fluid-->
 
-
-<script>
-var cogroup = <%- JSON.stringify(cogroup) %>;
-var co_name = viewModel.co_name = '<%= cogroup.name %>';
-var _csrf = '<%= _csrf %>';
-
-
-var key = {
-    ESC: 27,
-    ENTER: 13,
-    PLUS: 43
-};
-
-viewModel.ShowAllShipmentsVM = new (function () {
-    'use strict';
-    var self = this;
-
-    self.debug = false;  // Show database ID numbers in all cases if true
-    var d = new Date();
-    d.setMonth(d.getMonth() - 2);
-//    self.dateStart = ko.observable(d.toISOString().substring(0, 10));
-    self.nRecsShown = ko.observable(50);
-
-    /**
-     * SHIPMENT methods
-     */
-    self.shipments = ko.observableArray();
-    self.shipmentsItems = ko.observableArray();
-    self.rowSpans = ko.observableArray();
-
-    self.clearSelections = function() {
-        for (var i=0; i<self.shipmentsItems().length; i++) {
-            self.shipmentsItems()[i].selected(false);
-        }
-    };
-
-    self.calcRowSpan = function(index) {
-        var invoice_no = self.shipmentsItems()[index].invoice_no;
-        if (index > 0 && invoice_no != undefined && self.shipmentsItems()[index-1].invoice_no === invoice_no) {
-            return 0;
-        } else if (invoice_no != undefined) {
-            var rows = 1;
-            while (self.shipmentsItems()[index+1] != undefined && invoice_no === self.shipmentsItems()[index+1].invoice_no) {
-                rows += 1;
-                index += 1;
-            }
-            return rows;
-        } else return 1;
-    }
-
-    self.openInvoiceModal = function() {
-        var items = [];
-        for (var i=0; i<self.shipmentsItems().length; i++) {
-            var si = self.shipmentsItems()[i];
-            if (si.selected() && si.invoiceitem_id == null) {
-                items.push(si);
-            }
-        }
-        viewModel.invoiceModalVM.showModal(items);
-    };
-
-    self.view_invoice = function(invoice_btn_data) {
-        var params = {
-            _csrf: _csrf,
-            id: co_name,
-            invoice_no: invoice_btn_data.invoice_no,
-        };
-        post('/database/get/invoiceitems', params, function(response) {
-            var items = [];
-            for (var i=0; i<response.length; i++) {
-                items.push(response[i]);
-            }
-            viewModel.invoiceModalVM.showModal(items);
-        });
-    };
-
-    document.onkeydown = function(evt) {
-        // Exit any modal if displayed.
-        if (evt.keyCode == key.ESC) {
-            if (viewModel.invoiceModalVM.isVisible()) viewModel.invoiceModalVM.exitModal();
-            else self.clearSelections();
-        }
-        // Enter the normal shipment form.
-        if (evt.keyCode == key.ENTER) {
-            if (viewModel.invoiceModalVM.isVisible()) return true;
-            else self.openInvoiceModal();
-        }
-    };
-
-
-
-    self.getShipmentsArray = ko.computed(function() {
-        var params = {
-            _csrf: _csrf,
-            id: co_name,
-            limit: parseInt(self.nRecsShown()),
-        };
-        post('/database/get/shipmentitems', params, function(response) {
-            self.shipmentsItems.removeAll();
-            for (var i=0; i<response.length; i++) {
-                self.shipmentsItems.push(new KO_ShipmentListRow(response[i]));
-            }
-
-            self.rowSpans.removeAll();
-            for (var i=0; i<self.shipmentsItems().length; i++) {
-                self.rowSpans.push(self.calcRowSpan(i));
-            }
-
-            // Activate Bootstrap's tooltips (opt-in function).
-            $('[data-toggle="tooltip"]').tooltip();
-        });
-    });
-
-    // Set the header cell widths to match the body cell widths
-    ko.computed(function () {
-        if (self.rowSpans().length > 0) {
-            var ths = document.getElementById('showall-th').getElementsByTagName('th');
-            var tds = document.getElementById('showall-td').getElementsByTagName('td');
-            if (tds.length >= ths.length) {
-                for (var i = 0; i < ths.length; i++) {
-                    ths[i].style.width = tds[i].offsetWidth + 'px';
-                }
-            }
-            // Edit body starting offset from header
-            var panel_head = document.getElementById("showall-p-head");
-            var panel_body = document.getElementById("showall-p-body");
-            panel_body.style.marginTop = panel_head.offsetHeight + 'px';
-        }
-    });
-
-    self.open_shipment_pdf = function (item) {
-        window.location = '/shipment/pdf/' + item.shipment_id;
-    };
-
-    self.update_payment = function (item) {
-
-    };
-});
-</script>
+<script><%- partial ('vm.shipment.showall.js') %></script>
