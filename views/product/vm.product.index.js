@@ -76,9 +76,25 @@ viewModel.ProductsVM = {
     /**
      * Sorts the products by PN if any with PNs at the top.
      */
-    sortProducts: function () {
+    sortProductPNs: function () {
         this.products.sort(function (a, b) {
             var p = 'ASE_PN';
+            // Discontinued products straight to bottom
+            if (a['discontinued']()) return 1;
+            // Empty PN strings at end of list
+            if (a[p]().length < 1 && b[p]().length < 1) return 0;
+            if (a[p]().length < 1 || b[p]().length < 1) return (a[p]() > b[p]() ? -1 : 1);
+            // Else sort by PN
+            return (a[p]() < b[p]() ? -1 : 1);
+        });
+    },
+
+    /**
+     * Sorts the products inventory names.
+     */
+    sortProducts: function () {
+        this.products.sort(function (a, b) {
+            var p = 'inventory_name';
             // Discontinued products straight to bottom
             if (a['discontinued']()) return 1;
             // Empty PN strings at end of list

@@ -21,11 +21,32 @@ TODO:
     <thead>
         <th>選</th>
         <th>買/賣</th>
-        <th class="text-center" data-bind="click: sortProducts()">
-            <span class="badge">PN</span>
-            品名
+        <th class="row">
+            <div class="col-md-3 text-left cell-min">
+                <button class="btn btn-custom btn-xs">
+                    <span class="fa fa-sort-amount-asc"
+                          data-bind="click: sortProductPNs()"></span>
+                    PN
+                </button>
+            </div>
+            <div class="col-md-6 text-center cell-min">
+                <span class="badge">PN</span>
+                品名
+            </div>
+            <div class="col-md-3 text-right cell-min">
+                <button class="btn btn-custom btn-xs">
+                    <span class="fa fa-sort-amount-asc"
+                          data-bind="click: sortProducts()"></span>
+                    名
+                </button>
+            </div>
         </th>
-        <th data-bind="click: sortByPackage()"></th>
+        <th>
+            <button class="btn btn-custom btn-xs">
+                <span class="fa fa-sort-amount-asc"
+                    data-bind="click: sortByPackage()"></span>
+            </button>
+        </th>
         <th>單位量</th>
         <th>最近價格</th>
         <th>包裝描述</th>
