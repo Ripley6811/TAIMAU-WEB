@@ -50,16 +50,21 @@ viewModel.ShowAllShipmentsVM = new (function () {
 
     self.calcShipmentNoRowSpan = function(index) {
         var shipment_no = self.shipmentsItems()[index].shipment_no;
-        if (index > 0 && shipment_no != undefined && self.shipmentsItems()[index-1].shipment_no === shipment_no) {
+        // If no shipment number then do not merge cell with others.
+        if (!(shipment_no != undefined && shipment_no != "")) return 1;
+
+        if (index > 0 && self.shipmentsItems()[index-1].shipment_no === shipment_no) {
+            // If cell matches previous cell value then do not show this cell
             return 0;
-        } else if (shipment_no != undefined) {
+        } else {
+            // Count number of cells to span with cell value
             var rows = 1;
             while (self.shipmentsItems()[index+1] != undefined && shipment_no === self.shipmentsItems()[index+1].shipment_no) {
                 rows += 1;
                 index += 1;
             }
             return rows;
-        } else return 1;
+        }
     }
 
     self.openInvoiceModal = function() {
