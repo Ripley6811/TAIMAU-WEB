@@ -281,9 +281,9 @@ module.exports = {
 
     // Retrieve a limited "page" of orders.
     page: function (req, res, next) {
-        var limit = req.param('limit') || 50,
+        var limit = req.param('limit') || 40,
             page = req.param('page') || 1,
-            search_params = {};
+            search_params = {'is_open': req.param('is_open')};
 
 //        if (parseInt(req.param('id')) !== NaN) search_params.order_id = req.param('id');
         if (req.param('co')) search_params.group = req.param('co');

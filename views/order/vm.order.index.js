@@ -41,7 +41,7 @@ viewModel.OrderIndex = {
         // Load list of products into ko array.
         self.loadProducts();
         // Load first page of records into ko array.
-        self.retrieveOrderRecords();
+        self.retrieveOpenOrderRecords();
 //        self.sortOrderDate();
 
         // Add keypress options to page
@@ -94,7 +94,7 @@ viewModel.OrderIndex = {
                         == $doc.height()) {
                 // Display loading message.
                 self.isLoading(true);
-                self.retrieveOrderRecords();
+                self.retrieveClosedOrderRecords();
             }
         });
 
@@ -118,14 +118,16 @@ viewModel.OrderIndex = {
         }, self);
     },
 
+    // Used to prevent double loading of a page of records.
     awaitingPage: false,
     /**
-     * Retrieves a page of records from database and adds to Orders array.
+     * Retrieves all open records from database and adds to Orders array.
+     * Should only be called once.
+     * Initiates closed record retrieval in the callback.
      */
-    retrieveOrderRecords : function () {
+    retrieveOpenOrderRecords : function () {
         var self = this,
             callback = function (orderdata) {
-                self.loadPage += 1;
                 orderdata.forEach(function (order) {
                     self.orders.push(models.Order(order));
                 })
@@ -136,7 +138,9 @@ viewModel.OrderIndex = {
             params = {
                 _csrf: '<%= _csrf %>',
                 co: '<%= res.locals.cogroup ? cogroup.name : "" %>',
-                page: self.loadPage
+                page: 1,
+                limit: 1000,
+                is_open: true
             },
             xhr = new XMLHttpRequest();
 
@@ -155,46 +159,52 @@ viewModel.OrderIndex = {
             var res = JSON.parse(xhr.response);
             callback(res.orders);
             self.awaitingPage = false;
-            self.sortOrderOpenThenDate();
+            self.retrieveClosedOrderRecords();
         };
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.send(ko.toJSON(params));
     },
-
     /**
-     * Sorts orders by date with newest at top.
+     * Retrieves a page of records from database and adds to Orders array.
      */
-//    sortOrderDate: function () {
-//        this.orders.sort(function (a, b) {
-//            var p = 'orderdate';
-//            return b[p]() === a[p]() ? 0 : (b[p]() < a[p]() ? -1 : 1);
-//        });
-//    },
+    retrieveClosedOrderRecords : function () {
+        var self = this,
+            callback = function (orderdata) {
+                self.loadPage += 1;
+                orderdata.forEach(function (order) {
+                    self.orders.push(models.Order(order));
+                })
+                // Activate Bootstrap's tooltips (opt-in function).
+                $('[data-toggle="tooltip"]').tooltip();
+                self.isLoading(false);
+            },
+            params = {
+                _csrf: '<%= _csrf %>',
+                co: '<%= res.locals.cogroup ? cogroup.name : "" %>',
+                page: self.loadPage,
+                is_open: false
+            },
+            xhr = new XMLHttpRequest();
 
-    /**
-     * Sorts the orders array by order number. Blanks at bottom.
-     */
-//    sortOrderID: function () {
-//        this.orders.sort(function (a, b) {
-//            var p = 'orderID',
-//                a = a[p]() ? a[p]().toUpperCase() : 'zzz',
-//                b = b[p]() ? b[p]().toUpperCase() : 'zzz';
-//            return a === b ? 0 : (a < b ? -1 : 1);
-//        });
-//    },
+        // Prevent double-loading of same page
+        if (self.awaitingPage) return;
+        self.awaitingPage = true;
 
-    /**
-     * Sorts the orders array with open/active ones at top then by date.
-     */
-    sortOrderOpenThenDate: function () {
-        this.orders.sort(function (a, b) {
-            var p = 'is_open';
-            var result = a[p]() === b[p]() ? 0 : (a[p]() === true && b[p]() === false ? -1 : 1);
-            if (result != 0) return result;
-            // Sort by date if open state is the same.
-            p = 'orderdate';
-            return b[p]() === a[p]() ? 0 : (b[p]() < a[p]() ? -1 : 1);
-        });
+        xhr.open('POST', '/order/page', true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== 4) return;
+            if (!xhr.response) {
+                alert("Response is empty");
+                return;
+            }
+
+            var res = JSON.parse(xhr.response);
+            callback(res.orders);
+            self.awaitingPage = false;
+//            self.sortOrderOpenThenDate();
+        };
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.send(ko.toJSON(params));
     },
 
     /**
