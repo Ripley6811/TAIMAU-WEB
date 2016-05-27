@@ -155,6 +155,7 @@ viewModel.OrderIndex = {
             var res = JSON.parse(xhr.response);
             callback(res.orders);
             self.awaitingPage = false;
+            self.sortOrderOpenThenDate();
         };
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.send(ko.toJSON(params));
@@ -183,14 +184,18 @@ viewModel.OrderIndex = {
 //    },
 
     /**
-     * Sorts the orders array with open/active ones at top.
+     * Sorts the orders array with open/active ones at top then by date.
      */
-//    sortOrderOpen: function () {
-//        this.orders.sort(function (a, b) {
-//            var p = 'is_open';
-//            return a[p]() === b[p]() ? 0 : (a[p]() > b[p]() ? -1 : 1);
-//        });
-//    },
+    sortOrderOpenThenDate: function () {
+        this.orders.sort(function (a, b) {
+            var p = 'is_open';
+            var result = a[p]() === b[p]() ? 0 : (a[p]() === true && b[p]() === false ? -1 : 1);
+            if (result != 0) return result;
+            // Sort by date if open state is the same.
+            p = 'orderdate';
+            return b[p]() === a[p]() ? 0 : (b[p]() < a[p]() ? -1 : 1);
+        });
+    },
 
     /**
      * Adds or removes highlighting to a table row.
