@@ -298,6 +298,7 @@ module.exports = {
         .exec(function (err, orders) {
             if (err) res.json(err);
 
+            // Remove shipment records but keep total qty shipped.
             for (var i=0; i<orders.length; i++) {
                 orders[i].qty_shipped = orders[i].qty_shipped();
                 delete orders[i].shipments;

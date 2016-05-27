@@ -42,7 +42,7 @@ viewModel.OrderIndex = {
         self.loadProducts();
         // Load first page of records into ko array.
         self.retrieveOrderRecords();
-        self.sortOrderDate();
+//        self.sortOrderDate();
 
         // Add keypress options to page
         document.onkeydown = function(evt) {
@@ -118,6 +118,7 @@ viewModel.OrderIndex = {
         }, self);
     },
 
+    awaitingPage: false,
     /**
      * Retrieves a page of records from database and adds to Orders array.
      */
@@ -139,6 +140,10 @@ viewModel.OrderIndex = {
             },
             xhr = new XMLHttpRequest();
 
+        // Prevent double-loading of same page
+        if (self.awaitingPage) return;
+        self.awaitingPage = true;
+
         xhr.open('POST', '/order/page', true);
         xhr.onreadystatechange = function () {
             if (xhr.readyState !== 4) return;
@@ -149,6 +154,7 @@ viewModel.OrderIndex = {
 
             var res = JSON.parse(xhr.response);
             callback(res.orders);
+            self.awaitingPage = false;
         };
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.send(ko.toJSON(params));
@@ -157,34 +163,34 @@ viewModel.OrderIndex = {
     /**
      * Sorts orders by date with newest at top.
      */
-    sortOrderDate: function () {
-        this.orders.sort(function (a, b) {
-            var p = 'orderdate';
-            return b[p]() === a[p]() ? 0 : (b[p]() < a[p]() ? -1 : 1);
-        });
-    },
+//    sortOrderDate: function () {
+//        this.orders.sort(function (a, b) {
+//            var p = 'orderdate';
+//            return b[p]() === a[p]() ? 0 : (b[p]() < a[p]() ? -1 : 1);
+//        });
+//    },
 
     /**
      * Sorts the orders array by order number. Blanks at bottom.
      */
-    sortOrderID: function () {
-        this.orders.sort(function (a, b) {
-            var p = 'orderID',
-                a = a[p]() ? a[p]().toUpperCase() : 'zzz',
-                b = b[p]() ? b[p]().toUpperCase() : 'zzz';
-            return a === b ? 0 : (a < b ? -1 : 1);
-        });
-    },
+//    sortOrderID: function () {
+//        this.orders.sort(function (a, b) {
+//            var p = 'orderID',
+//                a = a[p]() ? a[p]().toUpperCase() : 'zzz',
+//                b = b[p]() ? b[p]().toUpperCase() : 'zzz';
+//            return a === b ? 0 : (a < b ? -1 : 1);
+//        });
+//    },
 
     /**
      * Sorts the orders array with open/active ones at top.
      */
-    sortOrderOpen: function () {
-        this.orders.sort(function (a, b) {
-            var p = 'is_open';
-            return a[p]() === b[p]() ? 0 : (a[p]() > b[p]() ? -1 : 1);
-        });
-    },
+//    sortOrderOpen: function () {
+//        this.orders.sort(function (a, b) {
+//            var p = 'is_open';
+//            return a[p]() === b[p]() ? 0 : (a[p]() > b[p]() ? -1 : 1);
+//        });
+//    },
 
     /**
      * Adds or removes highlighting to a table row.
