@@ -1,6 +1,8 @@
+"use strict";
+
 /**
  * @fileOverview This is the main viewModel object including utility methods.
- * This should load first so that other scripts add to this object.
+ * This should load first so that other scripts add to the "viewModel" namespace.
  * Adds the KnockoutJS viewmodel to page when document is ready.
  * Add sub-models to the `viewModel` namespace.
  */
@@ -12,12 +14,12 @@ var viewModel = {
     /**
      * CSRF token.
      */
-    _csrf: undefined,  // Defined in layout.ejs
+    _csrf: '<%= _csrf %>' !== '' ? '<%= _csrf %>' : undefined,
     
     /**
      * Current selected company name (ID) if applicable.
      */
-    co_name: undefined,  // Defined in layout.ejs
+    co_name: '<%= res.locals.cogroup %>' !== '' ? '<%= cogroup.name %>' : undefined,
 
     /**
      * Convert date string to "YYYY - M月 D日" format.

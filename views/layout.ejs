@@ -57,25 +57,22 @@
     <script src="/js/ko_extenders.js"></script>
     <script src="/js/ko_models.js"></script>
     <script src="/js/utils.js"></script>
-    <script src="/js/viewModel.main.js"></script>
     <!--SCRIPTS END-->
+    
+    <!-- Initialize global website viewmodel -->
+    <script><%- partial ('main.viewmodel.js') %></script>
 
 
-    <!--vvv START: Navigation sidebar_v2 and buttons vvv-->
+    <!--vvv START: Navigation sidebar and buttons vvv-->
     <div id="sidebar-wrapper">
-        <%- partial ('sidebar_v2.ejs') %>
+        <%- partial ('sidebar.ejs') %>
     </div>
-    <!--^^^ END: Navigation sidebar_v2 and buttons ^^^-->
+    <!--^^^ END: Navigation sidebar and buttons ^^^-->
 
     <div id="page-content-wrapper" style="height: 100%">
         <%- body %>
     </div>
 
-    <script>
-        var viewModel = viewModel || {};
-        viewModel._csrf = '<%= _csrf %>';
-        viewModel.co_name = '<%= res.locals.cogroup ? cogroup.name : "" %>';
-    </script>
 
     <!--
     Client-side Templates
