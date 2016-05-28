@@ -19,7 +19,7 @@ var viewModel = {
     /**
      * Current selected company name (ID) if applicable.
      */
-    co_name: '<%= res.locals.cogroup %>' !== '' ? '<%= cogroup.name %>' : undefined,
+    co_name: '<%= res.locals.cogroup %>' !== '' ? '<%= res.locals.cogroup ? cogroup.name : "" %>' : undefined,
 
     /**
      * Convert date string to "YYYY - M月 D日" format.

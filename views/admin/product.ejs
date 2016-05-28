@@ -64,7 +64,7 @@
     </table>
 </div>
 
-<script>
+<script>// Added to root viewmodel
 var products = ko.mapping.fromJS(<%- JSON.stringify(products) %>);
 var check_length = <%= length %>;
 // Verify that parsed JSON data matches the transmitted length value.
