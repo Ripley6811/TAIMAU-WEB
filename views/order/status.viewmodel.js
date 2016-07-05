@@ -55,7 +55,7 @@ viewModel.StatusVM = new (function () {
             if (a[p].length < 1 && b[p].length < 1) return 0;
             if (a[p].length < 1 || b[p].length < 1) return (a[p] > b[p] ? -1 : 1);
             // Else sort by PN
-            return (a[p] < b[p] ? 1 : -1);
+            return (Number(a[p]) < Number(b[p]) ? 1 : -1);
         });
     }
 
