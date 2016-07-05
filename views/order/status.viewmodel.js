@@ -47,7 +47,17 @@ viewModel.StatusVM = new (function () {
             viewModel.invoiceModalVM.showModal(items);
         });
     };
-
+    
+    self.sortByManifests = function () {
+        self.shipmentsItems.sort(function (a, b) {
+            var p = 'shipment_no';
+            // Empty PN strings at end of list
+            if (a[p]().length < 1 && b[p]().length < 1) return 0;
+            if (a[p]().length < 1 || b[p]().length < 1) return (a[p]() > b[p]() ? -1 : 1);
+            // Else sort by PN
+            return (a[p]() < b[p]() ? 1 : -1);
+        });
+    }
 
 
     self.getShipmentsArray = ko.computed(function() {
@@ -61,6 +71,7 @@ viewModel.StatusVM = new (function () {
             for (var i=0; i<response.length; i++) {
                 self.shipmentsItems.push(new KO_ShipmentListRow(response[i]));
             }
+            self.sortByManifests();
         });
     });
 
