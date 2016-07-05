@@ -52,10 +52,10 @@ viewModel.StatusVM = new (function () {
         self.shipmentsItems.sort(function (a, b) {
             var p = 'shipment_no';
             // Empty PN strings at end of list
-            if (a[p]().length < 1 && b[p]().length < 1) return 0;
-            if (a[p]().length < 1 || b[p]().length < 1) return (a[p]() > b[p]() ? -1 : 1);
+            if (a[p].length < 1 && b[p].length < 1) return 0;
+            if (a[p].length < 1 || b[p].length < 1) return (a[p] > b[p] ? -1 : 1);
             // Else sort by PN
-            return (a[p]() < b[p]() ? 1 : -1);
+            return (a[p] < b[p] ? 1 : -1);
         });
     }
 
