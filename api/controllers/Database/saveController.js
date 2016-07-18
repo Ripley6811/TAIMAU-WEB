@@ -170,7 +170,8 @@ module.exports = {
         var itemRecord = {
             order_id: item.order_id,
             qty: item.qty,
-            duedate: new Date(item.duedate),
+            shipdate: new Date(item.shipdate),
+            duedate: new Date(item.duedate || item.shipdate),
             shipped: item.shipdate ? true : false,
         }
         console.log('NEW Shipment:', shipmentRecord);
