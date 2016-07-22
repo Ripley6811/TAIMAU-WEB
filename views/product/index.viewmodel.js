@@ -26,6 +26,13 @@ viewModel.ProductsVM = {
     init: function () {
         var self = this;
         self.loadProducts();
+        
+        self.authorized = ko.observable(false);
+        if (JSON.parse(window.localStorage.getItem("user"))) {
+            if (JSON.parse(window.localStorage.getItem("user")).money) {
+                self.authorized(true);
+            }
+        }
 
         document.onkeydown = function(evt) {
             switch(evt.keyCode) {

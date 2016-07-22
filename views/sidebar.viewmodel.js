@@ -7,14 +7,29 @@ viewModel.SidebarVM = new (function () {
     'use strict';
     var self = this;
 
-    self.user = ko.observable(null);
+    self.user = ko.observable();
     self.user_name = ko.observable();
     self.user_password = ko.observable();
     self.log_in = function () {
-
+        if (self.user_password() === "$" && self.user_name() !== "") {
+            window.localStorage.setItem("user", JSON.stringify({
+                money: true,
+                name: self.user_name(),
+            }));
+            self.user(self.user_name());
+            window.location.reload();
+        }
     };
-    self.log_out = function () {
 
+    if (JSON.parse(window.localStorage.getItem("user"))) {
+        self.user(JSON.parse(window.localStorage.getItem("user")).name);
+    }
+    self.log_out = function () {
+        window.localStorage.setItem("user", null);
+        self.user_password("");
+        self.user_name("");
+        self.user(null);
+        window.location.reload();
     };
 
     self.company_id = ko.observable('<%= res.locals.cogroup ? cogroup.name : "" %>')

@@ -33,7 +33,7 @@ TODO:
         <th class="text-center">訂量</th>
         <th></th>
         <th class="text-center">已送</th>
-        <th class="text-center">價格</th>
+        <th data-bind="visible: authorized" class="text-center">價格</th>
         <th>納稅</th>
         <th>備註</th>
     </thead>
@@ -228,7 +228,8 @@ TODO:
             <td align="right">
                 <div data-bind="text: qty_shipped() + ' ' + qtyMeasure()"></div>
             </td>
-            <td has-input="price" class="has-success" align="center">
+            <td has-input="price" class="has-success" align="center"
+                data-bind="visible: $parent.authorized">
                 <div data-bind="text: '$' + price() + ' / ' + (MPN.unitpriced() ? MPN.UM() : MPN.SKU()),
                                 attr: {'data-original-title': MPN.unitpriced() && MPN.units() > 1 ? '$' + (price() * MPN.units()) + ' / ' + MPN.SKU() : ''}"
                      data-toggle="tooltip" data-placement="right"></div>

@@ -13,6 +13,13 @@ var key = {
 viewModel.ShowAllShipmentsVM = new (function () {
     'use strict';
     var self = this;
+    
+    self.authorized = ko.observable(false);
+    if (JSON.parse(window.localStorage.getItem("user"))) {
+        if (JSON.parse(window.localStorage.getItem("user")).money) {
+            self.authorized(true);
+        }
+    }
 
     self.debug = false;  // Show database ID numbers in all cases if true
     var d = new Date();

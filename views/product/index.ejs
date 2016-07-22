@@ -48,7 +48,7 @@ TODO:
             </button>
         </th>
         <th>單位量</th>
-        <th>最近價格</th>
+        <th data-bind="visible: authorized">最近價格</th>
         <th>包裝描述</th>
         <th>備註</th>
     </thead>
@@ -259,7 +259,7 @@ TODO:
                 </div>
             </td>
 
-            <td class="has-success" style="width: 7em">
+            <td data-bind="visible: $parent.authorized" class="has-success" style="width: 7em">
                 <span data-bind="text: '$' + curr_price() + ' / ' + (unitpriced() ? UM() : SKU()),
                                  attr: {'data-original-title': units() > 1 && unitpriced() ? '$' + (units() * curr_price()) + ' / ' + SKU() : ''}"
                      data-toggle="tooltip" data-placement="left">

@@ -36,11 +36,11 @@ TODO: Rename this as "index.ejs"
                             <th class="text-center">出貨單編號</th>
                             <th class="text-center">出貨日期</th>
                             <th class="text-center">QTY</th>
-                            <th class="text-center">發票編號</th>
-                            <th class="text-center">發票日期</th>
-                            <th class="text-center">單價</th>
-                            <th class="text-center">總價</th>
-                            <th class="text-center">付錢</th>
+                            <th class="text-center" data-bind="visible: authorized">發票編號</th>
+                            <th class="text-center" data-bind="visible: authorized">發票日期</th>
+                            <th class="text-center" data-bind="visible: authorized">單價</th>
+                            <th class="text-center" data-bind="visible: authorized">總價</th>
+                            <th class="text-center" data-bind="visible: authorized">付錢</th>
                         </tr>
                     </thead>
                 </table>
@@ -94,7 +94,7 @@ TODO: Rename this as "index.ejs"
 
                             <td style="border-left: solid 2px #532929;"
                                 class="cell-min text-center"
-                                data-bind="attr: { rowspan: $parent.invoiceNoRowSpans()[$index()] }, visible: $parent.invoiceNoRowSpans()[$index()]">
+                                data-bind="attr: { rowspan: $parent.invoiceNoRowSpans()[$index()] }, visible: $parent.invoiceNoRowSpans()[$index()] && $parent.authorized()">
                                 <input style="margin: 0px; width:26px; height:26px; vertical-align: top;"
                                        type="checkbox"
                                        data-bind="visible: invoice_id == undefined, checked: selected;">
@@ -106,29 +106,30 @@ TODO: Rename this as "index.ejs"
                                 </button>
                             </td>
                             <td class="cell-min text-center"
-                                data-bind="attr: { rowspan: $parent.invoiceNoRowSpans()[$index()] }, visible: $parent.invoiceNoRowSpans()[$index()]">
+                                data-bind="attr: { rowspan: $parent.invoiceNoRowSpans()[$index()] }, visible: $parent.invoiceNoRowSpans()[$index()] && $parent.authorized()">
 <!--                                <span data-bind="text: invoicedate"></span>-->
                                 <span data-bind="text: $root.formatDate(invoicedate),
                                                 attr: {'data-original-title': (new Date(invoicedate)).getFullYear() + '年'}"
                                      data-toggle="tooltip" data-placement="right"></span>
                             </td>
-                            <td style="width: 120px" class="cell-min text-center">
+                            <td style="width: 120px" class="cell-min text-center" 
+                                data-bind="visible: $parent.authorized()">
                                 <div class="input-group has-success">
                                     <div class="input-group-addon">$</div>
                                     <input class="text-center form-control" size="6"
                                            data-bind="disable: invoice_no, value: price_ko">
                                 </div>
                             </td>
-                            <td class="cell-min">
+                            <td class="cell-min" 
+                                data-bind="visible: $parent.authorized()">
                                 <div class="text-center" style="width: 100%; height: 100%"
                                     data-bind="attr: {'data-original-title': '$' + value_ko()}"
                                          data-toggle="tooltip" data-placement="right">
-
-
                                     <span data-bind="text: grand_total"></span>
                                 </div>
                             </td>
-                            <td class="cell-min text-center" data-bind="style: {backgroundColor: paid() ? null : 'pink'}">
+                            <td class="cell-min text-center" 
+                                data-bind="visible: $parent.authorized(), style: {backgroundColor: paid() ? null : 'pink'}">
                                 <input class="" style="width: 100%" size="6" placeholder="付錢了嗎?"
                                        data-bind="enable: invoice_id, value: check_no">
                             </td>

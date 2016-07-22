@@ -38,6 +38,13 @@ viewModel.OrderIndex = {
     init: function () {
         var self = this;
 
+        self.authorized = ko.observable(false);
+        if (JSON.parse(window.localStorage.getItem("user"))) {
+            if (JSON.parse(window.localStorage.getItem("user")).money) {
+                self.authorized(true);
+            }
+        }
+        
         // Load list of products into ko array.
         self.loadProducts();
         // Load first page of records into ko array.
