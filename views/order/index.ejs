@@ -33,6 +33,7 @@ TODO:
         <th class="text-center">訂量</th>
         <th></th>
         <th class="text-center">已送</th>
+        <th class="text-center">要送</th>
         <th data-bind="visible: authorized" class="text-center">價格</th>
         <th>納稅</th>
         <th>備註</th>
@@ -227,6 +228,9 @@ TODO:
             </td>
             <td align="right">
                 <div data-bind="text: qty_shipped() + ' ' + qtyMeasure()"></div>
+            </td>
+            <td align="right">
+                <div data-bind="text: (qty() - qty_shipped()) + ' ' + qtyMeasure()"></div>
             </td>
             <td has-input="price" class="has-success" align="center"
                 data-bind="visible: $parent.authorized">
