@@ -133,9 +133,12 @@ viewModel.ReportsVM = new (function () {
                 var total = 0;
                 var tax = 0;
                 selectedItems.forEach(function (each) {
-                    total += Math.round(each['value']);
-                    tax += Math.round(each['value']*0.05);
+                    total += each['value'];
+                    tax += each['value']*0.05;
                 });
+              
+                total = Math.round(total);
+                tax = Math.round(tax);
 
                 // Write totals
                 ypos = 35+j*5-page_adjust+0.1;
@@ -169,7 +172,7 @@ viewModel.ReportsVM = new (function () {
                         trips[each.product_label] = 0;
                         danwei[each.product_label] = each.UM;
                     }
-                    totals[each.product_label] += Math.round(each['value']);
+                    totals[each.product_label] += each['value'];
                     counts[each.product_label] += Math.round(each['qty']*each['units']);
                     trips[each.product_label] += 1;
                 });
@@ -180,7 +183,7 @@ viewModel.ReportsVM = new (function () {
                     doc.alttext(20, ypos, key, 11);
                     doc.alttext(80, ypos, trips[key] + " 趟", 11);
                     doc.alttext(110, ypos, counts[key] + " " + danwei[key], 11);
-                    doc.alttext(140, ypos, "$ " + totals[key], 11);
+                    doc.alttext(140, ypos, "$ " + Math.round(totals[key]), 11);
                     ypos += 5;
                 }
 
