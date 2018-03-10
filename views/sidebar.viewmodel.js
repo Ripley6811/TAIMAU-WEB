@@ -125,7 +125,7 @@ viewModel.SidebarVM = new (function () {
     if (cookieStr != '') {
         var res = JSON.parse(cookieStr);
         self.recent_companies.removeAll();
-        res.slice(0, 10).forEach(function(name) {
+        res.slice(0, 16).forEach(function(name) {
             self.recent_companies.push(name);
         });
     }
