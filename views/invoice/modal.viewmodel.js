@@ -34,7 +34,7 @@ function InvoiceModalVM() {
             self.invoiceItems.push(new KO_ShipmentListRow(items[i]));
             self.invoiceItems()[i].shipmentitem_id = items[i].shipmentitem_id;
             // Set the buyer and seller names
-            if (['台茂','富茂','永茂'].indexOf(items[i].buyer) >= 0) {
+            if (['台茂','富茂','永茂','進侑企業'].indexOf(items[i].buyer) >= 0) {
                 self.us(items[i].buyer);
                 self.them(items[i].seller);
             } else {
